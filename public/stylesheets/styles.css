@@ -1,0 +1,48 @@
+
+header{
+    background-color: #2a2a2a;
+}
+h1{
+    font-family: 'Merriweather Sans', sans-serif;
+    width: 350px;
+    color: rgb(255,255,255);
+    padding: 10px;
+}
+#nav{
+    background-color: rgb(25,22,22);
+}
+#nav-link{
+    color: rgb(255,255,255);
+    font-family: 'Merriweather Sans', sans-serif;
+}
+body{
+    background-image: url("/img/background.jpg");
+}
+
+.color-white{
+    color: rgb(255, 255, 255);
+}
+
+.ml15{
+    margin-left: 15px;
+}
+.pl10{
+    margin-top: 10px;
+}
+.mr10{
+    margin-right: 10px
+}
+.mt15{
+    margin-top: 15px;
+}
+#pw{
+    width: 343px;
+}
+.ml10{
+    margin-left : 10px;
+}
+.mt20{
+    margin-top: 20px;
+}
+#email{width: 400px;}
+

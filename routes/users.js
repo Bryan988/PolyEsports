@@ -11,6 +11,8 @@ router.get('/login',users.loginpage);
 router.post('/login',users.login);
 
 router.get('/signup',users.signupPage);
-router.post('/signup',users.signup)
+router.post('/signup',users.signup);
+
+router.get('/admin',users.verifyAdmin,users.adminPage);
 
 module.exports = router;
