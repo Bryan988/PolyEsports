@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+    <body>
+
+            <form action="/users/signup" method="post">
+                <label for="name">Nom : </label><br>
+                <input type="text" name="name" required><br>
+                <label for="fname">Prénom : </label><br>
+                <input type="text" name="fname" required><br>
+                <label for="mail">Email* : </label><br>
+                <input type="email" name="mail" required><br>
+                <label for="confmail">Confirmation de l'email* : </label><br>
+                <input type="email" name="confmail" required><br>
+                <label for="mdp">Mot de passe* : </label><br>
+                <input type="password" name="mdp" required minlength="8"><br>
+                <label for="mdp">Confirmation du mot de passe* : </label><br>
+                <input type="password" name="confmdp" required minlength="8"><br>
+                <label for="pseudo">Pseudo* : </label><br>
+                <input type="text" name="pseudo" required><br>
+
+                <input type="submit" value="Se Connecter">
+            </form>
+    <p>* : Champs obligatoire</p>
+
+    <%switch(errorNb){
+        case 0:%>
+            <h3>Les emails ne correspondent pas</h3>
+            <%break
+        case 1:%>
+            <h3>Les mots de passes ne correspondent pas</h3>
+            <%break
+        case 2:%>
+            <h3>Cet email est déjà utilisé</h3>
+            <%break
+        default:
+    }%>
+    </body>
+</html>

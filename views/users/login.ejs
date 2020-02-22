@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+    <body>
+
+            <form method="post">
+                <label for="mail">Email : </label><br>
+                <input type="email" name="mail"><br>
+                <label for="pw">Mot de passe : </label><br>
+                <input type="password" name="pw"><br>
+
+                <input type="submit" value="Se Connecter"><br>
+            </form>
+            <a href="/users/signup">Je n'ai pas de compte</a>
+
+    <%switch(status) {
+        case 0: %>
+            <h3>L'email est incorrect</h3>
+            <%break
+        case 1: %>
+            <h3> Le mot de passe est incorrect</h3>
+            <%break
+        default:
+    }%>
+
+    </body>
+</html>
