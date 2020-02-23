@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css" text="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather+Sans">
     <link rel="stylesheet" href="./fonts/font-awesome.min.css" text="text/css">
-    <link rel="stylesheet" href="./stylesheets/Navigation-with-Button.css" text="text/css">
     <link rel="stylesheet" href="./stylesheets/styles.css" text="text/css">
 
 
@@ -15,7 +14,7 @@
 <body>
 <header>
     <h1 class="display-4 text-center mx-auto">PolyEsports</h1>
-    <nav id="nav" class="navbar navbar-light navbar-expand-md navigation-clean-button">
+    <nav id="nav" class="navbar navbar-light navbar-expand-md">
         <div class="container">
             <div class="collapse navbar-collapse d-flex" id="navcol-1">
                 <ul class="nav navbar-nav mr-auto">
@@ -31,18 +30,11 @@
                     </li>
                 </ul>
                 <%if(logged){%>
-                    <span class="invisible navbar-text actions">
-                                <a id="nav-link" class="login" href="/users/login">
-                                    Log In
-                                </a>
-                                <a id="nav-link" class="btn btn-light action-button" role="button" href="/users/signup">
-                                    Sign Up
-                                </a>
-
-                    </span>
                     <span class="navbar-text actions">
-                        <a id="nav-link" class="btn btn-light action-button" role="button" href="/users/logout"">
-                            Log Out
+                        <a id="nav-link" href="/users/logout"">
+                            <button class="btn btn-info" role="button">
+                                Log Out
+                            </button>
                         </a>
                     </span>
                 <%}
@@ -51,8 +43,8 @@
                                 <a id="nav-link" class="login" href="/users/login">
                                     Log In
                                 </a>
-                                <a id="nav-link" class="btn btn-light action-button" role="button" href="/users/signup">
-                                    Sign Up
+                                <a id="nav-link"href="/users/signup">
+                                    <button class="btn btn-info" role="button"> Sign Up </button>
                                 </a>
 
                 </span>

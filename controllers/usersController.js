@@ -4,8 +4,9 @@ var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 var keyconfig = require('../config/key');
 
+//store the secret key for jws
 var secretkey=keyconfig.secretkey;
-console.log(secretkey);
+
 
 exports.loginpage= function(req,res,next){
     res.render('./users/login',{status:undefined});
@@ -88,6 +89,7 @@ exports.signup = function(req,res,next){
     else{res.render('./users/signup',{errorNb:0});}
 };
 
+
 exports.adminPage = function(req,res){
     console.log("token : "+req.cookies.token);
     jwt.verify(req.cookies.token,secretkey,(err,authData)=>{
@@ -98,10 +100,11 @@ exports.adminPage = function(req,res){
 };
 
 exports.verifyAdmin = function(req,res,next){
-
+    //store the jwt token
     var token = req.cookies.token;
 
     if(typeof token !== 'undefined'){
+        //check that the token is the correct signature
         jwt.verify(token,secretkey,(err,playload)=>{
             console.log(playload);
             if(playload.isAdmin){
@@ -120,10 +123,12 @@ exports.verifyAdmin = function(req,res,next){
 //function that will inform if the user is logged or not in order to show the correct content
 exports.checkLogged = function(req,res,next){
     let token = req.cookies.token;
+    //check if there is a token
     if(typeof token !== 'undefined'){
+        //check if the token is the correct sign
         jwt.verify(token,secretkey,(err,playload)=>{
             if(err){throw err};
-            res.redirect('/')
+            res.redirect('/');
         });
     }
     else{
@@ -132,6 +137,7 @@ exports.checkLogged = function(req,res,next){
 };
 //function that clears the token from the cookies
 exports.logout = function(req,res){
-    res.clearCookie("token")
+    //delete the token from cookies
+    res.clearCookie("token");
     res.redirect('/');
 };

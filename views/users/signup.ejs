@@ -1,42 +1,79 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login Page</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-    <body>
+<%- include('./headUser'); -%>
 
-            <form action="/users/signup" method="post">
-                <label for="name">Nom : </label><br>
-                <input type="text" name="name" required><br>
-                <label for="fname">Prénom : </label><br>
-                <input type="text" name="fname" required><br>
-                <label for="mail">Email* : </label><br>
-                <input type="email" name="mail" required><br>
-                <label for="confmail">Confirmation de l'email* : </label><br>
-                <input type="email" name="confmail" required><br>
-                <label for="mdp">Mot de passe* : </label><br>
-                <input type="password" name="mdp" required minlength="8"><br>
-                <label for="mdp">Confirmation du mot de passe* : </label><br>
-                <input type="password" name="confmdp" required minlength="8"><br>
-                <label for="pseudo">Pseudo* : </label><br>
-                <input type="text" name="pseudo" required><br>
 
-                <input type="submit" value="Se Connecter">
+            <form id="login"  class="border rounded-0 border-dark d-table-row d-sm-flex d-md-flex flex-column mx-auto align-items-sm-center justify-content-md-center mt150" action="/users/signup" method="post">
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
+                    <%switch(errorNb){
+                    case 0:%>
+                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Les emails ne correspondent pas</h5>
+                    <%break
+                    case 1:%>
+                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Les mots de passes ne correspondent pas</h5>
+                    <%break
+                    case 2:%>
+                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Cet email est déjà utilisé</h5>
+                    <%break
+                        default:
+                    }%>
+                </div>
+                <h1 class="text-center w-100">
+                Formulaire d'inscription
+                </h1>
+
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
+                    <label class=" mx-auto color-white ml15">
+                        Nom :
+                    </label>
+                    <input type="text" class="form-control mx-auto w350 justify-content-lg-center" name="name" required>
+                </div>
+
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                    <label class=" mx-auto color-white">
+                        Prénom :
+                    </label>
+                    <input  type="text" class="form-control mx-auto w350 justify-content-lg-center" name="fname" required>
+                </div>
+
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                    <label class=" mx-auto color-white">
+                        Email* :
+                    </label>
+                    <input class="form-control mx-auto w350 justify-content-lg-center" type="email" name="mail" required>
+                </div>
+
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                    <label class=" mx-auto color-white">
+                        Confirmation de l'email* :
+                    </label>
+                    <input class="form-control mx-auto w350 justify-content-lg-center" type="email" name="confmail" required>
+                </div>
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                    <label class="mx-auto color-white">
+                        Mot de passe* :
+                    </label>
+                    <input class="form-control mx-auto w350 justify-content-lg-center" type="password" name="mdp" required minlength="8">
+                </div>
+
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                    <label class="mx-auto color-white">
+                        Confirmation du mot de passe* :
+                    </label>
+                    <input class="form-control mx-auto w350 justify-content-lg-center" type="password" name="confmdp" required minlength="8">
+                </div>
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                    <label class="mx-auto color-white">
+                        Pseudo* :
+                    </label>
+                    <input class="form-control mx-auto w350 justify-content-lg-center" type="text" name="pseudo" required>
+                </div>
+                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20 mb-4">
+                    <input type="submit" value="Se Connecter">
+                    <p class="text-center mx-auto color-white mt-1">* : Champs obligatoire</p>
+                </div>
+
             </form>
-    <p>* : Champs obligatoire</p>
 
-    <%switch(errorNb){
-        case 0:%>
-            <h3>Les emails ne correspondent pas</h3>
-            <%break
-        case 1:%>
-            <h3>Les mots de passes ne correspondent pas</h3>
-            <%break
-        case 2:%>
-            <h3>Cet email est déjà utilisé</h3>
-            <%break
-        default:
-    }%>
-    </body>
-</html>
+
+
+
+<%- include('./footerUser'); -%>

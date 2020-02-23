@@ -2,21 +2,21 @@
 
 
 
-<form class="border rounded-0 border-dark mx-auto" style="width: 500px;background-color: #212121;margin-top: 150px;" method="POST">
-    <h1 class="text-center w-100";">
+<form id="login" class="border rounded-0 border-dark mx-auto mt150" method="POST">
+    <h1 class="text-center w-100">
         Connexion
     </h1>
     <div class="d-xl-flex justify-content-xl-start">
         <label class="color-white ml15">
             Email :
         </label>
-        <input id="email" type="email" class="form-control ml10" name="mail"/>
+        <input type="email" class="form-control ml10 w400" name="mail"/>
     </div>
     <div class="d-xl-flex justify-content-xl-start mt20">
         <label class="color-white ml15">Mot de passe :</label>
         <input id="pw" type="password" class="form-control ml10" name="pw"/>
     </div>
-    <div class="d-xl-flex flex-row mt15" style="margin-top: 15px;">
+    <div class="d-xl-flex flex-row mt15">
         <button class="btn btn-primary d-xl-flex mx-auto" type="submit">
             Login
         </button>
@@ -36,4 +36,5 @@
         }%>
     </div>
 </form>
+
 <%- include('./footerUser'); -%>
