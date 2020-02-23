@@ -18,34 +18,40 @@ exports.login = function(req,res,next){
     const data = req.body;
     // We then check if the mail is in database
     User.checkMail(data.mail,(result) =>{
-        if(result.check===true){
-            //Check if the password entered match with the one registered
-            User.getPw(result.idUser,(hashedPw)=>{
-                bcrypt.compare(data.pw,hashedPw,(err,resp)=>{
-                    if(resp) {
-                        User.getInfoToken(result.idUser,(infoUser)=>{
-                            console.log(infoUser);
-                            //first give the jwt token to the user
-                            jwt.sign({id:result.idUser, pseudo:infoUser.pseudo, isAdmin:infoUser.isAdmin===1},secretkey,{expiresIn: "1d"},(err, token)=>{
-                                if(token==='undefined'){
-                                    res.redirect('./users/login');
-                                }
-                                else {
-                                    res.cookie('token', token);
-                                    res.redirect("/");
-                                }
+        if(typeof result !== 'undefined'){
+            if(result.check===true){
+                //Check if the password entered match with the one registered
+                User.getPw(result.idUser,(hashedPw)=>{
+                    bcrypt.compare(data.pw,hashedPw,(err,resp)=>{
+                        if(resp) {
+                            User.getInfoToken(result.idUser,(infoUser)=>{
+                                console.log(infoUser);
+                                //first give the jwt token to the user
+                                jwt.sign({id: result.idUser, pseudo: infoUser.pseudo, isAdmin: infoUser.isAdmin === 1}, secretkey, {expiresIn: "1d"}, (err, token) => {
+                                    if (token === 'undefined') {
+                                        res.redirect('/users/login');
+                                    }else {
+                                        res.cookie('token', token);
+                                        if (infoUser.isAdmin === 1) {
+                                            res.redirect("/users/admin")
+                                        } else {
+                                            res.redirect("/");
+                                        }
+                                    }
+                                });
                             });
-                        })
-                    }
-                    else{
-                        res.render('./users/login',{status:1,logged:false});
-                    }
+                        }
+                        else{
+                            res.render('./users/login',{status:1,logged:false});
+                        }
+                    });
                 });
-            });
+            }
+            else{
+                res.render('./users/login',{status:0,logged:false})
+            }
         }
-        else{
-            res.render('./users/login',{status:0,logged:false})
-        }
+        else{res.render('./users/login',{status:0,logged:false})}
     });
 };
 

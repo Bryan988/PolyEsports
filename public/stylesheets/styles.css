@@ -57,6 +57,8 @@ body{
     width: 1100px;
     background-color: #191616;
 }
+.mydark{background-color: #232323;}
+
 #login{
     width: 500px;background-color: #212121;
 }
