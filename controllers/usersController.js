@@ -8,7 +8,7 @@ var keyconfig = require('../config/key');
 var secretkey=keyconfig.secretkey;
 
 
-exports.loginpage= function(req,res,next){
+exports.loginpage= function(req,res){
     res.render('./users/login',{status:undefined});
 };
 
@@ -50,14 +50,14 @@ exports.login = function(req,res,next){
     });
 };
 
-exports.signupPage = function(req,res,next){
+exports.signupPage = function(req,res){
     // return the corresponding page with variables initialized to undefined
     //Note that errorNb : 0 = mails are not matching
     // 1 = passwords are not matching
     // 2 = mail is already in database
     res.render('./users/signup',{errorNb:undefined});
 };
-exports.signup = function(req,res,next){
+exports.signup = function(req,res){
     // store the form's data
     var newUser=req.body;
     //Hashing the password
