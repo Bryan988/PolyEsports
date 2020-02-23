@@ -1,0 +1,48 @@
+<%- include('../../../include/head'); -%>
+
+<h3 class="color-white">hi </h3>
+<%if(data){%>
+
+
+
+        <div class="container mt-3">
+
+            <h2 class="color-white">What game do you want to delete</h2>
+            <input class="form-control" id="myInput" type="text" placeholder="Search..">
+            <br>
+            <form method="DELETE" action="/users/admin/games/delete">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="color-white">Games</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="myTable">
+                        <%for (var row of data){%>
+
+                                <tr>
+                                    <td class="color-white"> <%= row.libelle%> </td>
+                                    <td><button type="submit" name="delete" value=<%= row.id%>> Delete</button></td>
+                                </tr>
+                        <%}%>
+
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <script>
+            $(document).ready(function(){
+                $("#myInput").on("keyup", function() {
+                    var value = $(this).val().toLowerCase();
+                    $("#myTable tr").filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+            });
+        </script>
+    <%}%>
+
+
+<%- include('../../../include/footer'); -%>

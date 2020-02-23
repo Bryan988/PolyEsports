@@ -1,11 +1,10 @@
-
-var User = require('../models/usersModel');
-var bcrypt = require('bcrypt');
-var jwt = require('jsonwebtoken');
-var keyconfig = require('../config/key');
+const User = require('../models/usersModel');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const keyconfig = require('../config/key');
 
 //store the secret key for jws
-var secretkey=keyconfig.secretkey;
+const secretkey = keyconfig.secretkey;
 
 
 exports.loginpage= function(req,res){
@@ -16,7 +15,7 @@ exports.login = function(req,res,next){
 
     //Note that status : 0 = mail is wrong , 1 = password is not matching
     //store the form's data
-    var data = req.body;
+    const data = req.body;
     // We then check if the mail is in database
     User.checkMail(data.mail,(result) =>{
         if(result.check===true){
@@ -39,13 +38,13 @@ exports.login = function(req,res,next){
                         })
                     }
                     else{
-                        res.render('./users/login',{status:1});
+                        res.render('./users/login',{status:1,logged:false});
                     }
                 });
             });
         }
         else{
-            res.render('./users/login',{status:0})
+            res.render('./users/login',{status:0,logged:false})
         }
     });
 };
@@ -59,9 +58,9 @@ exports.signupPage = function(req,res){
 };
 exports.signup = function(req,res){
     // store the form's data
-    var newUser=req.body;
+    const newUser = req.body;
     //Hashing the password
-    var hashedPw=bcrypt.hashSync(newUser.mdp,10);
+    const hashedPw = bcrypt.hashSync(newUser.mdp, 10);
     if(newUser.mail===newUser.confmail){
         //We check if the mail is available in database
         User.checkMail(newUser.mail,(okmail) =>{
@@ -90,19 +89,34 @@ exports.signup = function(req,res){
 };
 
 
-exports.adminPage = function(req,res){
-    console.log("token : "+req.cookies.token);
-    jwt.verify(req.cookies.token,secretkey,(err,authData)=>{
-        if(err){throw err}
-        res.render('./users/admin/admin',{logged:true});
-    })
 
+//function that will inform if the user is logged or not in order to show the correct content
+exports.checkLogged = function(req,res,next){
+    let token = req.cookies.token;
+    //check if there is a token
+    if(typeof token !== 'undefined'){
+        //check if the token is the correct sign
+        jwt.verify(token,secretkey,(err,playload)=>{
+            if(err){throw err};
+            res.redirect('/');
+        });
+    }
+    else{
+        next();
+    }
 };
+//function that clears the token from the cookies
+exports.logout = function(req,res){
+    //delete the token from cookies
+    res.clearCookie("token");
+    res.redirect('/');
+};
+
+//Admin functions below
 
 exports.verifyAdmin = function(req,res,next){
     //store the jwt token
-    var token = req.cookies.token;
-
+    const token = req.cookies.token;
     if(typeof token !== 'undefined'){
         //check that the token is the correct signature
         jwt.verify(token,secretkey,(err,playload)=>{
@@ -118,26 +132,13 @@ exports.verifyAdmin = function(req,res,next){
     else{
         res.sendStatus(403);
     }
+};
 
+exports.adminPage = function(req,res){
+    console.log("token : "+req.cookies.token);
+    jwt.verify(req.cookies.token,secretkey,(err,authData)=>{
+        if(err){throw err}
+        res.render('./users/admin/admin',{logged:true});
+    })
 };
-//function that will inform if the user is logged or not in order to show the correct content
-exports.checkLogged = function(req,res,next){
-    let token = req.cookies.token;
-    //check if there is a token
-    if(typeof token !== 'undefined'){
-        //check if the token is the correct sign
-        jwt.verify(token,secretkey,(err,playload)=>{
-            if(err){throw err};
-            res.redirect('/');
-        });
-    }
-    else{
-       next();
-    }
-};
-//function that clears the token from the cookies
-exports.logout = function(req,res){
-    //delete the token from cookies
-    res.clearCookie("token");
-    res.redirect('/');
-};
+

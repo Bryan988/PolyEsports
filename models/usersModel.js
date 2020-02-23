@@ -1,9 +1,7 @@
+const connection = require('../config/database');
 
 
-var connection = require('../config/database');
-
-
-var User = {
+const User = {
      checkMail: function(mail,cb){
           //function that return true if the mail is in database
           connection.query('SELECT id FROM user WHERE email=?', mail, function(error,results,fields){
