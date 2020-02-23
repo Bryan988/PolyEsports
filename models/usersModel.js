@@ -2,6 +2,7 @@
 
 var connection = require('../config/database');
 
+
 var User = {
      checkMail: function(mail,cb){
           //function that return true if the mail is in database

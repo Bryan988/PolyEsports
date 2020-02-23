@@ -44,5 +44,12 @@ body{
 .mt20{
     margin-top: 20px;
 }
+.mt50{
+    margin-top: 50px;
+}
 #email{width: 400px;}
 
+#accueil{
+    width: 1100px;
+    background-color: #191616;
+}

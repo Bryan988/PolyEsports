@@ -7,12 +7,14 @@ var users = require('../controllers/usersController');
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
-router.get('/login',users.loginpage);
-router.post('/login',users.login);
+router.get('/login',users.checkLogged,users.loginpage);
+router.post('/login',users.checkLogged,users.login);
 
-router.get('/signup',users.signupPage);
-router.post('/signup',users.signup);
+router.get('/signup',users.checkLogged,users.signupPage);
+router.post('/signup',users.checkLogged,users.signup);
 
 router.get('/admin',users.verifyAdmin,users.adminPage);
+
+router.get('/logout',users.logout);
 
 module.exports = router;

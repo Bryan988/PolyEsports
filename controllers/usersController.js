@@ -2,14 +2,18 @@
 var User = require('../models/usersModel');
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
+var keyconfig = require('../config/key');
+
+var secretkey=keyconfig.secretkey;
+console.log(secretkey);
 
 exports.loginpage= function(req,res,next){
-    //Note that status : 0 = mail is wrong
-    // 1 = password is not matching
     res.render('./users/login',{status:undefined});
 };
 
 exports.login = function(req,res,next){
+
+    //Note that status : 0 = mail is wrong , 1 = password is not matching
     //store the form's data
     var data = req.body;
     // We then check if the mail is in database
@@ -22,12 +26,15 @@ exports.login = function(req,res,next){
                         User.getInfoToken(result.idUser,(infoUser)=>{
                             console.log(infoUser);
                             //first give the jwt token to the user
-                            jwt.sign({id:result.idUser, pseudo:infoUser.pseudo, isAdmin:infoUser.admin===1,expire: "1800"},'secretkey',(err,token)=>{
-                                res.cookie('token',token);
-                                res.redirect("/");
+                            jwt.sign({id:result.idUser, pseudo:infoUser.pseudo, isAdmin:infoUser.admin===1},secretkey,{expiresIn: "1d"},(err,token)=>{
+                                if(token==='undefined'){
+                                    res.redirect('./users/login');
+                                }
+                                else {
+                                    res.cookie('token', token);
+                                    res.redirect("/");
+                                }
                             });
-                            //render the page
-
                         })
                     }
                     else{
@@ -83,7 +90,7 @@ exports.signup = function(req,res,next){
 
 exports.adminPage = function(req,res){
     console.log("token : "+req.cookies.token);
-    jwt.verify(req.cookies.token,'secretkey',(err,authData)=>{
+    jwt.verify(req.cookies.token,secretkey,(err,authData)=>{
         if(err){throw err}
         res.render('./users/admin');
     })
@@ -95,7 +102,7 @@ exports.verifyAdmin = function(req,res,next){
     var token = req.cookies.token;
 
     if(typeof token !== 'undefined'){
-        jwt.verify(token,'secretkey',(err,playload)=>{
+        jwt.verify(token,secretkey,(err,playload)=>{
             console.log(playload);
             if(playload.isAdmin){
                 next();
@@ -104,10 +111,27 @@ exports.verifyAdmin = function(req,res,next){
                 res.sendStatus(403);
             }
         });
-
     }
     else{
         res.sendStatus(403);
     }
 
-}
+};
+//function that will inform if the user is logged or not in order to show the correct content
+exports.checkLogged = function(req,res,next){
+    let token = req.cookies.token;
+    if(typeof token !== 'undefined'){
+        jwt.verify(token,secretkey,(err,playload)=>{
+            if(err){throw err};
+            res.redirect('/')
+        });
+    }
+    else{
+       next();
+    }
+};
+//function that clears the token from the cookies
+exports.logout = function(req,res){
+    res.clearCookie("token")
+    res.redirect('/');
+};
