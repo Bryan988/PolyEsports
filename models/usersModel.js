@@ -32,6 +32,7 @@ var User = {
      getInfoToken : function(id,cb){
           connection.query('SELECT pseudo,admin FROM user where id=?',id, (error,results)=>{
                if (error) throw error;
+               console.log(results[0]);
                cb({pseudo : results[0].pseudo, isAdmin : results[0].admin});
           })
      }

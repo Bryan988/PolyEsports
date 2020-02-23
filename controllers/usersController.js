@@ -9,7 +9,7 @@ var secretkey=keyconfig.secretkey;
 
 
 exports.loginpage= function(req,res){
-    res.render('./users/login',{status:undefined});
+    res.render('./users/login',{status:undefined,logged:false});
 };
 
 exports.login = function(req,res,next){
@@ -27,7 +27,7 @@ exports.login = function(req,res,next){
                         User.getInfoToken(result.idUser,(infoUser)=>{
                             console.log(infoUser);
                             //first give the jwt token to the user
-                            jwt.sign({id:result.idUser, pseudo:infoUser.pseudo, isAdmin:infoUser.admin===1},secretkey,{expiresIn: "1d"},(err,token)=>{
+                            jwt.sign({id:result.idUser, pseudo:infoUser.pseudo, isAdmin:infoUser.isAdmin===1},secretkey,{expiresIn: "1d"},(err, token)=>{
                                 if(token==='undefined'){
                                     res.redirect('./users/login');
                                 }
@@ -55,7 +55,7 @@ exports.signupPage = function(req,res){
     //Note that errorNb : 0 = mails are not matching
     // 1 = passwords are not matching
     // 2 = mail is already in database
-    res.render('./users/signup',{errorNb:undefined});
+    res.render('./users/signup',{errorNb:undefined,logged:false});
 };
 exports.signup = function(req,res){
     // store the form's data
@@ -75,18 +75,18 @@ exports.signup = function(req,res){
                         res.redirect("/");
                     } else {
                         //return the signup page with the corresponding error
-                        res.render('./users/signup', {errorNb:1});
+                        res.render('./users/signup', {errorNb:1,logged:false});
                     }
                 });
             }
             else{
                 //return the signup page with the corresponding error
-                res.render('./users/signup',{errorNb:2});
+                res.render('./users/signup',{errorNb:2,logged:false});
             }
         });
     }
     //return the signup page with the corresponding error
-    else{res.render('./users/signup',{errorNb:0});}
+    else{res.render('./users/signup',{errorNb:0,logged:false});}
 };
 
 
@@ -94,7 +94,7 @@ exports.adminPage = function(req,res){
     console.log("token : "+req.cookies.token);
     jwt.verify(req.cookies.token,secretkey,(err,authData)=>{
         if(err){throw err}
-        res.render('./users/admin');
+        res.render('./users/admin/admin',{logged:true});
     })
 
 };

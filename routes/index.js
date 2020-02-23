@@ -3,6 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res) {
+  console.log(__dirname);
   if(typeof req.cookies.token !=='undefined'){
     res.render('index', {logged: true});
   }
