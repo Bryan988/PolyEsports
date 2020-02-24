@@ -4,13 +4,13 @@
             <form id="login"  class="border rounded-0 border-dark d-table-row d-sm-flex d-md-flex flex-column mx-auto align-items-sm-center justify-content-md-center mt150" action="/users/signup" method="post">
                 <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
                     <%switch(errorNb){
-                    case 0:%>
+                    case '0':%>
                     <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Les emails ne correspondent pas</h5>
                     <%break
-                    case 1:%>
+                    case '1':%>
                     <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Les mots de passes ne correspondent pas</h5>
                     <%break
-                    case 2:%>
+                    case '2':%>
                     <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Cet email est déjà utilisé</h5>
                     <%break
                         default:

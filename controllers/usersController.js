@@ -68,7 +68,9 @@ exports.signupPage = function(req,res){
     //Note that errorNb : 0 = mails are not matching
     // 1 = passwords are not matching
     // 2 = mail is already in database
-    res.render('./users/signup',{errorNb:undefined,logged:false});
+    let errorNb=req.cookies.errorNb;
+
+    res.render('./users/signup',{errorNb,logged:false});
 };
 exports.signup = function(req,res){
     // store the form's data
@@ -78,28 +80,35 @@ exports.signup = function(req,res){
     if(newUser.mail===newUser.confmail){
         //We check if the mail is available in database
         User.checkMail(newUser.mail,(okmail) =>{
-            if (okmail.check===false) {
-                //Here, the confmdp will be compare to the hashed password
-                bcrypt.compare(newUser.confmdp, hashedPw, function (err, data) {
-                    console.log(data);
-                    if (data) {
-                        //everything is good so it add it to the database and the user is created
-                        User.createUser(newUser.name, newUser.fname, newUser.pseudo, newUser.mail, hashedPw);
-                        res.redirect("/");
-                    } else {
-                        //return the signup page with the corresponding error
-                        res.render('./users/signup', {errorNb:1,logged:false});
-                    }
-                });
-            }
-            else{
-                //return the signup page with the corresponding error
-                res.render('./users/signup',{errorNb:2,logged:false});
+            if(typeof okmail!=='undefined') {
+                if (okmail.check === false) {
+                    //Here, the confmdp will be compare to the hashed password
+                    bcrypt.compare(newUser.confmdp, hashedPw, function (err, data) {
+                        console.log(data);
+                        if (data) {
+                            //everything is good so it add it to the database and the user is created
+                            User.createUser(newUser.name, newUser.fname, newUser.pseudo, newUser.mail, hashedPw);
+                            res.redirect("/");
+                        } else {
+                            //return the signup page with the corresponding error
+                            res.cookie('errorNb', 1, {maxAge: 1 * 1000});
+                            res.redirect('/users/signup');
+                        }
+                    });
+                } else {
+                    //return the signup page with the corresponding error
+                    res.cookie('errorNb', 2, {maxAge: 1 * 1000});
+                    res.redirect('/users/signup');
+                }
             }
         });
     }
     //return the signup page with the corresponding error
-    else{res.render('./users/signup',{errorNb:0,logged:false});}
+    else{
+        res.cookie('errorNb',0,{ maxAge: 1 * 1000});
+        res.redirect('/users/signup');
+    }
+
 };
 
 
