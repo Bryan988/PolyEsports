@@ -8,12 +8,15 @@ const secretkey = keyconfig.secretkey;
 
 
 exports.loginpage= function(req,res){
-    res.render('./users/login',{status:undefined,logged:false});
+    console.log("cookies");
+    console.log(req.cookies);
+    let status=req.cookies.status;
+    res.render('./users/login',{status,logged:false});
 };
 
 exports.login = function(req,res,next){
 
-    //Note that status : 0 = mail is wrong , 1 = password is not matching
+    //Note that status : 0 = Something is wrong
     //store the form's data
     const data = req.body;
     // We then check if the mail is in database
@@ -42,16 +45,21 @@ exports.login = function(req,res,next){
                             });
                         }
                         else{
-                            res.render('./users/login',{status:1,logged:false});
+                            res.cookie('status',0,{ maxAge: 1 * 1000});
+                            res.redirect('/users/login');
                         }
                     });
                 });
             }
             else{
-                res.render('./users/login',{status:0,logged:false})
+                res.cookie('status',0,{ maxAge: 1 * 1000});
+                res.redirect('/users/login');
             }
         }
-        else{res.render('./users/login',{status:0,logged:false})}
+        else {
+            res.cookie('status',0,{ maxAge: 1 * 1000, httpOnly: true });
+            res.redirect('/users/login');
+        }
     });
 };
 

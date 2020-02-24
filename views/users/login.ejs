@@ -25,12 +25,9 @@
         <a  class="mx-auto mr10" href="/users/signup">
             Creer un compte
         </a>
-        <% switch(status) {
-            case 0: %>
+        <%if(status==='0'){%>
                 <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Email ou mot de pass incorrect</h5>
-                <%break
-            default:
-        }%>
+        <%}%>
     </div>
 </form>
 

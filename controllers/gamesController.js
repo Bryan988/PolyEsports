@@ -25,7 +25,7 @@ exports.deleteGamePage=function(req,res){
         }
         else{
             Games.deleteGame(req.query.delete);
-            res.render('./users/admin/games/delete',{data:cb,logged:true,status:false});
+            res.redirect('/users/admin/games/delete');
         }
 
     });
