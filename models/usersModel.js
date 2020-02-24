@@ -4,7 +4,7 @@ const connection = require('../config/database');
 const User = {
      checkMail: function(mail,cb){
           //function that return true if the mail is in database
-          connection.query('SELECT id FROM user WHERE email=?', mail, function(error,results,fields) {
+          connection.query('SELECT id FROM user WHERE email=?', mail, function(error,results) {
                if (typeof results[0] !== 'undefined'){
                     cb({
                          check: results[0] !== undefined,

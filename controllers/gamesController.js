@@ -15,20 +15,22 @@ exports.addGame=function(req,res){
         file.mv(filepath);
         Games.addGame(req.body.name,filepath);
         res.redirect('/users/admin');
-
     }
 };
 
 exports.deleteGamePage=function(req,res){
     Games.allGames((cb)=>{
-        console.log(req.query);
         if(typeof req.query.delete==='undefined'){
             res.render('./users/admin/games/delete',{data:cb,logged:true,status:false});
         }
         else{
             Games.deleteGame(req.query.delete);
-            res.render("./users/admin/games/delete",{data:cb,logged:true,status:true});
+            res.render('./users/admin/games/delete',{data:cb,logged:true,status:false});
         }
 
     });
+};
+exports.deleteGame=function(req,res,next){
+    console.log(req.query);
+    next();
 };

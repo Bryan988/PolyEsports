@@ -103,8 +103,11 @@ exports.checkLogged = function(req,res,next){
     if(typeof token !== 'undefined'){
         //check if the token is the correct sign
         jwt.verify(token,secretkey,(err,playload)=>{
-            if(err){throw err};
-            res.redirect('/');
+            if(err){
+                console.log(err);
+                res.clearCookie("token");
+                };
+            next();
         });
     }
     else{
@@ -123,15 +126,25 @@ exports.logout = function(req,res){
 exports.verifyAdmin = function(req,res,next){
     //store the jwt token
     const token = req.cookies.token;
-    if(typeof token !== 'undefined'){
+    console.log(token);
+    if(typeof token!=='undefined'){
         //check that the token is the correct signature
         jwt.verify(token,secretkey,(err,playload)=>{
+            console.log("error"+err);
+            console.log("playload : ");
             console.log(playload);
-            if(playload.isAdmin){
-                next();
+            if(typeof playload!=='undefined'){
+                console.log(playload);
+                if(playload.isAdmin){
+                    next();
+                }
+                else{
+                    res.sendStatus(403);
+                }
             }
             else{
-                res.sendStatus(403);
+                console.log("token non valide");
+                res.redirect('/users/login');
             }
         });
     }
@@ -141,10 +154,6 @@ exports.verifyAdmin = function(req,res,next){
 };
 
 exports.adminPage = function(req,res){
-    console.log("token : "+req.cookies.token);
-    jwt.verify(req.cookies.token,secretkey,(err,authData)=>{
-        if(err){throw err}
-        res.render('./users/admin/admin',{logged:true});
-    })
+    res.render('./users/admin/admin',{logged:true});
 };
 
