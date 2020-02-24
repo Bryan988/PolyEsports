@@ -147,11 +147,7 @@ exports.verifyAdmin = function(req,res,next){
     if(typeof token!=='undefined'){
         //check that the token is the correct signature
         jwt.verify(token,secretkey,(err,playload)=>{
-            console.log("error"+err);
-            console.log("playload : ");
-            console.log(playload);
             if(typeof playload!=='undefined'){
-                console.log(playload);
                 if(playload.isAdmin){
                     next();
                 }
@@ -160,7 +156,6 @@ exports.verifyAdmin = function(req,res,next){
                 }
             }
             else{
-                console.log("token non valide");
                 res.redirect('/users/login');
             }
         });

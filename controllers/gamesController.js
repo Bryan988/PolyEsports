@@ -20,17 +20,14 @@ exports.addGame=function(req,res){
 
 exports.deleteGamePage=function(req,res){
     Games.allGames((cb)=>{
-        if(typeof req.query.delete==='undefined'){
-            res.render('./users/admin/games/delete',{data:cb,logged:true,status:false});
-        }
-        else{
-            Games.deleteGame(req.query.delete);
-            res.redirect('/users/admin/games/delete');
-        }
 
+        let status = req.cookies.status;
+        console.log("status "+status);
+        res.render('./users/admin/games/delete',{data:cb,logged:true,status});
     });
 };
-exports.deleteGame=function(req,res,next){
-    console.log(req.query);
-    next();
+exports.deleteGame=function(req,res){
+    Games.deleteGame(req.body.delete);
+    res.cookie('status',true,{maxAge:1 * 1000});
+    res.redirect('/users/admin/games/delete');
 };
