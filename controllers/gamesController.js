@@ -20,7 +20,6 @@ exports.addGame=function(req,res){
 
 exports.deleteGamePage=function(req,res){
     Games.allGames((cb)=>{
-
         let status = req.cookies.status;
         console.log("status "+status);
         res.render('./users/admin/games/delete',{data:cb,logged:true,status});
