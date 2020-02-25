@@ -1,45 +1,77 @@
 let Tournament = require('../models/tournamentModel');
 let Games = require('../models/gamesModel');
+let services=require('../services');
 
 exports.addTournamentPage = function(req,res){
     Games.allGames((data)=>{
         let status=req.cookies.status;
         let date=req.cookies.date;
-        res.render('./users/admin/tournament/create',{data,status,date});
+        let invalid=req.cookies.invalid;
+        res.render('./users/admin/tournament/create',{data,status,date,invalid});
     });
 };
 
 exports.addTournament = function(req,res){
-    console.log(req.body);
-    let date=req.body.statingDate;
-    let newDate= new Date(date).toString();
-    console.log(newDate);
-    //let splitDate=date.split('-');
+    let data = services.sanitizeBody(req);
+    let date=data.startingDate;
+    let newDate= new Date(date);
+    console.log(typeof newDate.getFullYear());
 
     let today = new Date(Date.now());
-    console.log(today.getFullYear());
+    if(typeof newDate.getFullYear()==='number'&& typeof newDate.getMonth()==='number' && typeof newDate.getDate()==='number') {
+        if (newDate.getFullYear() < today.getFullYear()) {
+            res.cookie("date", 1, {maxAge: 1 * 1000});
+            res.redirect('/users/admin/tournament/create')
+        } else {
+            if (newDate.getMonth() < today.getMonth()) {
+                res.cookie("date", 1, {maxAge: 1 * 1000});
+                res.redirect('/users/admin/tournament/create');
+            } else {
+                if (newDate.getDate() < today.getDate()) {
+                    res.cookie("date", 1, {maxAge: 1 * 1000});
+                    res.redirect('/users/admin/tournament/create');
+                } else {
+                    console.log('day Good');
+                    if (typeof data.idGame !== 'undefined' && typeof data.minNbTeams !== 'undefined' && typeof data.startingDate !== 'undefined' && typeof data.tournamentName !== 'undefined' && typeof data.description !== 'undefined') {
+                        Tournament.addTournament(data.idGame, data.minNbTeams, newDate, data.tournamentName, data.description,);
+                        res.cookie("status", 1, {maxAge: 1 * 1000});
+                        res.redirect('/users/admin/tournament/create');
+                    } else {
+                        res.cookie("invalid", 1, {maxAge: 1 * 1000});
+                        res.redirect('/users/admin/tournament/create');
+                    }
 
-    if(splitDate[0]<today.getFullYear()){
-        res.cookie("date",1,{maxAge:1*1000});
-        res.redirect('/users/admin/tournament/create')
+                }
+            }
+        }
     }
     else{
-        if(split[1]<today.getMonth()){
-            res.cookie("date",1,{maxAge:1*1000});
-            res.redirect('/users/admin/tournament/create');
-        }
-        else{
-            if(split[2]<today.getDay()){
-                res.cookie("date",1,{maxAge:1*1000});
-                res.redirect('/users/admin/tournament/create');
-            }
-            else{
-                res.cookie("status",1,{maxAge:1*1000});
-                res.redirect('/users/admin/tournament/create');
-            }
-        }
+        res.cookie("status", 1, {maxAge: 1 * 1000});
+        res.redirect('/users/admin/tournament/create');
     }
+};
 
+exports.selectTournamentPage = function(req,res){
+    Tournament.getAllOpenTournaments(async (data)=> {
+        //await is going to wait that the promise is ready
+        await Promise.all(data.map((row) => new Promise((resolve => {
+            //However, promise will wait that ALL promises are ended before being ready
+            Games.getNameGame(row.idJeux,(gameName)=>{
+                row.titleGame=gameName[0].libelle;
+                resolve();
+            });
 
-    res.redirect('/users/admin/tournament/create')
-}
+        }))));
+
+        console.log(data);
+        res.render('./users/admin/tournament/viewTournaments',{data:data});
+    });
+};
+exports.updateTournamentPage = function(req,res){
+    const pathname=req.url.split('/');
+    const id=pathname[3];
+    Tournament.getTournamentById(id,(data)=>{
+        console.log(data[0]);
+        res.render('./users/admin/tournament/update',{data:data});
+    })
+};

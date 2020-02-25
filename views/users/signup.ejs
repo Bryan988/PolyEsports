@@ -5,13 +5,13 @@
                 <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
                     <%switch(errorNb){
                     case '0':%>
-                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Les emails ne correspondent pas</h5>
+                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Error with the emails</h5>
                     <%break
                     case '1':%>
-                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Les mots de passes ne correspondent pas</h5>
+                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Passwords are not matching</h5>
                     <%break
                     case '2':%>
-                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Cet email est déjà utilisé</h5>
+                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Mail already used</h5>
                     <%break
                         default:
                     }%>
@@ -19,7 +19,6 @@
                 <h1 class="text-center w-100">
                 Formulaire d'inscription
                 </h1>
-
                 <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
                     <label class=" mx-auto color-white ml15">
                         Nom :

@@ -17,10 +17,16 @@ const Games = {
     },
     deleteGame : function(id){
         connection.query('DELETE FROM jeux WHERE id=?',id,(err)=>{
-            if(err){throw err};
+            if(err){throw err}
             console.log("game deleted");
         });
     },
+    getNameGame : function(id,cb){
+        connection.query('SELECT libelle FROM jeux WHERE id=?',id,(err,data)=>{
+            if(err){console.log(err);}
+            cb(data);
+        })
+    }
 };
 
 module.exports = Games;

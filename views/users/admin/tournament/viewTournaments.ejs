@@ -1,0 +1,50 @@
+<%- include('../../../include/head'); -%>
+<%- include('../navbarAdmin'); -%>
+<%if(data){%>
+    <div class="d-xl-flex flex-column mx-auto mydark w1000">
+        <h2 class="text-left color-white" style="color: rgb(255,255,255);">Search for a tournament</h2><input type="text" style="width: 400px;margin-bottom: 15px;" />
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="color-white">Tournament's Name</th>
+                    <th class="color-white">Start Date</th>
+                    <th class="color-white">Game</th>
+                    <th class="color-white">Minimum Team Numbers</th>
+                    <th class="color-white">Action</th>
+                </tr>
+                </thead>
+                <tbody id="myTable">
+                    <% for(var row of data) { %>
+                        <tr>
+                            <td class="color-white">
+                                <%= row.name%>
+                            </td>
+                            <td class="color-white">
+                                <%= row.date_debut%>
+                            </td>
+                            <td class="color-white">
+                                <%= row.titleGame%>
+                            </td>
+                            <td class="color-white">
+                                <%= row.participantMin%>
+                            </td>
+                            <td class=" d-flex flex-row">
+                                <a href="/users/admin/tournament/update/<%= row.id %>">
+                                    <button class="btn btn-primary mr10" type="button">
+                                        Update
+                                    </button>
+                                </a>
+
+                                <button class="btn btn-danger" type="button">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    <%}%>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<%}%>
+<%- include('../../../include/footer'); -%>

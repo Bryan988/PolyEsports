@@ -1,18 +1,19 @@
-var express = require('express');
-var router = express.Router();
-var users = require('../controllers/usersController');
+const express = require('express');
+const router = express.Router();
+const users = require('../controllers/usersController');
+const services = require('../services');
 
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
-router.get('/login',users.checkLogged,users.loginpage);
-router.post('/login',users.checkLogged,users.login);
+router.get('/login',services.checkLogged,users.loginpage);
+router.post('/login',services.checkLogged,users.login);
 
-router.get('/signup',users.checkLogged,users.signupPage);
-router.post('/signup',users.checkLogged,users.signup);
+router.get('/signup',services.checkLogged,users.signupPage);
+router.post('/signup',services.checkLogged,users.signup);
 
-router.get('/logout',users.logout);
+router.get('/logout',services.logout);
 
 module.exports = router;

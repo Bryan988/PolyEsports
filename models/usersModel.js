@@ -4,16 +4,16 @@ const connection = require('../config/database');
 const User = {
      checkMail: function(mail,cb){
           //function that return true if the mail is in database
-          connection.query('SELECT id FROM user WHERE email=?', mail, function(error,results) {
+          connection.query('SELECT id FROM user WHERE email=?', mail, function(error,results){
+               if(error){console.log(error);}
+               //console.log(results);
                if (typeof results[0] !== 'undefined'){
                     cb({
                          check: results[0] !== undefined,
                          idUser: results[0].id
                     });
                }
-               else{
-                    cb()
-               }
+               else{cb();}
           });
      },
      createUser: function(name,firstname,pseudo,mail,pw){
