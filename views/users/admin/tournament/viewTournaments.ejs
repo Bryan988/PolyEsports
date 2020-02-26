@@ -4,7 +4,10 @@
 
     <div class="d-xl-flex flex-column mx-auto mydark w1000">
         <%if(status==='1'){%>
-            <h3 class="color-white">The item has been deleted</h3>
+            <h3 class="text-success text-center">The item has been deleted</h3>
+        <%}%>
+        <%if(status==='2'){%>
+            <h3 class="text-success text-center">The item has been updated</h3>
         <%}%>
         <h2 class="text-left color-white" style="color: rgb(255,255,255);">Search for a tournament</h2><input type="text" style="width: 400px;margin-bottom: 15px;" />
         <div class="table-responsive">

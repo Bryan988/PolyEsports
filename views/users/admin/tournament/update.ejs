@@ -1,28 +1,37 @@
 <%- include('../../../include/head'); -%>
 <%- include('../navbarAdmin'); -%>
+<%if(status){%>
+    <h3 class="text-center text-success mt15"> The tournament has been updated</h3>
+<%}
+if(date){%>
+    <h3 class="text-center text-warning mt15"> The date is invalid</h3>
+<%}
+if(invalid){%>
+    <h3 class="text-center text-warning mt15"> The inputs are invalid</h3>
+<%}%>
 
 <%if(data && games){%>
     <div class="mx-auto mydark w1100">
-        <form class="d-flex flex-row m20 h600">
+        <form class="d-flex flex-row m20 h600" method="POST" action="/users/admin/tournament/update/<%= data[0].id%>" required>
             <div style="width: 500px;">
                 <div style="width: 400px;">
                     <div class="w500 color-white m10">
                         <label class="color-white">
                             Tournament's name
-                        </label>
-                        <input type="text"  name="tournamentName" class="form-control w300" placeholder="<%= data[0].name%>"/>
+                        </label></br>
+                        <input type="text"  name="tournamentName" class="form-control w300" value="<%= data[0].name%>" required/>
                     </div>
                     <div class="w500 color-white m10">
                         <label class="color-white">
                             Starting Date
-                        </label>
-                        <input placeholder="Date" class="textbox-n" type="text" onfocus="(this.type='date')" onblur="(this.type='text')" id="date" />
+                        </label></br>
+                        <input type="date" name="startingDate" value="<%= data[0].date_debut%>" required/>
                     </div>
                     <div class="w500 color-white m10">
                         <label class="color-white">
                             Minimum Number of Teams
-                        </label>
-                        <input type="number" name="minNbTeams" class="form-control" min="2" step="1" />
+                        </label></br>
+                        <input type="number" name="minNbTeams"  value="<%= data[0].participantMin %>" class="form-control" min="2" step="1" required/>
                     </div>
                 </div>
                 <div class="w400">
@@ -30,35 +39,43 @@
                         Search the game
                     </label>
                     <input class="w300" type="search" class="form-control" id="myInput" type="text" onkeyup="myFunction()" />
-                    <div class="table-responsive" style="margin-top: 10px;">
+                    <div class="table-responsive overflow-y-auto h300" style="margin-top: 10px;">
                         <table class="table">
                             <tbody id="myTable">
-                            <%for (var row of games){%>
-                                <tr>
-                                    <td class="color-white"> <%= row.libelle%> </td>
-                                    <td>
-                                        <%if(row.id===data.id){%>
-                                            <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required checked>
-                                        <%}else{%>
-                                            <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required>
-                                        <%}%>
-                                        <label class="color-white" for="idGame<%= row.id %>">Select</label>
-                                    </td>
-                                </tr>
-                            <%}%>
+                                <%for (var row of games){%>
+                                    <tr>
+                                        <td class="color-white"> <%= row.libelle%> </td>
+                                        <td>
+                                            <%if(row.id===data[0].idJeux){%>
+                                                <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required checked>
+                                            <%}else{%>
+                                                <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required>
+                                            <%}%>
+                                            <label class="color-white" for="idGame<%= row.id %>">Select</label>
+                                        </td>
+                                    </tr>
+                                <%}%>
                             </tbody>
-                            </tbody>
+
                         </table>
                     </div>
                 </div>
             </div>
-            <div class="w500 m10">
-                <label class="color-white">
-                    Tournament's description : 
-                </label>
-                <textarea class="form-control h500" >
-
-                </textarea>
+            <div class="d-flex d-xl-flex flex-column w500 m10 h580 ml50">
+                <div class="h500 overflow-y-auto">
+                    <label class="color-white">
+                        Tournament's description : 
+                    </label>
+                    <textarea class="form-control form-control-lg h500" name="description" required>
+                        <%= data[0].description%>
+                    </textarea>
+                </div>
+                <div class="d-xl-flex justify-content-xl-end">
+                    <input type="hidden" name="_method" value="put"/>
+                    <button class="btn btn-primary mt20" type="sumbit">
+                        Update
+                    </button>
+                </div>
             </div>
         </form>
     </div>

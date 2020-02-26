@@ -36,8 +36,10 @@ const Tournament = {
     },
 
     updateTournament : function(id,idGame,minNbTeams,startingDate,name,description){
-        connection.query('UPDATE tournois SET ? WHERE id=?',{idJeux:idGame,participantMin: minNbTeams,date_debut: startingDate,name:name,description:description},id);
-        console.log("tournament updated");
+        connection.query('UPDATE tournois SET ? WHERE id=?',[{idJeux:idGame,participantMin: minNbTeams,date_debut: startingDate,name:name,description:description},id], (err)=>{
+            if(err){console.log(err);}
+            console.log("tournament updated");
+        });
     },
 
     getTournamentById : function(id,callback){
