@@ -1,6 +1,6 @@
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-const keyconfig = require('./config/key');
+const keyconfig = require('../config/key');
 
 //store the secret key for jws
 const secretkey = keyconfig.secretkey;
@@ -67,3 +67,4 @@ exports.verifyAdmin = function(req,res,next){
     res.sendStatus(403);
   }
 };
+

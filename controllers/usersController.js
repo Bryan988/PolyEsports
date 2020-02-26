@@ -2,7 +2,7 @@ const User = require('../models/usersModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const keyconfig = require('../config/key');
-const services = require('../services');
+const services = require('../services/userServices');
 
 //store the secret key for jws
 const secretkey = keyconfig.secretkey;
@@ -10,8 +10,6 @@ const secretkey = keyconfig.secretkey;
 const EMAIL_REGEXX = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 exports.loginpage= function(req,res){
-    console.log("cookies");
-    console.log(req.cookies);
     let status=req.cookies.status;
     res.render('./users/login',{status,logged:false});
 };
@@ -82,11 +80,7 @@ exports.signup = function(req,res){
         const hashedPw = bcrypt.hashSync(newUser.mdp, 10);
         if (newUser.mail === newUser.confmail) {
             //We check if the mail is available in database
-            console.log(newUser.mail);
             User.checkMail(newUser.mail, (okmail)=>{
-                console.log('ok');
-
-                console.log(okmail);
                 if (okmail === undefined) {
                     //Here, the confmdp will be compare to the hashed password
                     bcrypt.compare(newUser.confmdp, hashedPw, function (err, data) {

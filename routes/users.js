@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const users = require('../controllers/usersController');
-const services = require('../services');
+const services = require('../services/userServices');
 
 
 /* GET users listing. */

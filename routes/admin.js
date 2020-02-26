@@ -2,7 +2,7 @@ let express = require('express');
 let router = express.Router();
 let games = require('../controllers/gamesController');
 let tournament = require('../controllers/tournamentController');
-let services = require('../services');
+let services = require('../services/userServices');
 let users = require('../controllers/usersController');
 
 router.get('/',services.verifyAdmin,users.adminPage);
