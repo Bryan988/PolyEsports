@@ -18,7 +18,7 @@ router.post('/tournament/create',services.verifyAdmin,tournament.addTournament);
 
 router.get('/tournament/edit',services.verifyAdmin,tournament.selectTournamentPage);
 router.get('/tournament/update/:id',services.verifyAdmin,tournament.updateTournamentPage);
-//router.post('/tournament/update/:id',services.verifyAdmin,tournament.editTournamentPage);
+router.get('/tournament/delete/:id',services.verifyAdmin,tournament.deleteTournament);
 
 
 

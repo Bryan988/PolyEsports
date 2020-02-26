@@ -1,7 +1,11 @@
 <%- include('../../../include/head'); -%>
 <%- include('../navbarAdmin'); -%>
 <%if(data){%>
+
     <div class="d-xl-flex flex-column mx-auto mydark w1000">
+        <%if(status==='1'){%>
+            <h3 class="color-white">The item has been deleted</h3>
+        <%}%>
         <h2 class="text-left color-white" style="color: rgb(255,255,255);">Search for a tournament</h2><input type="text" style="width: 400px;margin-bottom: 15px;" />
         <div class="table-responsive">
             <table class="table">
@@ -35,10 +39,11 @@
                                         Update
                                     </button>
                                 </a>
-
-                                <button class="btn btn-danger" type="button">
-                                    Delete
-                                </button>
+                                <a href="/users/admin/tournament/delete/<%= row.id %>">
+                                    <button class="btn btn-danger" type="button">
+                                        Delete
+                                    </button>
+                                </a>
                             </td>
                         </tr>
                     <%}%>

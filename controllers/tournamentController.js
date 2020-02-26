@@ -1,6 +1,7 @@
 let Tournament = require('../models/tournamentModel');
 let Games = require('../models/gamesModel');
 let services=require('../services');
+const DATE = require('date-and-time');
 
 exports.addTournamentPage = function(req,res){
     Games.allGames((data)=>{
@@ -18,6 +19,7 @@ exports.addTournament = function(req,res){
     console.log(typeof newDate.getFullYear());
 
     let today = new Date(Date.now());
+    console.log(DATE.format(today,'YYYY/MM/DD'));
     if(typeof newDate.getFullYear()==='number'&& typeof newDate.getMonth()==='number' && typeof newDate.getDate()==='number') {
         if (newDate.getFullYear() < today.getFullYear()) {
             res.cookie("date", 1, {maxAge: 1 * 1000});
@@ -52,11 +54,13 @@ exports.addTournament = function(req,res){
 };
 
 exports.selectTournamentPage = function(req,res){
+    const status = req.cookies.status;
     Tournament.getAllOpenTournaments(async (data)=> {
         //await is going to wait that the promise is ready
         await Promise.all(data.map((row) => new Promise((resolve => {
             //However, promise will wait that ALL promises are ended before being ready
             Games.getNameGame(row.idJeux,(gameName)=>{
+                row.date_debut=DATE.format(row.date_debut,'YYYY/MM/DD');
                 row.titleGame=gameName[0].libelle;
                 resolve();
             });
@@ -64,7 +68,7 @@ exports.selectTournamentPage = function(req,res){
         }))));
 
         console.log(data);
-        res.render('./users/admin/tournament/viewTournaments',{data:data});
+        res.render('./users/admin/tournament/viewTournaments',{data:data,status:status});
     });
 };
 exports.updateTournamentPage = function(req,res){
@@ -75,3 +79,13 @@ exports.updateTournamentPage = function(req,res){
         res.render('./users/admin/tournament/update',{data:data});
     })
 };
+
+exports.deleteTournament = function(req,res){
+    const pathname = req.url.split('/');
+    const id=pathname[3];
+    Tournament.deleteTournamentById(id);
+    res.cookie('status',1);
+    res.redirect('/users/admin/tournament/edit')
+};
+//TODO ENVOYER LES RES.STATUS CORRESPONDANT
+//TODO ENLEVER LES <body> et <html> des includes
