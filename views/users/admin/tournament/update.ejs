@@ -1,5 +1,67 @@
 <%- include('../../../include/head'); -%>
 <%- include('../navbarAdmin'); -%>
 
-<h3 class="color-white"> UPDATE PAGE </h3>
+<%if(data && games){%>
+    <div class="mx-auto mydark w1100">
+        <form class="d-flex flex-row m20 h600">
+            <div style="width: 500px;">
+                <div style="width: 400px;">
+                    <div class="w500 color-white m10">
+                        <label class="color-white">
+                            Tournament's name
+                        </label>
+                        <input type="text"  name="tournamentName" class="form-control w300" placeholder="<%= data[0].name%>"/>
+                    </div>
+                    <div class="w500 color-white m10">
+                        <label class="color-white">
+                            Starting Date
+                        </label>
+                        <input placeholder="Date" class="textbox-n" type="text" onfocus="(this.type='date')" onblur="(this.type='text')" id="date" />
+                    </div>
+                    <div class="w500 color-white m10">
+                        <label class="color-white">
+                            Minimum Number of Teams
+                        </label>
+                        <input type="number" name="minNbTeams" class="form-control" min="2" step="1" />
+                    </div>
+                </div>
+                <div class="w400">
+                    <label class="color-white m10">
+                        Search the game
+                    </label>
+                    <input class="w300" type="search" class="form-control" id="myInput" type="text" onkeyup="myFunction()" />
+                    <div class="table-responsive" style="margin-top: 10px;">
+                        <table class="table">
+                            <tbody id="myTable">
+                            <%for (var row of games){%>
+                                <tr>
+                                    <td class="color-white"> <%= row.libelle%> </td>
+                                    <td>
+                                        <%if(row.id===data.id){%>
+                                            <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required checked>
+                                        <%}else{%>
+                                            <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required>
+                                        <%}%>
+                                        <label class="color-white" for="idGame<%= row.id %>">Select</label>
+                                    </td>
+                                </tr>
+                            <%}%>
+                            </tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="w500 m10">
+                <label class="color-white">
+                    Tournament's description : 
+                </label>
+                <textarea class="form-control h500" >
+
+                </textarea>
+            </div>
+        </form>
+    </div>
+<%}%>
+<%- include('../../../include/searchFunc'); -%>
 <%- include('../../../include/footer'); -%>

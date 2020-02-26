@@ -73,8 +73,10 @@ exports.signupPage = function(req,res){
     res.render('./users/signup',{errorNb,logged:false});
 };
 exports.signup = function(req,res){
+
     // store the form's data
     const newUser = services.sanitizeBody(req);
+    console.log(newUser);
     if (EMAIL_REGEXX.test(newUser.mail) && typeof newUser.name !=='undefined' && typeof newUser.fname!=='undefined' && typeof newUser.pseudo!=='undefined' && typeof newUser.mail !=='undefined' && typeof newUser.mdp!=='undefined'){
         //Hashing the password
         const hashedPw = bcrypt.hashSync(newUser.mdp, 10);

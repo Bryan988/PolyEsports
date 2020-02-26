@@ -62,9 +62,13 @@ exports.selectTournamentPage = function(req,res){
 exports.updateTournamentPage = function(req,res){
     const pathname=req.url.split('/');
     const id=pathname[3];
-    Tournament.getTournamentById(id,(data)=>{
-        console.log(data[0]);
-        res.render('./users/admin/tournament/update',{data:data});
+    Games.allGames((games)=>{
+        Tournament.getTournamentById(id,(data)=>{
+            data[0].date_debut=DATE.format(data[0].date_debut,'YYYY/MM/DD');
+            console.log(data[0]);
+
+            res.render('./users/admin/tournament/update',{data,games});
+        })
     })
 };
 

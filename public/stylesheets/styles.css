@@ -23,6 +23,7 @@ body{
     color: rgb(255, 255, 255);
 }
 .m10{margin: 10px;}
+.m20{margin: 20px;}
 
 .ml15{
     margin-left: 15px;
@@ -58,15 +59,17 @@ body{
 .w300{width: 300px;}
 .w350{width : 350px;}
 .w400{width: 400px;}
+.w500{width: 500px;}
 .w700{width: 700px;}
 .w1000{width: 1000px;}
-
+.w1100{width: 1100px;}
 .w80p{width: 80%;}
 
 .h100{height: 100px;}
 .h300{height: 300px;}
 .h400{height: 400px;}
-
+.h500{height: 500px;}
+.h600{height: 600px;}
 #accueil{
     width: 1100px;
     background-color: #191616;
