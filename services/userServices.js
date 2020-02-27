@@ -5,14 +5,7 @@ const keyconfig = require('../config/key');
 //store the secret key for jws
 const secretkey = keyconfig.secretkey;
 
-exports.sanitizeBody=function(req){
-  const body = req.body;
-  let retour = {};
-  for(const parameters in body){
-      retour[parameters]=req.sanitize(body[parameters]);
-  }
-  return retour;
-};
+
 
 //function that will inform if the user is logged or not in order to show the correct content
 exports.checkLogged = function(req,res,next){
@@ -40,7 +33,7 @@ exports.checkLogged = function(req,res,next){
 exports.logout = function(req,res){
   //delete the token from cookies
   res.clearCookie("token");
-  res.redirect('/');
+  res.status(200).render('./redirect',{link:'/'});
 };
 
 exports.verifyAdmin = function(req,res,next){
@@ -55,16 +48,16 @@ exports.verifyAdmin = function(req,res,next){
           next();
         }
         else{
-          res.sendStatus(403);
+          res.status(403).render('./redirect',{link:'/'});
         }
       }
       else{
-        res.redirect('/users/login');
+        res.status(401).render('./redirect',{link:'/'});
       }
     });
   }
   else{
-    res.sendStatus(403);
+    res.status(401).render('./redirect',{link:'/'});
   }
 };
 

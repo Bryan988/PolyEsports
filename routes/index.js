@@ -9,12 +9,15 @@ let secretkey = key.secretkey;
 router.get('/', function(req, res) {
   console.log(__dirname);
   console.log(req.cookies.token);
+  let signedup = req.cookies.signedup;
   jwt.verify(req.cookies.token, secretkey, (err, playload) => {
+
     if (err) {
       console.log(err.message);
-      return res.render('index', {logged: false});
+      return res.render('index', {logged: false,isAdmin : false,signedup});
     } else {
-      return res.render('index', {logged: true});
+      let isAdmin = playload.isAdmin;
+      return res.render('index', {logged: true,isAdmin,signedup});
     }
   });
 });

@@ -1,19 +1,22 @@
-<%- include('../../../include/head'); -%>
-<%- include('../navbarAdmin'); -%>
-<main>
-    <div class="justify-content-xl-center d-xl-flex mx-auto w-50 mt50 mydark">
-        <form method="POST" enctype="multipart/form-data" action="/users/admin/games/add">
-            <h3 class="text-center color-white">
-                Add a game to the library
-            </h3>
-            <input class="color-white mx-auto" type="file" name="filename" required><br>
-            <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center">
-                <label class="color-white">Game's name</label>
-                <input class="w-50" type="text" name="name" required>
-                <button class="btn btn-primary" type="submit">Upload</button>
+<html>
+    <%- include('../../../include/head'); -%>
+    <body>
+        <%- include('../../../include/navbarAdmin'); -%>
+        <main>
+            <div class="justify-content-xl-center d-xl-flex mx-auto w-50 mt50 mydark">
+                <form method="POST" enctype="multipart/form-data" action="/users/admin/games/add">
+                    <h3 class="text-center color-white">
+                        Add a game to the library
+                    </h3>
+                    <input class="color-white mx-auto" type="file" name="filename" required><br>
+                    <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center">
+                        <label class="color-white">Game's name</label>
+                        <input class="w-50" type="text" name="name" required>
+                        <button class="btn btn-primary" type="submit">Upload</button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
-</main>
-<%- include('../../../include/footer'); -%>
-
+        </main>
+        <%- include('../../../include/footer'); -%>
+    </body>
+</html>

@@ -6,15 +6,15 @@ const DATE = require('date-and-time');
 
 exports.addTournamentPage = function(req,res){
     Games.allGames((data)=>{
-        let status=req.cookies.status;
-        let date=req.cookies.date;
-        let invalid=req.cookies.invalid;
+        let status=commonServices.getCookie(req,'status');
+        let date=commonServices.getCookie(req,'date');
+        let invalid=commonServices.getCookie(req,'invalid');
         res.render('./users/admin/tournament/create',{data,status,date,invalid});
     });
 };
 
 exports.addTournament = function(req,res){
-    let data = userServices.sanitizeBody(req);
+    let data = commonServices.sanitizeBody(req);
     let date=data.startingDate;
     let newDate= new Date(date);
 
@@ -22,26 +22,26 @@ exports.addTournament = function(req,res){
         if(commonServices.checkPastDate(newDate)){
             if (typeof data.idGame !== 'undefined' && typeof data.minNbTeams !== 'undefined' && typeof data.startingDate !== 'undefined' && typeof data.tournamentName !== 'undefined' && typeof data.description !== 'undefined') {
                 Tournament.addTournament(data.idGame, data.minNbTeams, newDate, data.tournamentName, data.description,);
-                res.cookie("status", 1, {maxAge: 1 * 1000});
+                commonServices.setCookie(res,"status", 1);
                 res.redirect('/users/admin/tournament/create');
             } else {
-                res.cookie("invalid", 1, {maxAge: 1 * 1000});
+                commonServices.setCookie(res,"invalid", 1);
                 res.redirect('/users/admin/tournament/create');
             }
         }
         else{
-            res.cookie('date',1,{maxAge : 1*1000});
+            commonServices.setCookie(res,'date',1);
             res.redirect('/users/admin/tournament/create');
         }
     }
     else{
-        res.cookie("status", 1, {maxAge: 1 * 1000});
+        commonServices.setCookie(res,"status", 1);
         res.redirect('/users/admin/tournament/create');
     }
 };
 
 exports.selectTournamentPage = function(req,res){
-    const status = req.cookies.status;
+    const status = commonServices.getCookie(req,'status');
     Tournament.getAllOpenTournaments(async (data)=> {
         //await is going to wait that the promise is ready
 
@@ -64,16 +64,15 @@ exports.deleteTournament = function(req,res){
     const pathname = req.url.split('/');
     const id=pathname[3];
     Tournament.deleteTournamentById(id);
-    res.cookie('status',1);
+    commonServices.setCookie(res,'status',1);
     res.redirect('/users/admin/tournament/edit')
 };
 
 exports.updateTournamentPage = function(req,res){
-    const pathname=req.url.split('/');
-    const id=pathname[3];
-    let status = req.cookies.status;
-    let invalid = req.cookies.invalid;
-    let date = req.cookies.date
+    const id=req.params.id;
+    let status = commonServices.getCookie(req,'status');
+    let invalid = commonServices.getCookie(req,'invalid');
+    let date = commonServices.getCookie(req,'date');
     Games.allGames((games)=>{
         Tournament.getTournamentById(id,(data)=>{
             data[0].date_debut=DATE.format(data[0].date_debut,'YYYY-MM-DD');
@@ -85,34 +84,33 @@ exports.updateTournamentPage = function(req,res){
 };
 
 exports.updateTournament = function(req,res){
-    let data = userServices.sanitizeBody(req);
+    let data = commonServices.sanitizeBody(req);
 
     let date=data.startingDate;
     let newDate= new Date(date);
     console.log(req.body);
-    let pathname = req.url.split('/');
-    let id = pathname[3];
+    let id = req.params.id;
     if(typeof newDate.getFullYear()==='number'&& typeof newDate.getMonth()==='number' && typeof newDate.getDate()==='number') {
         if(commonServices.checkPastDate(newDate)){
             if (typeof data.idGame !== 'undefined' && typeof data.minNbTeams !== 'undefined' && typeof data.startingDate !== 'undefined' && typeof data.tournamentName !== 'undefined' && typeof data.description !== 'undefined') {
                 Tournament.updateTournament(id,data.idGame, data.minNbTeams, newDate, data.tournamentName, data.description);
-                res.cookie("status", 2, {maxAge: 1 * 1000});
+                commonServices.setCookie(res,"status", 2);
                 res.redirect('/users/admin/tournament/edit');
             } else {
-                res.cookie("invalid", 1, {maxAge: 1 * 1000});
+                commonServices.setCookie(res,"invalid", 1);
                 res.redirect('/users/admin/tournament/update/'+id);
             }
         }
         else{
-            res.cookie('date',1,{maxAge : 1*1000});
+            commonServices.setCookie(res,'date',1);
             res.redirect('/users/admin/tournament/update/'+id);
         }
     }
     else{
-        res.cookie("invalid", 1, {maxAge: 1 * 1000});
+        commonServices.setCookie(res,"invalid", 1);
         res.redirect('/users/admin/tournament/update/'+id);
     }
 
 }
 //TODO ENVOYER LES RES.STATUS CORRESPONDANT
-//TODO ENLEVER LES <body> et <html> des includes
+

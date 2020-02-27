@@ -1,3 +1,8 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<html>
+    <%- include('./include/head'); -%>
+    <body>
+        <h1 class="text-danger text center"><%= message %></h1>
+    <%- include('./include/footer'); -%>
+    </body>
+</html>
+

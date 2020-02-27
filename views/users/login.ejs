@@ -1,34 +1,38 @@
-<%- include('../include/head'); -%>
-<%- include('../include/navbar'); -%>
+<html>
+        <%- include('../include/head'); -%>
+    <body>
+        <%- include('../include/navbar'); -%>
 
 
-<form action="/users/login" id="login" class="border rounded-0 border-dark mx-auto mt150" method="POST">
-    <h1 class="text-center w-100">
-        Connexion
-    </h1>
-    <div class="d-xl-flex justify-content-xl-start">
-        <label class="color-white ml15">
-            Email :
-        </label>
-        <input type="email" class="form-control ml10 w400" name="mail"/>
-    </div>
-    <div class="d-xl-flex justify-content-xl-start mt20">
-        <label class="color-white ml15">Mot de passe :</label>
-        <input id="pw" type="password" class="form-control ml10" name="pw"/>
-    </div>
-    <div class="d-xl-flex flex-row mt15">
-        <button class="btn btn-primary d-xl-flex mx-auto" type="submit">
-            Login
-        </button>
-    </div>
-    <div class="d-xl-flex flex-column justify-content-xl-center">
-        <a  class="mx-auto mr10" href="/users/signup">
-            Creer un compte
-        </a>
-        <%if(status==='0'){%>
-                <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Email ou mot de pass incorrect</h5>
-        <%}%>
-    </div>
-</form>
+        <form action="/users/login" id="login" class="border rounded-0 border-dark mx-auto mt150" method="POST">
+            <h1 class="text-center w-100">
+                Connexion
+            </h1>
+            <div class="d-xl-flex justify-content-xl-start">
+                <label class="color-white ml15">
+                    Email :
+                </label>
+                <input type="email" class="form-control ml10 w400" name="mail"/>
+            </div>
+            <div class="d-xl-flex justify-content-xl-start mt20">
+                <label class="color-white ml15">Mot de passe :</label>
+                <input id="pw" type="password" class="form-control ml10" name="pw"/>
+            </div>
+            <div class="d-xl-flex flex-row mt15">
+                <button class="btn btn-primary d-xl-flex mx-auto" type="submit">
+                    Login
+                </button>
+            </div>
+            <div class="d-xl-flex flex-column justify-content-xl-center">
+                <a  class="mx-auto mr10" href="/users/signup">
+                    Creer un compte
+                </a>
+                <%if(status==='0'){%>
+                        <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Email ou mot de pass incorrect</h5>
+                <%}%>
+            </div>
+        </form>
 
-<%- include('../include/footer'); -%>
+        <%- include('../include/footer'); -%>
+    </body>
+</html>

@@ -1,18 +1,31 @@
-<%- include('./include/head'); -%>
-<%- include('./include/navbar'); -%>
-<main id="accueil" class="border rounded-0 border-dark shadow-lg mx-auto mt50">
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <div>
-          <h4 class="color-white">Tournois ouvert</h4>
+<html>
+  <%- include('./include/head'); -%>
+  <body>
+
+  <%if(isAdmin){%>
+    <%- include('./include/navbarAdmin'); -%>
+  <%}
+  else{%>
+    <%- include('./include/navbar'); -%>
+  <%}%>
+  <%if(signedup){%>
+    <h3 class="text-success text-center">Your account has been created</h3>
+  <%}%>
+  <main id="accueil" class="border rounded-0 border-dark shadow-lg mx-auto mt50">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <div>
+              <h4 class="color-white">Tournois ouvert</h4>
+            </div>
+          </div>
+        </div>
+        <div class="row mt50">
+          <div class="col"></div>
         </div>
       </div>
-    </div>
-    <div class="row mt50">
-      <div class="col"></div>
-    </div>
-  </div>
-</main>
+    </main>
 
-<%- include('./include/footer'); -%>
+    <%- include('./include/footer'); -%>
+  </body>
+</html>

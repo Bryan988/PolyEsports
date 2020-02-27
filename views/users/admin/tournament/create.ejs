@@ -1,74 +1,78 @@
-<%- include('../../../include/head'); -%>
-<%- include('../navbarAdmin'); -%>
-<%if(status){%>
-    <h3 class="text-center text-success mt15"> The tournament has been added</h3>
-<%}
-if(date){%>
-    <h3 class="text-center text-warning mt15"> The date is invalid</h3>
-<%}
-if(invalid){%>
-<h3 class="text-center text-warning mt15"> The inputs are invalid</h3>
-<%}%>
+<html>
+    <%- include('../../../include/head'); -%>
+    <body>
+        <%- include('../../../include/navbarAdmin'); -%>
+        <%if(status){%>
+            <h3 class="text-center text-success mt15"> The tournament has been added</h3>
+        <%}
+        if(date){%>
+            <h3 class="text-center text-warning mt15"> The date is invalid</h3>
+        <%}
+        if(invalid){%>
+        <h3 class="text-center text-warning mt15"> The inputs are invalid</h3>
+        <%}%>
 
 
-<div class="d-flex flex-column align-items-xl-center mt50">
-    <h2 class="color-white text-center">Create a tournament</h2>
-    <form method="POST" action="/users/admin/tournament/create">
-        <div class="d-flex flex-column align-items-center align-items-lg-center">
-            <div class="d-flex align-items-xl-center mydark h400 w1000">
-                <div class="d-flex flex-column w300 h-100 ml10 overflow-y-auto mt15 color-white">
-                    <div class="table-responsive d-flex flex-column flex-grow-0">
-                        <label>Search the game</label>
-                        <input class="form-control w80p" id="myInput" type="text" onkeyup="myFunction()" placeholder="Search.."/>
-                            <table class="table table-bordered">
-                                <tbody id="myTable">
-                                <%for (var row of data){%>
-                                    <tr>
-                                        <td class="color-white"> <%= row.libelle%> </td>
-                                        <td>
-                                            <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required>
-                                            <label class="color-white" for="idGame<%= row.id %>">Select</label>
-                                        </td>
-                                    </tr>
-                                <%}%>
-                                </tbody>
-                            </table>
+        <div class="d-flex flex-column align-items-xl-center mt50">
+            <h2 class="color-white text-center">Create a tournament</h2>
+            <form method="POST" action="/users/admin/tournament/create">
+                <div class="d-flex flex-column align-items-center align-items-lg-center">
+                    <div class="d-flex align-items-xl-center mydark h400 w1000">
+                        <div class="d-flex flex-column w300 h-100 ml10 overflow-y-auto mt15 color-white">
+                            <div class="table-responsive d-flex flex-column flex-grow-0">
+                                <label>Search the game</label>
+                                <input class="form-control w80p" id="myInput" type="text" onkeyup="myFunction()" placeholder="Search.."/>
+                                    <table class="table table-bordered">
+                                        <tbody id="myTable">
+                                        <%for (var row of data){%>
+                                            <tr>
+                                                <td class="color-white"> <%= row.libelle%> </td>
+                                                <td>
+                                                    <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required>
+                                                    <label class="color-white" for="idGame<%= row.id %>">Select</label>
+                                                </td>
+                                            </tr>
+                                        <%}%>
+                                        </tbody>
+                                    </table>
+                            </div>
+                        </div>
+                        <div class="border rounded d-xl-flex flex-row d-flex w700 h300 m10">
+                            <div class="w300">
+                                <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100">
+                                    <label class="color-white">
+                                        Tournament Name
+                                         </label>
+                                    <input type="text" name="tournamentName" class="w200" required/>
+                                </div>
+                                <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100">
+                                    <label class="color-white">
+                                        Minimum number of teams
+                                         </label>
+                                    <input type="number" name="minNbTeams" class="d-xl-flex" min="2" step="1" required />
+                                </div>
+                                <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100">
+                                    <label class="color-white">
+                                        Start Date
+                                    </label>
+                                    <input id="date"type="date" name="startingDate" required />
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column w400">
+                                <label class="color-white ml15 mt15">Tournament's description</label>
+                                <textarea name="description" required>
+                                </textarea>
+                            </div>
+                        </div>
                     </div>
+                    <button class="btn btn-primary" type="submit">Create tournament</button>
                 </div>
-                <div class="border rounded d-xl-flex flex-row d-flex w700 h300 m10">
-                    <div class="w300">
-                        <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100">
-                            <label class="color-white">
-                                Tournament Name
-                                 </label>
-                            <input type="text" name="tournamentName" class="w200" required/>
-                        </div>
-                        <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100">
-                            <label class="color-white">
-                                Minimum number of teams
-                                 </label>
-                            <input type="number" name="minNbTeams" class="d-xl-flex" min="2" step="1" required />
-                        </div>
-                        <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100">
-                            <label class="color-white">
-                                Start Date
-                            </label>
-                            <input id="date"type="date" name="startingDate" required />
-                        </div>
-                    </div>
-                    <div class="d-flex flex-column w400">
-                        <label class="color-white ml15 mt15">Tournament's description</label>
-                        <textarea name="description" required>
-                        </textarea>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" type="submit">Create tournament</button>
+
+            </form>
         </div>
 
-    </form>
-</div>
+        <%- include('../../../include/searchFunc') -%>
 
-<%- include('../../../include/searchFunc') -%>
-
-<%- include('../../../include/footer'); -%>
+        <%- include('../../../include/footer'); -%>
+    </body>
+</html>

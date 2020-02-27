@@ -1,38 +1,42 @@
-<%- include('../../../include/head'); -%>
-<%- include('../navbarAdmin'); -%>
+<html>
+    <%- include('../../../include/head'); -%>
+    <body>
+        <%- include('../../../include/navbarAdmin'); -%>
 
-<%if(data){%>
-    <%if(status){%>
-        <h3 class="text-center text-success mt15"> The item has been deleted</h3>
-    <%}%>
-    <div class="container mt-3">
-        <h2 class="color-white">What game do you want to delete</h2>
-        <input class="form-control" id="myInput" type="text" onkeyup="myFunction()" placeholder="Search..">
-        <br>
-        <form method="POST" action="/users/admin/games/delete">
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th class="color-white">Games</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody id="myTable">
-                    <%for (var row of data){%>
+        <%if(data){%>
+            <%if(status){%>
+                <h3 class="text-center text-success mt15"> The item has been deleted</h3>
+            <%}%>
+            <div class="container mt-3">
+                <h2 class="color-white">What game do you want to delete</h2>
+                <input class="form-control" id="myInput" type="text" onkeyup="myFunction()" placeholder="Search..">
+                <br>
+                <form method="POST" action="/users/admin/games/delete">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="color-white">Games</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="myTable">
+                            <%for (var row of data){%>
 
-                            <tr>
-                                <td class="color-white"> <%= row.libelle%> </td>
-                                <td>
-                                    <button type="submit" name="delete" value=<%= row.id%>> Delete</button>
-                                </td>
-                            </tr>
-                    <%}%>
+                                    <tr>
+                                        <td class="color-white"> <%= row.libelle%> </td>
+                                        <td>
+                                            <button type="submit" name="delete" value=<%= row.id%>> Delete</button>
+                                        </td>
+                                    </tr>
+                            <%}%>
 
-                </tbody>
-            </table>
-        </form>
-    </div>
-<%}%>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        <%}%>
 
-<%- include('../../../include/searchFunc'); -%>
-<%- include('../../../include/footer'); -%>
+        <%- include('../../../include/searchFunc'); -%>
+        <%- include('../../../include/footer'); -%>
+    </body>
+</html>

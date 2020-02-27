@@ -1,78 +1,76 @@
-<%- include('../include/head'); -%>
-<%- include('../include/navbar'); -%>
+<html>
+    <%- include('../include/head'); -%>
+    <body>
+        <%- include('../include/navbar'); -%>
+        <form id="login"  class="border rounded-0 border-dark d-table-row d-sm-flex d-md-flex flex-column mx-auto align-items-sm-center justify-content-md-center mt150" action="/users/signup" method="post">
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
+                <%switch(errorNb){
+                case '0':%>
+                <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Error with the emails</h5>
+                <%break
+                case '1':%>
+                <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Passwords are not matching</h5>
+                <%break
+                case '2':%>
+                <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Mail already used</h5>
+                <%break
+                    default:
+                }%>
+            </div>
+            <h1 class="text-center w-100">
+            Formulaire d'inscription
+            </h1>
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
+                <label class=" mx-auto color-white ml15">
+                    Nom :
+                </label>
+                <input type="text" class="form-control mx-auto w350 justify-content-lg-center" name="name" required>
+            </div>
 
-            <form id="login"  class="border rounded-0 border-dark d-table-row d-sm-flex d-md-flex flex-column mx-auto align-items-sm-center justify-content-md-center mt150" action="/users/signup" method="post">
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
-                    <%switch(errorNb){
-                    case '0':%>
-                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Error with the emails</h5>
-                    <%break
-                    case '1':%>
-                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Passwords are not matching</h5>
-                    <%break
-                    case '2':%>
-                    <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Mail already used</h5>
-                    <%break
-                        default:
-                    }%>
-                </div>
-                <h1 class="text-center w-100">
-                Formulaire d'inscription
-                </h1>
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start">
-                    <label class=" mx-auto color-white ml15">
-                        Nom :
-                    </label>
-                    <input type="text" class="form-control mx-auto w350 justify-content-lg-center" name="name" required>
-                </div>
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                <label class=" mx-auto color-white">
+                    Prénom :
+                </label>
+                <input  type="text" class="form-control mx-auto w350 justify-content-lg-center" name="fname" required>
+            </div>
 
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
-                    <label class=" mx-auto color-white">
-                        Prénom :
-                    </label>
-                    <input  type="text" class="form-control mx-auto w350 justify-content-lg-center" name="fname" required>
-                </div>
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                <label class=" mx-auto color-white">
+                    Email* :
+                </label>
+                <input class="form-control mx-auto w350 justify-content-lg-center" type="email" name="mail" required>
+            </div>
 
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
-                    <label class=" mx-auto color-white">
-                        Email* :
-                    </label>
-                    <input class="form-control mx-auto w350 justify-content-lg-center" type="email" name="mail" required>
-                </div>
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                <label class=" mx-auto color-white">
+                    Confirmation de l'email* :
+                </label>
+                <input class="form-control mx-auto w350 justify-content-lg-center" type="email" name="confmail" required>
+            </div>
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                <label class="mx-auto color-white">
+                    Mot de passe* :
+                </label>
+                <input class="form-control mx-auto w350 justify-content-lg-center" type="password" name="mdp" required minlength="8">
+            </div>
 
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
-                    <label class=" mx-auto color-white">
-                        Confirmation de l'email* :
-                    </label>
-                    <input class="form-control mx-auto w350 justify-content-lg-center" type="email" name="confmail" required>
-                </div>
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
-                    <label class="mx-auto color-white">
-                        Mot de passe* :
-                    </label>
-                    <input class="form-control mx-auto w350 justify-content-lg-center" type="password" name="mdp" required minlength="8">
-                </div>
-
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
-                    <label class="mx-auto color-white">
-                        Confirmation du mot de passe* :
-                    </label>
-                    <input class="form-control mx-auto w350 justify-content-lg-center" type="password" name="confmdp" required minlength="8">
-                </div>
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
-                    <label class="mx-auto color-white">
-                        Pseudo* :
-                    </label>
-                    <input class="form-control mx-auto w350 justify-content-lg-center" type="text" name="pseudo" required>
-                </div>
-                <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20 mb-4">
-                    <button class="btn btn-primary d-xl-flex mx-auto" type="submit">S'inscrire</button>
-                    <p class="text-center mx-auto color-white mt-1">* : Champs obligatoire</p>
-                </div>
-
-            </form>
-
-
-
-
-<%- include('../include/footer'); -%>
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                <label class="mx-auto color-white">
+                    Confirmation du mot de passe* :
+                </label>
+                <input class="form-control mx-auto w350 justify-content-lg-center" type="password" name="confmdp" required minlength="8">
+            </div>
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20">
+                <label class="mx-auto color-white">
+                    Pseudo* :
+                </label>
+                <input class="form-control mx-auto w350 justify-content-lg-center" type="text" name="pseudo" required>
+            </div>
+            <div class="d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start mt20 mb-4">
+                <button class="btn btn-primary d-xl-flex mx-auto" type="submit">S'inscrire</button>
+                <p class="text-center mx-auto color-white mt-1">* : Champs obligatoire</p>
+            </div>
+        </form>
+        <%- include('../include/footer'); -%>
+    </body>
+</html>

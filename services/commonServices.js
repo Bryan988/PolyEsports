@@ -16,4 +16,25 @@ exports.checkPastDate = function(newDate) {
             }
         }
     }
-}
+};
+
+exports.sanitizeBody=function(req){
+    const body = req.body;
+    let retour = {};
+    for(const parameters in body){
+        retour[parameters]=req.sanitize(body[parameters]);
+    }
+    return retour;
+};
+
+exports.setCookie = function(res,name,value){
+    return res.cookie(name,value,{maxAge : 3*1000,httpOnly: true});
+};
+exports.getCookie = function(req,name){
+    if(typeof req.cookies !=='undefined'){
+        return req.cookies[name];
+    }
+    else{
+        return undefined;
+    }
+};

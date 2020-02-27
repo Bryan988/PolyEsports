@@ -3,14 +3,16 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const keyconfig = require('../config/key');
 const services = require('../services/userServices');
+const commonServices = require('../services/commonServices');
 
-//store the secret key for jws
+
+//store the secret key for jwt
 const secretkey = keyconfig.secretkey;
 
 const EMAIL_REGEXX = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 exports.loginpage= function(req,res){
-    let status=req.cookies.status;
+    let status=commonServices.getCookie(req,'status');
     res.render('./users/login',{status,logged:false});
 };
 
@@ -18,7 +20,7 @@ exports.login = function(req,res,next){
 
     //Note that status : 0 = Something is wrong
     //store the form's data
-    const data = services.sanitizeBody(req);
+    const data = commonServices.sanitizeBody(req);
     // We then check if the mail is in database
     User.checkMail(data.mail,(result) =>{
         if(typeof result !== 'undefined'){
@@ -34,7 +36,7 @@ exports.login = function(req,res,next){
                                     if (token === 'undefined') {
                                         res.redirect('/users/login');
                                     }else {
-                                        res.cookie('token', token);
+                                        commonServices.setCookie(res,'token',token);
                                         if (infoUser.isAdmin === 1) {
                                             res.redirect("/users/admin")
                                         } else {
@@ -45,20 +47,20 @@ exports.login = function(req,res,next){
                             });
                         }
                         else{
-                            res.cookie('status',0,{ maxAge: 1 * 1000});
-                            res.redirect('/users/login');
+                            commonServices.setCookie(res,'status',0);
+                            res.status(400).render('./redirect',{link:'/users/login'});
                         }
                     });
                 });
             }
             else{
-                res.cookie('status',0,{ maxAge: 1 * 1000});
-                res.redirect('/users/login');
+                commonServices.setCookie(res,'status',0);
+                res.status(400).render('./redirect',{link:'/users/login'});
             }
         }
         else {
-            res.cookie('status',0,{ maxAge: 1 * 1000, httpOnly: true });
-            res.redirect('/users/login');
+            commonServices.setCookie(res,'status',0);
+            res.status(400).render('./redirect',{link:'/users/login'});
         }
     });
 };
@@ -68,14 +70,14 @@ exports.signupPage = function(req,res){
     //Note that errorNb : 0 = mails are not matching
     // 1 = passwords are not matching
     // 2 = mail is already in database
-    let errorNb=req.cookies.errorNb;
-
+    let errorNb=commonServices.getCookie(req,'errorNb');
+    console.log("errorNb = "+errorNb);
     res.render('./users/signup',{errorNb,logged:false});
 };
 exports.signup = function(req,res){
 
     // store the form's data
-    const newUser = services.sanitizeBody(req);
+    const newUser = commonServices.sanitizeBody(req);
     console.log(newUser);
     if (EMAIL_REGEXX.test(newUser.mail) && typeof newUser.name !=='undefined' && typeof newUser.fname!=='undefined' && typeof newUser.pseudo!=='undefined' && typeof newUser.mail !=='undefined' && typeof newUser.mdp!=='undefined'){
         //Hashing the password
@@ -90,29 +92,32 @@ exports.signup = function(req,res){
                         if (data) {
                             //everything is good so it add it to the database and the user is created
                             User.createUser(newUser.name, newUser.fname, newUser.pseudo, newUser.mail, hashedPw);
-                            res.redirect("/");
+                            commonServices.setCookie(res,'signedup',1);
+                            res.status(201).render('./redirect',{link:"/"});
+
+
                         } else {
                             //return the signup page with the corresponding error
-                            res.cookie('errorNb', 1, {maxAge: 1 * 1000});
-                            res.redirect('/users/signup');
+                            commonServices.setCookie(res,'errorNb', 1);
+                            res.status(400).render('./redirect',{link:"/users/signup"});
                         }
                     });
                 }
                 else{
-                    res.cookie('errorNb',2,{maxAge:1*1000});
-                    res.redirect('/users/signup');
+                    commonServices.setCookie(res,'errorNb',2);
+                    res.status(400).render('./redirect',{link:"/users/signup"});
                 }
             });
         }
         //return the signup page with the corresponding error
         else {
-            res.cookie('errorNb', 0, {maxAge: 1 * 1000});
-            res.redirect('/users/signup');
+            commonServices.setCookie(res,'errorNb', 0);
+            res.status(400).render('./redirect',{link:"/users/signup"});
         }
     }
     else{
-        res.cookie('errorNb',0,{maxAge : 1*1000});
-        res.redirect('/users/signup');
+        commonServices.setCookie(res,'errorNb',0);
+        res.status(400).render('./redirect',{link:"/users/signup"});
     }
 
 };
