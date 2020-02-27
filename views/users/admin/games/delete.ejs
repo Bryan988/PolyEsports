@@ -11,28 +11,27 @@
                 <h2 class="color-white">What game do you want to delete</h2>
                 <input class="form-control" id="myInput" type="text" onkeyup="myFunction()" placeholder="Search..">
                 <br>
-                <form method="POST" action="/users/admin/games/delete">
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th class="color-white">Games</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody id="myTable">
-                            <%for (var row of data){%>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="color-white">Games</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="myTable">
+                        <%for (var row of data){%>
 
-                                    <tr>
-                                        <td class="color-white"> <%= row.libelle%> </td>
-                                        <td>
-                                            <button type="submit" name="delete" value=<%= row.id%>> Delete</button>
-                                        </td>
-                                    </tr>
-                            <%}%>
-
-                        </tbody>
-                    </table>
-                </form>
+                                <tr>
+                                    <td class="color-white"> <%= row.libelle%> </td>
+                                    <td>
+                                        <a href="/users/admin/games/delete/<%= row.id%>">
+                                            <button type="btn btn-danger" name="delete"> Delete</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                        <%}%>
+                    </tbody>
+                </table>
             </div>
         <%}%>
 

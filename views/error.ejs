@@ -1,7 +1,9 @@
 <html>
     <%- include('./include/head'); -%>
     <body>
-        <h1 class="text-danger text center"><%= message %></h1>
+        <h1 class="text-danger"><%= message %></h1>
+        <h2 class="color-white"><%= error.status %></h2>
+        <pre class="color-white"><%= error.stack %></pre>
     <%- include('./include/footer'); -%>
     </body>
 </html>

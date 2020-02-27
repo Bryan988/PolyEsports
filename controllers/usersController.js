@@ -2,7 +2,7 @@ const User = require('../models/usersModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const keyconfig = require('../config/key');
-const services = require('../services/userServices');
+const middleware = require('../middlewares/userMW');
 const commonServices = require('../services/commonServices');
 
 
@@ -13,6 +13,10 @@ const EMAIL_REGEXX = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".
 
 exports.loginpage= function(req,res){
     let status=commonServices.getCookie(req,'status');
+    let code=commonServices.getCookie(req,'code');
+    if(typeof code!=='undefined') {
+        res.status(code);
+    }
     res.render('./users/login',{status,logged:false});
 };
 
@@ -31,36 +35,31 @@ exports.login = function(req,res,next){
                         if(resp) {
                             User.getInfoToken(result.idUser,(infoUser)=>{
                                 console.log(infoUser);
-                                //first give the jwt token to the user
-                                jwt.sign({id: result.idUser, pseudo: infoUser.pseudo, isAdmin: infoUser.isAdmin === 1}, secretkey, {expiresIn: "1d"}, (err, token) => {
-                                    if (token === 'undefined') {
-                                        res.redirect('/users/login');
-                                    }else {
-                                        commonServices.setCookie(res,'token',token);
-                                        if (infoUser.isAdmin === 1) {
-                                            res.redirect("/users/admin")
-                                        } else {
-                                            res.redirect("/");
-                                        }
-                                    }
-                                });
+                                //Call the services that will create the token and redirect corresponding to his status
+                                middleware.createToken(res,result,result.idUser,infoUser.pseudo,infoUser.isAdmin)
                             });
                         }
                         else{
+                            //It will come here if the user did not type in the right password
                             commonServices.setCookie(res,'status',0);
-                            res.status(400).render('./redirect',{link:'/users/login'});
+                            commonServices.setCookie(res,'code',400);
+                            res.redirect('/users/login');
                         }
                     });
                 });
             }
             else{
+                //that means that the user did not enter the same mails
                 commonServices.setCookie(res,'status',0);
-                res.status(400).render('./redirect',{link:'/users/login'});
+                commonServices.setCookie(res,'code',400);
+                res.redirect('/users/login');
             }
         }
         else {
+            //if there is no mail matching in the DB
             commonServices.setCookie(res,'status',0);
-            res.status(400).render('./redirect',{link:'/users/login'});
+            commonServices.setCookie(res,'code',400);
+            res.redirect('/users/login');
         }
     });
 };
@@ -71,7 +70,10 @@ exports.signupPage = function(req,res){
     // 1 = passwords are not matching
     // 2 = mail is already in database
     let errorNb=commonServices.getCookie(req,'errorNb');
-    console.log("errorNb = "+errorNb);
+    let code=commonServices.getCookie(req,'code');
+    if(typeof code!=='undefined'){
+        res.status(code);
+    }
     res.render('./users/signup',{errorNb,logged:false});
 };
 exports.signup = function(req,res){
@@ -93,37 +95,42 @@ exports.signup = function(req,res){
                             //everything is good so it add it to the database and the user is created
                             User.createUser(newUser.name, newUser.fname, newUser.pseudo, newUser.mail, hashedPw);
                             commonServices.setCookie(res,'signedup',1);
-                            res.status(201).render('./redirect',{link:"/"});
-
-
+                            commonServices.setCookie(res,'code',201);
+                            res.redirect("/");
                         } else {
                             //return the signup page with the corresponding error
                             commonServices.setCookie(res,'errorNb', 1);
-                            res.status(400).render('./redirect',{link:"/users/signup"});
+                            commonServices.setCookie(res,'code',400);
+                            res.redirect("/users/signup");
                         }
                     });
                 }
                 else{
                     commonServices.setCookie(res,'errorNb',2);
-                    res.status(400).render('./redirect',{link:"/users/signup"});
+                    commonServices.setCookie(res,'code',400);
+                    res.redirect("/users/signup");
                 }
             });
         }
         //return the signup page with the corresponding error
         else {
+            //if mails are not matching
             commonServices.setCookie(res,'errorNb', 0);
-            res.status(400).render('./redirect',{link:"/users/signup"});
+            commonServices.setCookie(res,'code',400);
+            res.redirect("/users/signup");
         }
     }
     else{
+        //if inputs are incorrect
         commonServices.setCookie(res,'errorNb',0);
-        res.status(400).render('./redirect',{link:"/users/signup"});
+        commonServices.setCookie(res,'code',400);
+        res.redirect("/users/signup");
     }
 
 };
 
-//Admin page
 exports.adminPage = function(req,res){
     res.render('./users/admin/admin',{logged:true});
 };
+
 

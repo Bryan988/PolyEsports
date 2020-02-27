@@ -1,7 +1,7 @@
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const keyconfig = require('../config/key');
-
+const commonServices = require('../services/commonServices');
 //store the secret key for jws
 const secretkey = keyconfig.secretkey;
 
@@ -33,7 +33,8 @@ exports.checkLogged = function(req,res,next){
 exports.logout = function(req,res){
   //delete the token from cookies
   res.clearCookie("token");
-  res.status(200).render('./redirect',{link:'/'});
+  commonServices.setCookie(res,'code',200);
+  res.redirect('/');
 };
 
 exports.verifyAdmin = function(req,res,next){
@@ -48,16 +49,44 @@ exports.verifyAdmin = function(req,res,next){
           next();
         }
         else{
-          res.status(403).render('./redirect',{link:'/'});
+          commonServices.setCookie(res,'code',403);
+          res.redirect('/');
         }
       }
       else{
-        res.status(401).render('./redirect',{link:'/'});
+        commonServices.setCookie(res,'code',401);
+        res.redirect('/')
       }
     });
   }
   else{
-    res.status(401).render('./redirect',{link:'/'});
+    commonServices.setCookie(res,'code',401);
+    res.redirect('/');
   }
 };
+
+exports.createToken = function(res,result,idUser,pseudo,isAdmin){
+  //sign the token
+  console.log(isAdmin===1)
+  jwt.sign({
+    id:result.idUser,
+    pseudo:pseudo,
+    isAdmin:isAdmin===1
+  }, secretkey, {expiresIn: "1d"}, (err, token) => {
+    //if the token is not created return an internal  server error
+    console.log("token");
+    console.log(token);
+    if (token === 'undefined') {
+      res.status(500).render('./redirect',{link:'/users/login'});
+    } else {
+      res.cookie('token', token);
+      // return the corresponding page for the user
+      if (isAdmin===1) {
+        res.status(200).render('./redirect',{link:"/users/admin"});
+      } else {
+        res.status(200).render('./redirect',{link:"/"});
+      }
+    }
+  });
+}
 
