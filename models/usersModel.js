@@ -32,10 +32,23 @@ const User = {
 
      //retrieve pseudo and if the user is admin for the token
      getInfoToken : function(id,cb){
-          connection.query('SELECT pseudo,admin FROM user where id=?',id, (error,results)=>{
+          connection.query('SELECT pseudo,admin FROM user WHERE id=?',id, (error,results)=>{
                if (error) throw error;
                console.log(results[0]);
                cb({pseudo : results[0].pseudo, isAdmin : results[0].admin});
+          })
+     },
+     canApplyForTeam : function(id,cb){
+          connection.query('SELECT idTeam,pending,captain FROM user WHERE id=?',id,(err,data)=>{
+               if (err) throw err;
+               console.log(data);
+               cb(data);
+          });
+     },
+     setToCaptain : function(id){
+          connection.query('UPDATE user SET captain = 1 WHERE id=?',id,(err)=>{
+               if(err)throw err;
+               console.log("user now captain");
           })
      }
 

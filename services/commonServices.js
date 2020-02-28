@@ -1,4 +1,6 @@
-
+let jwt = require('jsonwebtoken');
+let key = require('../config/key');
+let secretkey=key.secretkey;
 
 exports.checkPastDate = function(newDate) {
     let today = new Date(Date.now());
@@ -42,4 +44,10 @@ exports.getCookie = function(req,name){
     else{
         return undefined;
     }
+};
+
+exports.getUserId = function (req){
+    let token = this.getCookie(req,'token');
+    let playload = jwt.verify(token,secretkey);
+    return playload.id;
 };

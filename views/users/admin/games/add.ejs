@@ -3,6 +3,9 @@
     <body>
         <%- include('../../../include/navbarAdmin'); -%>
         <main>
+            <%if(status){%>
+                <h3 class="text-success text-center">New game added</h3>
+            <%}%>
             <div class="justify-content-xl-center d-xl-flex mx-auto w-50 mt50 mydark">
                 <form method="POST" enctype="multipart/form-data" action="/users/admin/games/add">
                     <h3 class="text-center color-white">

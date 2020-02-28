@@ -26,7 +26,15 @@ const Games = {
             if(err){console.log(err);}
             cb(data);
         })
-    }
+    },
+    selectGameById : function(id,cb) {
+        connection.query('SELECT * FROM jeux WHERE id=?', id, (err, data) => {
+            if (err) {
+                console.log(err);
+            }
+            cb(data);
+        });
+    },
 };
 
 module.exports = Games;

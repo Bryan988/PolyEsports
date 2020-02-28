@@ -8,11 +8,11 @@ const middleware = require('../middlewares/userMW');
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
-router.get('/login',middleware.checkLogged,users.loginpage);
-router.post('/login',middleware.checkLogged,users.login);
+router.get('/login',middleware.checkNonLogged,users.loginpage);
+router.post('/login',middleware.checkNonLogged,users.login);
 
-router.get('/signup',middleware.checkLogged,users.signupPage);
-router.post('/signup',middleware.checkLogged,users.signup);
+router.get('/signup',middleware.checkNonLogged,users.signupPage);
+router.post('/signup',middleware.checkNonLogged,users.signup);
 
 router.get('/logout',middleware.logout);
 

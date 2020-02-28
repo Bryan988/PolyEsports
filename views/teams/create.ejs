@@ -1,0 +1,26 @@
+<html>
+<%- include('../include/head'); -%>
+<body>
+<%- include('../include/navbar'); -%>
+<main>
+    <%if(status){%>
+        <h3 class="text-success text-center">Your team has been created</h3>
+    <%}%>
+    <div class="justify-content-xl-center d-xl-flex mx-auto w-50 mt50 mydark">
+        <form method="POST" enctype="multipart/form-data" action="/teams/create">
+            <h3 class="text-center color-white">
+               Create your own team
+            </h3>
+            <input class="color-white mx-auto" type="file" name="filename">
+            <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center">
+                <label class="color-white">Team's name</label>
+                <input class="w-50" type="text" name="name" required>
+            </div>
+            <button class="btn btn-primary" type="submit">Create</button>
+
+        </form>
+    </div>
+</main>
+<%- include('../include/footer'); -%>
+</body>
+</html>

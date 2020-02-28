@@ -9,6 +9,7 @@ const expressSanitizer = require('express-sanitizer');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
+const teamsRouter = require('./routes/teams');
 
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(expressSanitizer());
 
 
 app.use('/', indexRouter);
+app.use("/teams",teamsRouter);
 app.use('/users', usersRouter);
 app.use('/users/admin', adminRouter);
 
@@ -49,4 +51,7 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(4000);
+
+
+
 module.exports = app;

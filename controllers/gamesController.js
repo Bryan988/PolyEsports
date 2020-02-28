@@ -1,13 +1,17 @@
 let Games =  require('../models/gamesModel');
 let commonServices = require('../services/commonServices');
 const path = "./public/img/games/";
+const fs = require('fs');
+
 
 exports.addGamePage=function(req,res){
+    //retrieve cookies
+    let status = commonServices.getCookie(req,'status');
     let code = commonServices.getCookie(req,'code');
     if(typeof code !=='undefined'){
         res.status(code);
     }
-    res.render('users/admin/games/add');
+    res.render('users/admin/games/add',{status});
 };
 exports.addGame=function(req,res){
     if(req.files){
@@ -19,12 +23,12 @@ exports.addGame=function(req,res){
         file.mv(filepath);
         Games.addGame(req.body.name,filepath);
         commonServices.setCookie(res,'status',1);
-        commonServices.setCookie(res,'code',200);
-        res.redirect('/users/admin');
+        commonServices.setCookie(res,'code',201);
+        res.redirect('/users/admin/games/add');
     }
     else{
         commonServices.setCookie(res,'code',400);
-        res.redirect('/users/admin');
+        res.redirect('/users/admin/games/add');
     }
 };
 
@@ -39,9 +43,13 @@ exports.deleteGamePage=function(req,res){
 };
 exports.deleteGame=function(req,res){
     let id = req.params.id;
-    Games.getNameGame(id,(info)=>{
+    let body = commonServices.sanitizeBody(req);
+    Games.selectGameById(id,(info)=>{
         if(typeof info!=='undefined'){
-            Games.deleteGame(req.body.delete);
+            Games.deleteGame(id);
+            fs.unlink(info[0].image,err=>{
+                if(err){throw err;}
+            });
             commonServices.setCookie(res,'status',2);
             commonServices.setCookie(res,'code',200);
             res.redirect('/users/admin/games/delete');
