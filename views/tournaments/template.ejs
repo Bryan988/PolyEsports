@@ -1,0 +1,31 @@
+<html>
+        <%- include('../include/head'); -%>
+    <body>
+        <%if (isAdmin===true){%>
+            <%- include('../include/navbarAdmin'); -%>
+        <%}
+        else{%>
+            <%- include('../include/navbar'); -%>
+        <%}%>
+
+        <h3 class="text-center color-white">Welcome to <%= data[0].name%>  ! </h3>
+        <form action="/tournaments/<%= id%>" method="POST">
+            <%switch(status){
+                case 1:%>
+                    <button type="submit" class="btn btn-primary" name="join" value="1">Join</button>
+                    <%break
+                case 2:%>
+                    <button type="submit" class="btn btn-danger" name="leave" value="1">Leave </button>
+                    <%break
+                default:%>
+                    <button type="button" class="btn btn-primary" disabled>Join</button>
+            <%}%>
+        </form>
+
+
+
+
+
+        <%- include('../include/footer'); -%>
+    </body>
+</html>

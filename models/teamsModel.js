@@ -7,10 +7,10 @@ const Teams = {
             cb(data);
         })
     },
-    getTeamById : function(id,cb){
-        connection.query('SELECT * FROM team WHERE id=?',id,(err,data)=>{
+    getTeamByName : function(name,cb){
+        connection.query('SELECT * FROM team WHERE teamName=?',name,(err,data)=>{
             if(err){throw err;}
-            cb(data);
+            cb(data[0]);
         })
     },
     createTeam : function(name,logo){
@@ -25,6 +25,7 @@ const Teams = {
             console.log("number of members updated");
         });
     }
+
 
 };
 

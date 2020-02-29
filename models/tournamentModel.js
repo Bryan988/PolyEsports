@@ -54,8 +54,21 @@ const Tournament = {
             if(err){console.log(err);}
             console.log("Tournament Deleted");
         })
-    }
-
+    },
+    increaseTeams : function(id){
+        connection.query('UPDATE tournois SET nbParticipant = nbParticipant + 1',(err)=> {
+            if (err) {
+                throw err;
+            }
+        });
+    },
+    decreaseTeams : function(id){
+        connection.query('UPDATE tournois SET nbParticipant = nbParticipant - 1',(err)=> {
+            if (err) {
+                throw err;
+            }
+        });
+    },
 
 
 };

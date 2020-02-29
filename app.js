@@ -10,6 +10,8 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 const teamsRouter = require('./routes/teams');
+const tournamentRouter = require('./routes/tournaments');
+
 
 
 const app = express();
@@ -30,6 +32,7 @@ app.use(expressSanitizer());
 
 app.use('/', indexRouter);
 app.use("/teams",teamsRouter);
+app.use("/tournaments",tournamentRouter);
 app.use('/users', usersRouter);
 app.use('/users/admin', adminRouter);
 

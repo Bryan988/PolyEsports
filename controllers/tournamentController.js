@@ -3,6 +3,8 @@ let Games = require('../models/gamesModel');
 let userServices = require('../middlewares/userMW');
 let commonServices = require('../services/commonServices');
 const DATE = require('date-and-time');
+const Users = require("../models/usersModel");
+const Ranks = require("../models/ranksModel");
 
 exports.addTournamentPage = function(req,res){
     Games.allGames((data)=>{
@@ -140,6 +142,88 @@ exports.updateTournament = function(req,res){
         res.redirect('/users/admin/tournament/update/'+id);
     }
 
-}
+};
 //TODO ENVOYER LES RES.STATUS CORRESPONDANT A CHAQUE FOIS !!
 
+
+exports.tournamentPage = function(req,res){
+    let id = req.params.id;
+    let info = commonServices.isAdminLogged(req);
+    let logged = info.logged;
+    let isAdmin = info.isAdmin;
+    let status;
+    //need to know the status of the player, if he's the captain or no
+    // retrieve all the info about the tournament
+    Tournament.getTournamentById(id,(data)=>{
+        console.log("data");
+        console.log(typeof data[0] !=='undefined');
+        if(typeof data[0] !=='undefined') {
+            if (logged) {
+                let idUser = commonServices.getUserId(req);
+                Users.getTeamInfo(idUser, (info) => {
+                    console.log(info);
+                    //check if the team is registered in the tournament or not
+                    if (info[0].captain === 1) {
+                        Ranks.getTeamAById(id, info[0].idTeam, (cb) => {
+                            if (typeof cb !== 'undefined') {
+                                //means that the team is in the tournament
+                                status = 2;
+                            } else {
+                                //it means that the captain can join the tournament
+                                status = 1;
+                            }
+                            res.render("./tournaments/template", {data, logged, isAdmin, status, id});
+                        });
+                    } else {
+                        res.render("./tournaments/template", {data, logged, isAdmin, status, id});
+                    }
+                });
+            } else {
+                res.render("./tournaments/template", {data, logged, isAdmin, status, id});
+            }
+        }
+        else{
+            res.sendStatus(404);
+        }
+    });
+};
+
+/*
+*Two scenarios :
+* - The captain wants to join the tournament
+* - The captain wants to leave the tournament
+ */
+
+exports.tournament = function(req,res){
+    let  body = commonServices.sanitizeBody(req);
+    let id = req.params.id;
+    //we first need to get the idTeam of the captain
+    let idUser = commonServices.getUserId(req);
+    //First scenario
+    if(body.join==="1"){
+
+        Users.getTeamInfo(idUser,(teaminfo)=>{
+            //increase the number of team by one
+            Tournament.increaseTeams(id);
+            let idTeam = teaminfo[0].idTeam;
+            //then add the team in the rankings
+            Ranks.addTeam(id,idTeam);
+            commonServices.setCookie(res,"code",201);
+            res.redirect('/tournaments/'+id);
+        });
+    }
+    else if(body.leave==="1"){
+        //get the team
+        Users.getTeamInfo(idUser,(teaminfo)=> {
+            let idTeam = teaminfo[0].idTeam;
+            //decrease the number of team in tournament
+            Tournament.decreaseTeams(id);
+            //delete from rankings
+            Ranks.removeTeam(id,idTeam);
+            commonServices.setCookie(res,"code",201);
+            res.redirect('/tournaments/'+id);
+        });
+
+    }
+
+};

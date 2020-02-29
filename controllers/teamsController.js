@@ -2,7 +2,6 @@ const Teams = require('../models/teamsModel');
 const Users = require('../models/usersModel');
 const services = require('../services/commonServices');
 const path = "./public/img/teams/";
-const middleware = require('../middlewares/userMW');
 
 
 exports.TeamsPage = function(req,res){
@@ -39,7 +38,10 @@ exports.createTeam = function(req,res){
     Teams.createTeam(body.name,filepath);
     //Set the user to captain
     let idUser = services.getUserId(req);
-    Users.setToCaptain(idUser);
+    Teams.getTeamByName(body.name,(info)=>{
+        let idTeam = info.id;
+        Users.setToCaptain(idUser,idTeam);
+    });
     services.setCookie(res,'cookie',201);
     //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
     res.redirect("/");
@@ -57,15 +59,15 @@ exports.profilePage = function(req,res){
     if(typeof code !=='undefined'){
         res.status(code);
     }
-
     //this const will tell if the user has the same team as the one he is visiting
     const idPage=req.params.id;
     let status;
     //First check if the user is logged
-    let logged = services.userIsLogged(req);
+    let info = services.isAdminLogged(req);
+    let logged = info.logged;
+    //this is for the display of the navbar
+    let isAdmin = info.isAdmin;
     if(logged){
-        //this is for the display of the navbar
-        let isAdmin = services.userIsAdmin(req);
         //then check if the user can create a team, that means that he can also apply for a team
         let idUser = services.getUserId(req);
         Users.canApplyForTeam(idUser,(data)=>{
@@ -93,7 +95,7 @@ exports.profilePage = function(req,res){
     }
     else{
         const status = 0;
-        res.render('./teams/id',{logged,isAdmin:false,status,idPage});
+        res.render('./teams/id',{logged,isAdmin,status,idPage});
     }
 };
 exports.requestFromPage = function(req,res){
@@ -136,16 +138,11 @@ exports.requestFromPage = function(req,res){
 };
 
 exports.allTeamsPage = function(req,res){
-    let logged = services.userIsLogged(req);
+    let info = services.isAdminLogged(req);
+    let logged=info.logged;
+    let isAdmin=info.isAdmin;
     Teams.getAllTeams((data)=>{
-        if (logged){
-            let isAdmin = services.userIsAdmin(req);
-            res.render("./teams/all",{data,logged,isAdmin});
-        }
-        else{
-            let isAdmin = false;
-            res.render("./teams/all",{data,logged,isAdmin});
-        }
+        res.render("./teams/all",{data,logged,isAdmin});
     });
 
 };

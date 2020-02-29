@@ -68,4 +68,11 @@ exports.userIsLogged = function(req){
     else{return false}
 };
 
-
+exports.isAdminLogged = function(req){
+    let logged = this.userIsLogged(req);
+    let isAdmin;
+    if(logged){
+        isAdmin=this.userIsAdmin(req);
+    }
+    return {logged,isAdmin};
+};

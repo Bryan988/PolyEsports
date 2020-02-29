@@ -45,8 +45,8 @@ const User = {
           });
      },
 
-     setToCaptain : function(id){
-          connection.query('UPDATE user SET captain = 1 WHERE id=?',id,(err)=>{
+     setToCaptain : function(id,idTeam){
+          connection.query('UPDATE user SET captain = 1 idTeam=? WHERE id=?',[idTeam,id],(err)=>{
                if(err)throw err;
                console.log("user now captain");
           });
@@ -73,6 +73,12 @@ const User = {
           connection.query('UPDATE user SET ? WHERE id=?', [{pending: 0}, idUser], (err) => {
                if (err) console.log(err);
                console.log("user's request accepted");
+          });
+     },
+     getTeamInfo : function(idUser,cb) {
+          connection.query('SELECT idTeam,captain FROM user WHERE id=?', idUser, (err, data) => {
+               if (err) console.log(err);
+               cb(data);
           });
      },
 };
