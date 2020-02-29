@@ -11,6 +11,7 @@ router.get("/create",middleware.checkLogged,middleware.canCreateTeam,teams.creat
 router.post("/create",middleware.checkLogged,teams.createTeam);
 
 router.get("/:id",middleware.checkLogged,teams.profilePage);
+router.post("/:id",middleware.checkLogged,teams.requestFromPage);
 
 
 

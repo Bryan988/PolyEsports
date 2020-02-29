@@ -50,9 +50,20 @@ const User = {
           connection.query('UPDATE user SET captain = 1 WHERE id=?',id,(err)=>{
                if(err)throw err;
                console.log("user now captain");
-          })
-     }
-
+          });
+     },
+     appliedToTeam : function(idUser,idTeam){
+          connection.query('UPDATE user SET ? WHERE id=?',[{idTeam:idTeam,pending:1},idUser],(err)=>{
+               if(err)console.log(err);
+               console.log("user's team updated");
+          });
+     },
+     cancelledRequest : function(idUser) {
+          connection.query('UPDATE user SET ? WHERE id=?', [{idTeam: 0, pending: 0}, idUser], (err) => {
+               if (err) console.log(err);
+               console.log("user's request canceled");
+          });
+     },
 };
 
 

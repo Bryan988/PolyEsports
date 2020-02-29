@@ -53,6 +53,11 @@ exports.createTeam = function(req,res){
 // 3 = member of the team
 // number in DB and url is a string => no === but ==
 exports.profilePage = function(req,res){
+    let code =services.getCookie(req,'code');
+    if(typeof code !=='undefined'){
+        res.status(code);
+    }
+
     //this const will tell if the user has the same team as the one he is visiting
     const idPage=req.params.id;
     console.log(idPage);
@@ -69,29 +74,51 @@ exports.profilePage = function(req,res){
             //first case, he can not apply because he is member of another team
             if(data[0].idTeam != idPage && data[0].idTeam !==0){
                 status = 0;
-                //res.render('./teams/id',{logged,isAdmin,status});
             }
             //second case
             else if(data[0].idTeam == idPage && data[0].pending === 1){
                  status = 1;
-                //res.render('./teams/id',{logged,isAdmin,status});
             }
             else if(data[0].idTeam == idPage && data[0].captain === 1){
                  status = 2;
-                //res.render('./teams/id',{logged,isAdmin,status});
             }
             else if(data[0].idTeam == idPage && data[0].pending === 0 ){
                  status = 3;
-                //res.render('./teams/id',{logged,isAdmin,status});
             }
-            res.render('./teams/id',{logged,isAdmin,status});
+            //TODO all info of the team must be added now
+            res.render('./teams/id',{logged,isAdmin,status,idPage});
 
         });
 
     }
     else{
         const status = 0;
-        res.render('./teams/id',{logged,isAdmin:false,status})
+        res.render('./teams/id',{logged,isAdmin:false,status,idPage});
     }
+};
+exports.requestFromPage = function(req,res){
+    let idPage = req.params.id;
+    let body=services.sanitizeBody(req);
+    //first scenario , the user sends his request to the team
+    if(body.request==="1") {
+        //We start by picking up his id
+        let idUser = services.getUserId(req);
+        //then update his info in DB (idTeam and pending invitation)
+        Users.appliedToTeam(idUser, idPage);
+        services.setCookie(res,'code',202);
+        res.redirect("/teams/"+idPage);
+    }
+    //second scenario, the user wants to cancel his request to the team
+    else if(body.cancel ==="1"){
+        //same pattern for now
+        //TODO check if idUser can go out of the cases
+        let idUser = services.getUserId(req);
+        //then update his info in DB (idTeam and pending invitation)
+        Users.cancelledRequest(idUser);
+        services.setCookie(res,'code',201);
+        res.redirect("/teams/"+idPage);
+    }
+
+
 };
 
