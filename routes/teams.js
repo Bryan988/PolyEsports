@@ -10,6 +10,8 @@ let users = require('../controllers/usersController');
 router.get("/create",middleware.checkLogged,middleware.canCreateTeam,teams.createTeamPage);
 router.post("/create",middleware.checkLogged,teams.createTeam);
 
+router.get("/:id",middleware.checkLogged,teams.profilePage);
+
 
 
 

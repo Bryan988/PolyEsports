@@ -1,0 +1,28 @@
+<%- include('../include/head'); -%>
+<%if (isAdmin===true){%>
+    <%- include('../include/navbarAdmin'); -%>
+<%}
+else{%>
+    <%- include('../include/navbar'); -%>
+<%}%>
+<form>
+
+    <%switch(status){
+        case 0:%>
+            <button type="button" class="btn btn-primary" disabled>Send a request</button>
+            <%break
+        case 1: %>
+            <button type="submit" class="btn btn-secondary" name="cancel">Cancel request</button>
+            <%break
+        case 2:%>
+            <h3 class="text-info text-center"> pending inv</h3>
+            <%break
+        case 3:
+            break
+        default:%>
+            <button type="submit" class="btn btn-primary" name="request">Send a request</button>
+    <%}%>
+</form>
+
+
+<%- include('../include/footer'); -%>

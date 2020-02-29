@@ -1,5 +1,6 @@
 let jwt = require('jsonwebtoken');
 let key = require('../config/key');
+const Users = require("../models/usersModel");
 let secretkey=key.secretkey;
 
 exports.checkPastDate = function(newDate) {
@@ -51,3 +52,20 @@ exports.getUserId = function (req){
     let playload = jwt.verify(token,secretkey);
     return playload.id;
 };
+
+exports.userIsAdmin = function(req){
+    let token = this.getCookie(req,'token');
+    let playload = jwt.verify(token,secretkey);
+    return playload.isAdmin;
+};
+
+exports.userIsLogged = function(req){
+    let token = this.getCookie(req,'token');
+    if(typeof token !=='undefined') {
+        let playload = jwt.verify(token, secretkey);
+        return typeof playload !== 'undefined';
+    }
+    else{return false}
+};
+
+

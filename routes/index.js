@@ -12,13 +12,13 @@ router.get('/', function(req, res) {
   let signedup = req.cookies.signedup;
   jwt.verify(req.cookies.token, secretkey, (err, playload) => {
 
-    if (err) {
-      console.log(err.message);
-      return res.render('index', {logged: false,isAdmin : false,signedup});
-    } else {
+    if (err) {console.log(err.message);}
+    if(typeof playload !=='undefined'){
       let isAdmin = playload.isAdmin;
-      return res.render('index', {logged: true,isAdmin,signedup});
+      res.render('index', {logged: true,isAdmin,signedup});
     }
+    else{res.render('index', {logged: false,isAdmin : false,signedup});}
+
   });
 });
 

@@ -45,6 +45,7 @@ const User = {
                cb(data);
           });
      },
+
      setToCaptain : function(id){
           connection.query('UPDATE user SET captain = 1 WHERE id=?',id,(err)=>{
                if(err)throw err;
