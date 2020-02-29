@@ -60,11 +60,9 @@ exports.profilePage = function(req,res){
 
     //this const will tell if the user has the same team as the one he is visiting
     const idPage=req.params.id;
-    console.log(idPage);
-    var status;
+    let status;
     //First check if the user is logged
     let logged = services.userIsLogged(req);
-    console.log("logged "+logged);
     if(logged){
         //this is for the display of the navbar
         let isAdmin = services.userIsAdmin(req);
@@ -86,7 +84,9 @@ exports.profilePage = function(req,res){
                  status = 3;
             }
             //TODO all info of the team must be added now
-            res.render('./teams/id',{logged,isAdmin,status,idPage});
+            Users.getAllTeamMembers(idPage,(data)=> {
+                res.render('./teams/id', {logged, isAdmin, status, idPage,data});
+            });
 
         });
 
@@ -106,19 +106,32 @@ exports.requestFromPage = function(req,res){
         //then update his info in DB (idTeam and pending invitation)
         Users.appliedToTeam(idUser, idPage);
         services.setCookie(res,'code',202);
-        res.redirect("/teams/"+idPage);
     }
     //second scenario, the user wants to cancel his request to the team
     else if(body.cancel ==="1"){
         //same pattern for now
-        //TODO check if idUser can go out of the cases
         let idUser = services.getUserId(req);
         //then update his info in DB (idTeam and pending invitation)
         Users.cancelledRequest(idUser);
         services.setCookie(res,'code',201);
-        res.redirect("/teams/"+idPage);
     }
-
+    //third scenario, the captain decline the request from an user
+    else if(typeof body.decline !=='undefined'){
+        //store the idUser that needs to be modified != the captain
+        let idUser=body.decline;
+        //then just  remove the request from the user from DB
+        Users.cancelledRequest(idUser);
+        services.setCookie(res,'code',200);
+    }
+    else if(typeof body.accept !=='undefined'){
+        //same pattern here but we accept his request
+        let idUser=body.accept;
+        Users.acceptedInTeam(idUser);
+        //then need to update the number of members in the team
+        Teams.increaseTeam(idPage);
+        services.setCookie(res,'code',200);
+    }
+    res.redirect("/teams/"+idPage);
 
 };
 

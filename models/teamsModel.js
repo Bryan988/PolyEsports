@@ -19,6 +19,12 @@ const Teams = {
             console.log("New team created ! ");
         });
     },
+    increaseTeam : function(idTeam){
+        connection.query('UPDATE team SET nombre = nombre + 1 WHERE id=?',idTeam,(err)=>{
+            if(err)throw err;
+            console.log("number of members updated");
+        });
+    }
 
 };
 

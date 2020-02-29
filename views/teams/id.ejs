@@ -16,8 +16,25 @@ else{%>
             <%break
         case 2:%>
             <h3 class="text-info text-center"> pending inv</h3>
+            <table class="mx-auto">
+                <tbody>
+                    <%if(data){
+                        for (let row of data){ %>
+                            <%if(row.pending === 1){%>
+                                <tr>
+                                    <td><p class="color-white"> <%= row.pseudo%></p></td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success" name="accept" value="<%=row.id%>"> Accept</button>
+                                        <button type="submit" class="btn btn-danger" name="decline" value="<%=row.id%>"> Decline</button>
+                                    </td>
+                                </tr>
+                            <%}%>
+                        <%}%>
+                    <%}%>
+                </tbody>
+            </table>
             <%break
-        case 3:
+        case 3 :
             break
         default:%>
             <button type="submit" class="btn btn-primary" name="request" value="1">Send a request</button>

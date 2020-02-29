@@ -41,7 +41,6 @@ const User = {
      canApplyForTeam : function(id,cb){
           connection.query('SELECT idTeam,pending,captain FROM user WHERE id=?',id,(err,data)=>{
                if (err) throw err;
-               console.log(data);
                cb(data);
           });
      },
@@ -62,6 +61,18 @@ const User = {
           connection.query('UPDATE user SET ? WHERE id=?', [{idTeam: 0, pending: 0}, idUser], (err) => {
                if (err) console.log(err);
                console.log("user's request canceled");
+          });
+     },
+     getAllTeamMembers : function(idTeam,cb){
+          connection.query('SELECT id,pseudo,pending FROM user WHERE idTeam=?',idTeam,(err,data)=>{
+               if (err) console.log(err);
+               cb(data);
+          })
+     },
+     acceptedInTeam : function(idUser){
+          connection.query('UPDATE user SET ? WHERE id=?', [{pending: 0}, idUser], (err) => {
+               if (err) console.log(err);
+               console.log("user's request accepted");
           });
      },
 };
