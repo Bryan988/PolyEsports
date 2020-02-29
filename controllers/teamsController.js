@@ -135,3 +135,19 @@ exports.requestFromPage = function(req,res){
 
 };
 
+exports.allTeamsPage = function(req,res){
+    let logged = services.userIsLogged(req);
+    Teams.getAllTeams((data)=>{
+        if (logged){
+            let isAdmin = services.userIsAdmin(req);
+            res.render("./teams/all",{data,logged,isAdmin});
+        }
+        else{
+            let isAdmin = false;
+            res.render("./teams/all",{data,logged,isAdmin});
+        }
+    });
+
+};
+
+//TODO Visuel page Team + all Teams + Rajouter les logos des teams et user dans l'affichage de la team !
