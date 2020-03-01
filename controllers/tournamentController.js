@@ -155,6 +155,7 @@ exports.tournamentPage = function(req,res){
     // retrieve all the info about the tournament
     Tournament.getTournamentById(id,(data)=>{
         if(typeof data[0] !=='undefined') {
+            data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
             Games.getNameGame(data[0].idJeux,(gameName)=>{
                 data[0].game=gameName[0].libelle;
                 //store the teams that are in the tournament in order to display the rankings
