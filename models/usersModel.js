@@ -46,9 +46,15 @@ const User = {
      },
 
      setToCaptain : function(id,idTeam){
-          connection.query('UPDATE user SET captain = 1 idTeam=? WHERE id=?',[idTeam,id],(err)=>{
+          connection.query('UPDATE user SET ? WHERE id=?',[{captain:1,idTeam:idTeam},id],(err)=>{
                if(err)throw err;
                console.log("user now captain");
+          });
+     },
+     noLongerCaptain : function(idUser){
+          connection.query('UPDATE user SET captain = 0 WHERE id=?',idUser,(err)=>{
+               if(err)throw err;
+               console.log("user no longer captain");
           });
      },
      appliedToTeam : function(idUser,idTeam){

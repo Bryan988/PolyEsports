@@ -1,7 +1,7 @@
 const Teams = require('../models/teamsModel');
 const Users = require('../models/usersModel');
 const services = require('../services/commonServices');
-const path = "./public/img/teams/";
+const path = "/img/teams/";
 
 
 exports.TeamsPage = function(req,res){
@@ -59,6 +59,7 @@ exports.profilePage = function(req,res){
     if(typeof code !=='undefined'){
         res.status(code);
     }
+    let issue = services.getCookie(req,'issue');
     //this const will tell if the user has the same team as the one he is visiting
     const idPage=req.params.id;
     let status;
@@ -85,9 +86,8 @@ exports.profilePage = function(req,res){
             else if(data[0].idTeam == idPage && data[0].pending === 0 ){
                  status = 3;
             }
-            //TODO all info of the team must be added now
             Users.getAllTeamMembers(idPage,(data)=> {
-                res.render('./teams/id', {logged, isAdmin, status, idPage,data});
+                res.render('./teams/id', {logged, isAdmin, status, idPage,data,issue});
             });
 
         });
@@ -95,43 +95,114 @@ exports.profilePage = function(req,res){
     }
     else{
         const status = 0;
-        res.render('./teams/id',{logged,isAdmin,status,idPage});
+        res.render('./teams/id',{logged,isAdmin,status,idPage,issue});
     }
 };
 exports.requestFromPage = function(req,res){
     let idPage = req.params.id;
     let body=services.sanitizeBody(req);
+    //We start by picking up his id
+    let idUser = services.getUserId(req);
     //first scenario , the user sends his request to the team
     if(body.request==="1") {
-        //We start by picking up his id
-        let idUser = services.getUserId(req);
         //then update his info in DB (idTeam and pending invitation)
         Users.appliedToTeam(idUser, idPage);
         services.setCookie(res,'code',202);
     }
     //second scenario, the user wants to cancel his request to the team
     else if(body.cancel ==="1"){
-        //same pattern for now
-        let idUser = services.getUserId(req);
         //then update his info in DB (idTeam and pending invitation)
         Users.cancelledRequest(idUser);
         services.setCookie(res,'code',201);
     }
-    //third scenario, the captain decline the request from an user
+    //third scenario, the captain declines the request from an user
     else if(typeof body.decline !=='undefined'){
         //store the idUser that needs to be modified != the captain
-        let idUser=body.decline;
+        let targetUser=body.decline;
         //then just  remove the request from the user from DB
-        Users.cancelledRequest(idUser);
+        Users.cancelledRequest(targetUser);
         services.setCookie(res,'code',200);
     }
+    //fourth scenario the captain accepts the user
     else if(typeof body.accept !=='undefined'){
         //same pattern here but we accept his request
-        let idUser=body.accept;
-        Users.acceptedInTeam(idUser);
+        let targetUser=body.accept;
+        Users.acceptedInTeam(targetUser);
         //then need to update the number of members in the team
         Teams.increaseTeam(idPage);
         services.setCookie(res,'code',200);
+    }
+    //fifth scenario, the user wants to leave the team
+    else if(body.leave==="1"){
+        //then update his profile in DB
+        Users.cancelledRequest(idUser);
+        //Then we need to decrease the number of members in the corresponding team
+        Teams.decreaseTeam(idPage);
+        services.setCookie(res,'code',200);
+    }
+    //too many scenarios ,here the captain wants to promote another member of his team to captain
+    else if(typeof body.promote !=='undefined'){
+        let targetUser = body.promote;
+        console.log(targetUser);
+        console.log(idUser);
+        //in case if the captain wants to promote itself, we do a little check
+        if(idUser!=targetUser) {
+            //first the captain is no longer captain
+            Users.noLongerCaptain(idUser);
+            //then promote the target user to captain
+            Users.setToCaptain(targetUser, idPage);
+            services.setCookie(res, 'code', 200);
+        }
+        else{
+            services.setCookie(res, 'code', 401);
+            services.setCookie(res, 'issue', 0);
+
+        }
+    }
+    //yeah there's one last I hope. Here the captain remove a member of the team
+        // we of course check that if he remove himself, he put an other captain
+        // In the case that he is alone, we delete the team (DB and logo in folders)
+    else if(typeof body.remove!=='undefined'){
+        //Check the number of members in order to know in what scenario the captain is
+        Teams.getTeamById(idPage,(info)=>{
+           //special scenario when the captain is the last member
+           if(info.nombre===1){
+               console.log("solo captain");
+               //Remove everything in the server here the logo
+               fs.unlink(info.logo,err=>{
+                   if(err){throw err;}
+               });
+               //then from DB
+               Teams.deleteTeam(idPage);
+               //then we can remove the user's status
+               Users.noLongerCaptain(idUser);
+               Users.cancelledRequest(idUser);
+               services.setCookie(res,'code',200);
+           }
+           else{
+               //here if the captain wants to remove someone (including himself)
+               let targetUser = body.remove;
+               Users.getTeamInfo(targetUser,(infoUser)=>{
+                   if(infoUser[0].captain===1){
+                       console.log("trying to remove captain");
+                       //if the target is captain, it means that he must promote first
+                       services.setCookie(res,"code",401);
+                       services.setCookie(res,"issue",1);
+                   }
+                   else{
+                       console.log("ok scenario");
+                       //everything is ok here
+                       // Start by decreasing the nb of members
+                       Teams.decreaseTeam(idPage);
+                       //then the target user
+                       console.log("ok decrease");
+                       Users.cancelledRequest(targetUser);
+                       console.log("ok cancel");
+                   }
+               })
+           }
+        });
+
     }
     res.redirect("/teams/"+idPage);
 
@@ -147,4 +218,7 @@ exports.allTeamsPage = function(req,res){
 
 };
 
-//TODO Visuel page Team + all Teams + Rajouter les logos des teams et user dans l'affichage de la team !
+//TODO Security every where ! check mail // forgot pw
+//TODO 2- DO PROFILE PAGE : Allow an user to modify his pseudo // password
+//TODO 3- allow the captain to modify the picture/name of his team
+//TODO 4- Visuel page Team + all Teams + Rajouter les logos des teams et user dans l'affichage de la team !

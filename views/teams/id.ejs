@@ -35,9 +35,37 @@
                             <%}%>
                         </tbody>
                     </table>
+                    <h3 class="text-info text-center"> Members</h3>
+                    <%if(issue==1){%>
+                        <h3 class="text-warning text-center"> You must first promote another member</h3>
+                    <%}%>
+                    <%if(issue==0){%>
+                        <h3 class="text-warning text-center"> You can't promote yourself</h3>
+                    <%}%>
+                    <table class="mx-auto">
+                        <tbody>
+                            <%if(data){
+                                for (let row of data){ %>
+                                    <%if(row.pending === 0){%>
+                                        <tr>
+                                            <td><p class="color-white"> <%= row.pseudo%></p></td>
+                                            <td>
+                                                <button type="submit" class="btn btn-warning" name="promote" value="<%=row.id%>"> Promote</button>
+                                                <button type="submit" class="btn btn-danger" name="remove" value="<%=row.id%>"> Remove</button>
+                                            </td>
+                                        </tr>
+                                    <%}%>
+                                <%}%>
+                            <%}%>
+                        </tbody>
+                    </table>
+
+
                     <%break
-                case 3 :
-                    break
+                case 3 :%>
+                    <button type="submit" class="btn btn-danger" name="leave" value="1"> Leave</button>
+
+                    <% break
                 default:%>
                     <button type="submit" class="btn btn-primary" name="request" value="1">Send a request</button>
             <%}%>

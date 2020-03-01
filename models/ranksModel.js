@@ -9,7 +9,7 @@ const Ranks = {
             cb(data[0]);
         })
     },
-    addTeam : function(idTournament,idTeam,position){
+    addTeam : function(idTournament,idTeam){
         connection.query('INSERT INTO classement SET ?',{idTournois:idTournament,idTeam:idTeam,position:0},(err)=>{
             if(err){throw err;}
             console.log("new team joined the tournament");
@@ -19,7 +19,13 @@ const Ranks = {
         connection.query('DELETE FROM classement WHERE idTournois=? AND idTeam=?',[idTournament,idTeam],(err)=>{
             if(err){throw err;}
         })
-    }
+    },
+    getAllTeamInTournament : function(idTournament,cb){
+        connection.query('SELECT * FROM classement WHERE idTournois=?',idTournament,(err,teams)=>{
+                if(err){throw err;}
+                cb(teams);
+            });
+    },
 };
 
 module.exports = Ranks;

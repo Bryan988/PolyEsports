@@ -1,0 +1,29 @@
+<html>
+    <%- include('../include/head'); -%>
+    <body>
+        <%if (isAdmin===true){%>
+            <%- include('../include/navbarAdmin'); -%>
+        <%}
+        else{%>
+            <%- include('../include/navbar'); -%>
+        <%}%>
+
+        <%if(data){
+            for (let row of data){ %>
+                <div>
+                    <a href="/tournaments/<%= row.id%>">
+                        <p class="color-white text-center">
+                            Join <%= row.name%> !
+                        </p>
+                    </a>
+                </div>
+            <%}%>
+        <%}%>
+
+
+
+
+
+        <%- include('../include/footer'); -%>
+    </body>
+</html>

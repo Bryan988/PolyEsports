@@ -3,6 +3,9 @@ let key = require('../config/key');
 const Users = require("../models/usersModel");
 let secretkey=key.secretkey;
 
+//this function informs wether the date entered is past or not, comparing to today.
+//false means that the date is already past
+
 exports.checkPastDate = function(newDate) {
     let today = new Date(Date.now());
     if (newDate.getFullYear() < today.getFullYear()) {

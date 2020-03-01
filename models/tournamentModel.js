@@ -2,7 +2,7 @@ const connection = require('../config/database');
 const DATE = require('date-and-time');
 
 const Tournament = {
-    getAllTournament : function(callback){
+    getAllTournaments : function(callback){
         connection.query('SELECT * FROM tournois',(err,data)=>{
             if(err){console.log(err);}
             callback(data);

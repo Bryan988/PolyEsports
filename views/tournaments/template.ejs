@@ -8,9 +8,11 @@
             <%- include('../include/navbar'); -%>
         <%}%>
 
-        <h3 class="text-center color-white">Welcome to <%= data[0].name%>  ! </h3>
+        <h3 class="text-center color-white">Welcome to <%= data[0].name%> ! </h3>
         <form action="/tournaments/<%= id%>" method="POST">
             <%switch(status){
+                case 0:
+                    break
                 case 1:%>
                     <button type="submit" class="btn btn-primary" name="join" value="1">Join</button>
                     <%break
@@ -22,7 +24,26 @@
             <%}%>
         </form>
 
+        <p class="color-white text-center">This is the tournament of the YEAR ! </br>
+            There are <%= data[0].nbParticipant%> teams at the moment, Join the tournament in order to show every one your strengths ! </br>
+            Careful, tournament will start on <%= data[0].date_debut%> AND the game is <%= data[0].game%></p>
 
+        <table class="mx-auto">
+            <tbody>
+            <%if(teams){
+                    for (let row of teams){ %>
+
+                        <tr>
+                            <td>
+                                <p class="color-white"> <%= row.teamName%> en position <%= row.position %></p>
+
+                            </td>
+                        </tr>
+
+                     <%}%>
+            <%}%>
+            </tbody>
+        </table>
 
 
 
