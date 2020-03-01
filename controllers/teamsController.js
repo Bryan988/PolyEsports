@@ -68,35 +68,36 @@ exports.profilePage = function(req,res){
     let logged = info.logged;
     //this is for the display of the navbar
     let isAdmin = info.isAdmin;
-    if(logged){
-        //then check if the user can create a team, that means that he can also apply for a team
-        let idUser = services.getUserId(req);
-        Users.canApplyForTeam(idUser,(data)=>{
-            //first case, he can not apply because he is member of another team
-            if(data[0].idTeam != idPage && data[0].idTeam !==0){
-                status = 0;
-            }
-            //second case
-            else if(data[0].idTeam == idPage && data[0].pending === 1){
-                 status = 1;
-            }
-            else if(data[0].idTeam == idPage && data[0].captain === 1){
-                 status = 2;
-            }
-            else if(data[0].idTeam == idPage && data[0].pending === 0 ){
-                 status = 3;
-            }
-            Users.getAllTeamMembers(idPage,(data)=> {
-                res.render('./teams/id', {logged, isAdmin, status, idPage,data,issue});
+    Users.getAllTeamMembers(idPage,(members)=> {
+        if(logged){
+            //then check if the user can create a team, that means that he can also apply for a team
+            let idUser = services.getUserId(req);
+            Users.canApplyForTeam(idUser,(data)=>{
+                //first case, he can not apply because he is member of another team
+                if(data[0].idTeam != idPage && data[0].idTeam !==0){
+                    status = 0;
+                }
+                //second case
+                else if(data[0].idTeam == idPage && data[0].pending === 1){
+                     status = 1;
+                }
+                else if(data[0].idTeam == idPage && data[0].captain === 1){
+                     status = 2;
+                }
+                else if(data[0].idTeam == idPage && data[0].pending === 0 ){
+                     status = 3;
+                }
+                res.render('./teams/id', {logged, isAdmin, status, idPage,members,issue});
+
+
             });
 
-        });
-
-    }
-    else{
-        const status = 0;
-        res.render('./teams/id',{logged,isAdmin,status,idPage,issue});
-    }
+        }
+        else{
+            status = 0;
+            res.render('./teams/id',{logged,isAdmin,status,idPage,issue,members});
+        }
+    });
 };
 exports.requestFromPage = function(req,res){
     let idPage = req.params.id;
