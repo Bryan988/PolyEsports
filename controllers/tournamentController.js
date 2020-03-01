@@ -157,7 +157,6 @@ exports.tournamentPage = function(req,res){
         if(typeof data[0] !=='undefined') {
             data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
             Games.getNameGame(data[0].idJeux,(gameName)=>{
-                data[0].game=gameName[0].libelle;
                 //store the teams that are in the tournament in order to display the rankings
                 Ranks.getAllTeamInTournament(id,async (teams)=>{
                     //we will add every team name to the team row
@@ -171,6 +170,8 @@ exports.tournamentPage = function(req,res){
                     }))));
                     console.log(teams);
                     if(commonServices.checkPastDate(data[0].date_debut)){
+                        data[0].game=gameName[0].libelle;
+
                         //here return the corresponding status for the buttons display
                         if (logged) {
                             let idUser = commonServices.getUserId(req);
@@ -198,6 +199,8 @@ exports.tournamentPage = function(req,res){
                         }
                     }
                     else{
+                        data[0].game=gameName[0].libelle;
+
                         //the date is past so no teams can leave the tournament nor join it
                         status=0;
                         res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams});
