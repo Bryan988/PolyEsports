@@ -8,6 +8,7 @@
             <%- include('../include/navbar'); -%>
         <%}%>
         <form action="/teams/<%= idPage%>" method = "POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken%>">
             <%if(members){
                 switch(status){
                     case 0:%>

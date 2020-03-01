@@ -16,6 +16,7 @@
         <div class="d-flex flex-column align-items-xl-center mt50">
             <h2 class="color-white text-center">Create a tournament</h2>
             <form method="POST" action="/users/admin/tournament/create">
+                <input type="hidden" name="_csrf" value="<%= csrfToken%>">
                 <div class="d-flex flex-column align-items-center align-items-lg-center">
                     <div class="d-flex align-items-xl-center mydark h400 w1000">
                         <div class="d-flex flex-column w300 h-100 ml10 overflow-y-auto mt15 color-white">

@@ -10,6 +10,7 @@
 
         <h3 class="text-center color-white">Welcome to <%= data[0].name%> ! </h3>
         <form action="/tournaments/<%= id%>" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken%>">
             <%switch(status){
                 case 0:
                     break

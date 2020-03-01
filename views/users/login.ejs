@@ -5,6 +5,7 @@
 
 
         <form action="/users/login" id="login" class="border rounded-0 border-dark mx-auto mt150" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken%>">
             <h1 class="text-center w-100">
                 Connexion
             </h1>

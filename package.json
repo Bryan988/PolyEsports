@@ -4,7 +4,7 @@
   "private": true,
   "engine": {
     "node": "12.15.0",
-    "npm" : "6.13.4"
+    "npm": "6.13.4"
   },
   "scripts": {
     "start": "node ./bin/www"
@@ -12,6 +12,7 @@
   "dependencies": {
     "bcrypt": "^4.0.0",
     "cookie-parser": "~1.4.4",
+    "csurf": "^1.11.0",
     "date-and-time": "^0.12.0",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",

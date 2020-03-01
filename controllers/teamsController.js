@@ -22,7 +22,7 @@ exports.createTeamPage = function(req,res){
     if(typeof code!=='undefined'){
         res.status(code);
     }
-    res.render("./teams/create",{logged:true,status});
+    res.render("./teams/create",{logged:true,status,csrfToken: req.csrfToken()});
 };
 
 exports.createTeam = function(req,res){
@@ -87,7 +87,7 @@ exports.profilePage = function(req,res){
                 else if(data[0].idTeam == idPage && data[0].pending === 0 ){
                      status = 3;
                 }
-                res.render('./teams/id', {logged, isAdmin, status, idPage,members,issue});
+                res.render('./teams/id', {logged, isAdmin, status, idPage,members,issue,csrfToken: req.csrfToken()});
 
 
             });
@@ -152,7 +152,6 @@ exports.requestFromPage = function(req,res){
             Users.noLongerCaptain(idUser);
             //then promote the target user to captain
             Users.setToCaptain(targetUser, idPage);
-            services.setCookie(res, 'code', 200);
         }
         else{
             services.setCookie(res, 'code', 401);
@@ -189,6 +188,7 @@ exports.requestFromPage = function(req,res){
                        //if the target is captain, it means that he must promote first
                        services.setCookie(res,"code",401);
                        services.setCookie(res,"issue",1);
+
                    }
                    else{
                        console.log("ok scenario");
@@ -200,7 +200,7 @@ exports.requestFromPage = function(req,res){
                        Users.cancelledRequest(targetUser);
                        console.log("ok cancel");
                    }
-               })
+               });
            }
         });
 

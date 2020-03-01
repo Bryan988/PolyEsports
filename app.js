@@ -6,12 +6,14 @@ const logger = require('morgan');
 const upload = require('express-fileupload');
 const expressSanitizer = require('express-sanitizer');
 
+
+
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 const teamsRouter = require('./routes/teams');
 const tournamentRouter = require('./routes/tournaments');
-
+const csrf = require("csurf");
 
 
 const app = express();
@@ -22,8 +24,10 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
+//extended false means that values will only be string and array in body
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(csrf({ cookie: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(upload());
 app.use(expressSanitizer());

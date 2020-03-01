@@ -15,8 +15,9 @@
         <%if(data && games){%>
             <div class="mx-auto mydark w1100">
                 <form class="d-flex flex-row m20 h600" method="POST" action="/users/admin/tournament/update/<%= data[0].id%>" required>
-                    <div style="width: 500px;">
-                        <div style="width: 400px;">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+                    <div class = "w500">
+                        <div class="w400">
                             <div class="w500 color-white m10">
                                 <label class="color-white">
                                     Tournament's name
@@ -41,7 +42,7 @@
                                 Search the game
                             </label>
                             <input class="w300" type="search" class="form-control" id="myInput" type="text" onkeyup="myFunction()" />
-                            <div class="table-responsive overflow-y-auto h300" style="margin-top: 10px;">
+                            <div class="table-responsive overflow-y-auto h300 mt15">
                                 <table class="table">
                                     <tbody id="myTable">
                                         <%for (var row of games){%>

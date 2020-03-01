@@ -17,7 +17,7 @@ exports.loginpage= function(req,res){
     if(typeof code!=='undefined') {
         res.status(code);
     }
-    res.render('./users/login',{status,logged:false});
+    res.render('./users/login',{status,logged:false, csrfToken: req.csrfToken()});
 };
 
 exports.login = function(req,res,next){
@@ -74,7 +74,7 @@ exports.signupPage = function(req,res){
     if(typeof code!=='undefined'){
         res.status(code);
     }
-    res.render('./users/signup',{errorNb,logged:false});
+    res.render('./users/signup',{errorNb,logged:false,csrfToken: req.csrfToken()});
 };
 exports.signup = function(req,res){
 

@@ -11,7 +11,7 @@ exports.addGamePage=function(req,res){
     if(typeof code !=='undefined'){
         res.status(code);
     }
-    res.render('users/admin/games/add',{status});
+    res.render('users/admin/games/add',{status,csrfToken: req.csrfToken()});
 };
 exports.addGame=function(req,res){
     if(req.files){

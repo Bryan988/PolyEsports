@@ -17,7 +17,7 @@ exports.addTournamentPage = function(req,res){
         if(typeof code!=='undefined'){
             res.status(code);
         }
-        res.render('./users/admin/tournament/create',{data,status,date,invalid});
+        res.render('./users/admin/tournament/create',{data,status,date,invalid,csrfToken: req.csrfToken()});
     });
 };
 
@@ -73,7 +73,7 @@ exports.selectTournamentPage = function(req,res){
 
         }))));
 
-        res.render('./users/admin/tournament/viewTournaments',{data:data,status:status});
+        res.render('./users/admin/tournament/viewTournaments',{data:data,status:status,csrfToken: req.csrfToken()});
     });
 };
 
@@ -106,7 +106,7 @@ exports.updateTournamentPage = function(req,res){
             data[0].date_debut=DATE.format(data[0].date_debut,'YYYY-MM-DD');
             console.log(data[0]);
 
-            res.render('./users/admin/tournament/update',{data,games,status,date,invalid});
+            res.render('./users/admin/tournament/update',{data,games,status,date,invalid,csrfToken: req.csrfToken()});
         })
     })
 };
@@ -186,22 +186,22 @@ exports.tournamentPage = function(req,res){
                                             //it means that the captain can join the tournament
                                             status = 1;
                                         }
-                                        res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams});
+                                        res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
                                     });
                                 } else {
-                                    res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams});
+                                    res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
                                 }
                             });
                         }
                         else {
-                            res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams});
+                            res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
                         }
                     }
                     else{
                         data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
                         //the date is past so no teams can leave the tournament nor join it
                         status=0;
-                        res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams});
+                        res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
                     }
                 });
 
