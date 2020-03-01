@@ -227,3 +227,4 @@ exports.tournament = function(req,res){
     }
 
 };
+//TODO ne pas permettre de rejoindre lorsque la date est passée ! 
