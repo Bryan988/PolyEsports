@@ -1,8 +1,8 @@
 const Teams = require('../models/teamsModel');
 const Users = require('../models/usersModel');
 const services = require('../services/commonServices');
-const path = "/img/teams/";
-
+const path = "public/img/teams/";
+const fs = require("fs");
 
 exports.TeamsPage = function(req,res){
     //retrieve the status code first
@@ -95,7 +95,7 @@ exports.profilePage = function(req,res){
         }
         else{
             status = 0;
-            res.render('./teams/id',{logged,isAdmin,status,idPage,issue,members});
+            res.render('./teams/id',{logged,isAdmin,status,idPage,issue,members,csrfToken: req.csrfToken()});
         }
     });
 };
@@ -180,7 +180,7 @@ exports.requestFromPage = function(req,res){
         //Check the number of members in order to know in what scenario the captain is
         Teams.getTeamById(idPage,(info)=>{
            //special scenario when the captain is the last member
-           if(info.nombre===1){
+           if(info.nombre==1){
                console.log("solo captain");
                //Remove everything in the server here the logo
                fs.unlink(info.logo,err=>{

@@ -1,6 +1,6 @@
 let Games =  require('../models/gamesModel');
 let commonServices = require('../services/commonServices');
-const path = "/img/games/";
+const path = "public/img/games/";
 const fs = require('fs');
 
 
