@@ -12,7 +12,7 @@ router.get('/games/add',services.verifyAdmin,games.addGamePage);
 router.post('/games/add',services.verifyAdmin,games.addGame);
 
 router.get('/games/delete',services.verifyAdmin,games.deleteGamePage);
-router.get('/games/delete/:id',services.verifyAdmin,games.deleteGame);
+router.delete('/games/delete/',services.verifyAdmin,games.deleteGame);
 
 router.get('/tournament/create',services.verifyAdmin,tournament.addTournamentPage);
 router.post('/tournament/create',services.verifyAdmin,tournament.addTournament);

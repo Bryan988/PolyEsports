@@ -3,9 +3,6 @@
 <body>
 <%- include('../include/navbar'); -%>
 <main>
-    <%if(status){%>
-        <h3 class="text-success text-center">Your team has been created</h3>
-    <%}%>
     <div class="justify-content-xl-center d-xl-flex mx-auto w-50 mt50 mydark">
         <form method="POST" enctype="multipart/form-data" action="/teams/create?_csrf=<%= csrfToken%>">
             <h3 class="text-center color-white">

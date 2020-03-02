@@ -10,5 +10,7 @@ router.post("/create",middleware.checkLogged,teams.createTeam);
 
 router.get("/:id",teams.profilePage);
 router.post("/:id",teams.requestFromPage);
+router.put("/:id",teams.requestFromPage);
+router.delete("/:id",teams.requestFromPage);
 
 module.exports = router;

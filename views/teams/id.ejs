@@ -7,16 +7,29 @@
         else{%>
             <%- include('../include/navbar'); -%>
         <%}%>
-        <form action="/teams/<%= idPage%>" method = "POST">
-            <input type="hidden" name="_csrf" value="<%= csrfToken%>">
             <%if(members){
                 switch(status){
                     case 0:%>
                         <button type="button" class="btn btn-primary" disabled>Send a request</button>
                         <%break
                     case 1: %>
-                        <button type="submit" class="btn btn-secondary" name="cancel" value="1">Cancel request</button>
-                        <%break
+                        <button id="cancel" type="button" class="btn btn-secondary" name="cancel" value="1">Cancel request</button>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $('#cancel').click(function () {
+                                    $.ajax({
+                                        url: '/teams/'+<%= idPage%>,
+                                        type: 'PUT',
+                                        data: {cancel:1,_csrf: "<%= csrfToken %>" },
+                                        success: function() {
+                                            $("#cancel").hide();
+                                            alert("Request cancelled ! ");
+                                        },
+                                    });
+                                });
+                            })
+                        </script>
+                        <% break
                     case 2:%>
                         <h3 class="text-info text-center"> pending inv</h3>
                         <table class="mx-auto">
@@ -24,11 +37,39 @@
 
                                     <%for (let row of members){ %>
                                         <%if(row.pending === 1){%>
-                                            <tr>
+                                            <tr id="<%= row.id%>">
                                                 <td><p class="color-white"> <%= row.pseudo%></p></td>
-                                                <td>
-                                                    <button type="submit" class="btn btn-success" name="accept" value="<%=row.id%>"> Accept</button>
-                                                    <button type="submit" class="btn btn-danger" name="decline" value="<%=row.id%>"> Decline</button>
+                                                <td >
+                                                    <button id="acc_<%=row.id%>" type="button" class="btn btn-success" name="accept" value="<%=row.id%>"> Accept</button>
+                                                    <button id="del_<%= row.id%>" type="button" class="btn btn-danger" name="decline" value="<%=row.id%>"> Decline</button>
+                                                    <script type="text/javascript">
+                                                        $(document).ready(function () {
+                                                            $('#acc_<%= row.id %>').click(function () {
+                                                                $.ajax({
+                                                                    url: '/teams/'+<%= idPage%>,
+                                                                    type: 'PUT',
+                                                                    data: {accept : <%= row.id%>,_csrf: "<%= csrfToken %>" },
+                                                                    success: function() {
+                                                                        $("#<%= row.id%>").hide();
+                                                                        alert("User accepted ! ");
+                                                                    },
+                                                                });
+                                                            });
+                                                        })
+                                                        $(document).ready(function () {
+                                                            $('#del_<%= row.id %>').click(function () {
+                                                                $.ajax({
+                                                                    url: '/teams/'+<%= idPage%>,
+                                                                    type: 'PUT',
+                                                                    data: {decline : <%= row.id%>,_csrf: "<%= csrfToken %>" },
+                                                                    success: function() {
+                                                                        $("#<%= row.id%>").hide();
+                                                                        alert("User's request removed ! ");
+                                                                    },
+                                                                });
+                                                            });
+                                                        });
+                                                    </script>
                                                 </td>
                                             </tr>
                                         <%}%>
@@ -38,11 +79,41 @@
                         </table>
                         <%break
                     case 3 :%>
-                        <button type="submit" class="btn btn-danger" name="leave" value="1"> Leave</button>
+                        <button id="leave" type="button" class="btn btn-danger" name="leave" value="1"> Leave</button>
+                        <script>
+                            $(document).ready(function () {
+                                $('#leave').click(function () {
+                                    $.ajax({
+                                        url: '/teams/'+<%= idPage%>,
+                                        type: 'PUT',
+                                        data: {leave :1,_csrf: "<%= csrfToken %>" },
+                                        success: function() {
+                                            $("#leave").hide();
+                                            alert("You left this team ! Please refresh ");
+                                        },
+                                    });
+                                });
+                            });
+                        </script>
 
                         <% break
                     default:%>
-                        <button type="submit" class="btn btn-primary" name="request" value="1">Send a request</button>
+                        <button id="req" type="button" class="btn btn-primary" name="request" value="1">Send a request</button>
+                        <script>
+                            $(document).ready(function () {
+                                $('#req').click(function () {
+                                    $.ajax({
+                                        url: '/teams/'+<%= idPage%>,
+                                        type: 'PUT',
+                                        data: {request : 1,_csrf: "<%= csrfToken %>" },
+                                        success: function() {
+                                            $("#req").hide();
+                                            alert("Your request has been sent ! Please refresh ");
+                                        },
+                                    });
+                                });
+                            });
+                        </script>
                 <%}%>
                 <h3 class="text-info text-center"> Members</h3>
                 <%if(issue==1){%>
@@ -56,12 +127,46 @@
 
                     <%for (let row of members){ %>
                         <%if(row.pending === 0){%>
-                            <tr>
+                            <tr id="<%= row.id%>">
                                 <td><p class="color-white"> <%= row.pseudo%></p></td>
                                 <%if(status===2){%>
-                                    <td>
-                                        <button type="submit" class="btn btn-warning" name="promote" value="<%=row.id%>"> Promote</button>
-                                        <button type="submit" class="btn btn-danger" name="remove" value="<%=row.id%>"> Remove</button>
+                                    <td >
+                                        <button id="prom_<%=row.id%>" type="button" class="btn btn-warning" name="promote" value="<%=row.id%>"> Promote</button>
+                                        <button id="remove_<%= row.id%>" type="button" class="btn btn-danger" name="remove" value="<%=row.id%>"> Remove</button>
+                                        <script type="text/javascript">
+                                            $(document).ready(function () {
+                                                $('#prom_<%= row.id %>').click(function () {
+                                                    $.ajax({
+                                                        url: '/teams/'+<%= idPage%>,
+                                                        type: 'PUT',
+                                                        data: {promote : <%= row.id%>,_csrf: "<%= csrfToken %>" },
+                                                        success: function(){
+                                                            alert("Member promoted");
+                                                            $(".btn").hide();
+                                                        },
+                                                        error: function(){
+                                                            alert('you can not promote yourself...')
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                            $(document).ready(function () {
+                                                $('#remove_<%= row.id %>').click(function () {
+                                                    $.ajax({
+                                                        url: '/teams/'+<%= idPage%>,
+                                                        type: 'DELETE',
+                                                        data: {remove : <%= row.id%>,_csrf: "<%= csrfToken %>" },
+                                                        success: function() {
+                                                            $("#<%= row.id%>").hide();
+                                                            alert("Member removed ! ");
+                                                        },
+                                                        error: function(){
+                                                            alert("You need to promote another member to leave the team");
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        </script>
                                     </td>
                                 <%}%>
 
@@ -71,7 +176,6 @@
                     </tbody>
                 </table>
             <%}%>
-        </form>
         <%- include('../include/footer'); -%>
     </body>
 </html>

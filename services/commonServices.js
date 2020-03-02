@@ -1,6 +1,5 @@
 let jwt = require('jsonwebtoken');
 let key = require('../config/key');
-const Users = require("../models/usersModel");
 let secretkey=key.secretkey;
 
 //this function informs wether the date entered is past or not, comparing to today.
@@ -16,12 +15,7 @@ exports.checkPastDate = function(newDate) {
             return false;
         } else {
             if (newDate.getMonth()===today.getMonth()) {
-                if (newDate.getDate() < today.getDate()) {
-                    return false;
-                }
-                else{
-                    return true;
-                }
+                return newDate.getDate() >= today.getDate();
             }else{
                 return true;
             }
@@ -80,8 +74,6 @@ exports.isAdminLogged = function(req){
     return {logged,isAdmin};
 };
 exports.correctString = function(text){
-    let space = text.replace(/ /g, "_");
-    let res = space.replace(/'/g,"");
-    return res;
+    return text.replace(/\W /g, "_");
 };
 

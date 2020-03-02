@@ -27,43 +27,44 @@ exports.createTeamPage = function(req,res){
 
 exports.createTeam = function(req,res){
     //store the form data
+    if(req.files &&req.body.name !=='') {
+        let file = req.files.filename;
+        //need to check first if the file is a picture and if the size is not too big
+        if (file.size < 10000000) {
+            let format = file.mimetype.split('/');
+            if (format[1] === 'png' || format[1] === 'jpg' || format[1] === 'jpeg') {
+                //store the file name and set the path to put the file
+                let filename = commonServices.correctString(req.body.name.toLowerCase());
+                let filepath = path + filename;
+                console.log(filepath);
+                //put the file in the corresponding path
+                file.mv(filepath);
+                Teams.createTeam(req.body.name, filepath);
+                //Set the user to captain
+                let idUser = services.getUserId(req);
+                Teams.getTeamByName(body.name, (info) => {
+                    let idTeam = info.id;
+                    Users.setToCaptain(idUser, idTeam);
+                    commonServices.setCookie(res, 'status', 1);
+                    commonServices.setCookie(res, 'code', 201);
+                    res.redirect('/teams/'+info.id);
+                });
+                services.setCookie(res, 'cookie', 201);
+                //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
 
-    let file=req.files.filename;
-    //need to check first if the file is a picture and if the size is not too big
-    if(file.size<1000000000){
-        let format = file.mimetype.split('/');
-        if(format[1]==='png'||format[1]==='jpg'||format[1]==='jpeg') {
-            //store the file name and set the path to put the file
-            let filename = commonServices.correctString(req.body.name.toLowerCase());
-            let filepath = path + filename;
-            console.log(filepath);
-            //put the file in the corresponding path
-            file.mv(filepath);
-            Teams.createTeam(req.body.name,filepath);
-            //Set the user to captain
-            let idUser = services.getUserId(req);
-            Teams.getTeamByName(body.name,(info)=>{
-                let idTeam = info.id;
-                Users.setToCaptain(idUser,idTeam);
-            });
-            services.setCookie(res,'cookie',201);
-            //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
-            res.redirect("/");
-            commonServices.setCookie(res, 'status', 1);
-            commonServices.setCookie(res, 'code', 201);
-            res.redirect('/users/admin/games/add');
-        }
-        else{
-            commonServices.setCookie(res, 'code', 415);
-            res.redirect('/users/admin/games/add');
+            } else {
+                commonServices.setCookie(res, 'code', 415);
+                res.redirect('/teams/create');
 
+            }
+        } else {
+            commonServices.setCookie(res, 'code', 413);
+            res.redirect('/teams/create');
         }
     }
     else{
-        commonServices.setCookie(res, 'code', 413);
-        res.redirect('/users/admin/games/add');
-    }
 
+    }
 
 };
 //function that will render the corresponding view to the users
@@ -121,6 +122,8 @@ exports.profilePage = function(req,res){
 };
 exports.requestFromPage = function(req,res){
     let idPage = req.params.id;
+    console.log(req.params);
+    console.log(req.body);
     let body=services.sanitizeBody(req);
     //We start by picking up his id
     let idUser = services.getUserId(req);
@@ -128,16 +131,18 @@ exports.requestFromPage = function(req,res){
     if(body.request==="1") {
         //then update his info in DB (idTeam and pending invitation)
         Users.appliedToTeam(idUser, idPage);
-        services.setCookie(res,'code',202);
-        res.redirect("/teams/"+idPage);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.write(JSON.stringify({ status: 200 }));
+        res.end();
 
     }
     //second scenario, the user wants to cancel his request to the team
     else if(body.cancel ==="1"){
         //then update his info in DB (idTeam and pending invitation)
         Users.cancelledRequest(idUser);
-        services.setCookie(res,'code',201);
-        res.redirect("/teams/"+idPage);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.write(JSON.stringify({ status: 200 }));
+        res.end();
 
     }
     //third scenario, the captain declines the request from an user
@@ -146,8 +151,9 @@ exports.requestFromPage = function(req,res){
         let targetUser=body.decline;
         //then just  remove the request from the user from DB
         Users.cancelledRequest(targetUser);
-        services.setCookie(res,'code',200);
-        res.redirect("/teams/"+idPage);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.write(JSON.stringify({ status: 200 }));
+        res.end();
 
     }
     //fourth scenario the captain accepts the user
@@ -157,8 +163,9 @@ exports.requestFromPage = function(req,res){
         Users.acceptedInTeam(targetUser);
         //then need to update the number of members in the team
         Teams.increaseTeam(idPage);
-        services.setCookie(res,'code',200);
-        res.redirect("/teams/"+idPage);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.write(JSON.stringify({ status: 200 }));
+        res.end();
 
     }
     //fifth scenario, the user wants to leave the team
@@ -167,8 +174,9 @@ exports.requestFromPage = function(req,res){
         Users.cancelledRequest(idUser);
         //Then we need to decrease the number of members in the corresponding team
         Teams.decreaseTeam(idPage);
-        services.setCookie(res,'code',200);
-        res.redirect("/teams/"+idPage);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.write(JSON.stringify({ status: 200 }));
+        res.end();
 
     }
     //too many scenarios ,here the captain wants to promote another member of his team to captain
@@ -181,14 +189,15 @@ exports.requestFromPage = function(req,res){
             //first the captain is no longer captain
             Users.noLongerCaptain(idUser);
             //then promote the target user to captain
-            Users.setToCaptain(targetUser, idPage);
-            res.redirect("/teams/"+idPage);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.write(JSON.stringify({ status: 200 }));
+            res.end();
 
         }
         else{
-            services.setCookie(res, 'code', 401);
-            services.setCookie(res, 'issue', 0);
-            res.redirect("/teams/"+idPage);
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.write(JSON.stringify({ status: 401 }));
+            res.end();
 
 
         }
@@ -197,9 +206,11 @@ exports.requestFromPage = function(req,res){
         // we of course check that if he remove himself, he put an other captain
         // In the case that he is alone, we delete the team (DB and logo in folders)
     else if(typeof body.remove!=='undefined'){
+        console.log(idPage);
         //Check the number of members in order to know in what scenario the captain is
         Teams.getTeamById(idPage,(info)=>{
            //special scenario when the captain is the last member
+            console.log(info);
            if(info.nombre==1){
                console.log("solo captain");
                //Remove everything in the server here the logo
@@ -211,8 +222,9 @@ exports.requestFromPage = function(req,res){
                //then we can remove the user's status
                Users.noLongerCaptain(idUser);
                Users.cancelledRequest(idUser);
-               services.setCookie(res,'code',200);
-               res.redirect("/teams/"+idPage);
+               res.writeHead(200, { 'Content-Type': 'application/json' });
+               res.write(JSON.stringify({ status: 200 }));
+               res.end();
 
            }
            else{
@@ -221,23 +233,23 @@ exports.requestFromPage = function(req,res){
                Users.getTeamInfo(targetUser,(infoUser)=>{
                    if(infoUser[0].captain===1){
                        console.log("trying to remove captain");
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.write(JSON.stringify({ status: 400 }));
+                        res.end();
                        //if the target is captain, it means that he must promote first
                        //TODO This here doesn't work, it is sent after the redirection who knows why
-                       services.setCookie(res,'issue',1);
-                       res.redirect("/teams/"+idPage);
+
 
                    }
                    else{
-                       console.log("ok scenario");
                        //everything is ok here
                        // Start by decreasing the nb of members
                        Teams.decreaseTeam(idPage);
                        //then the target user
-                       console.log("ok decrease");
                        Users.cancelledRequest(targetUser);
-                       console.log("ok cancel");
-                       res.redirect("/teams/"+idPage);
-
+                       res.writeHead(200, { 'Content-Type': 'application/json' });
+                       res.write(JSON.stringify({ status: 200 }));
+                       res.end();
                    }
                });
            }
@@ -252,8 +264,9 @@ exports.allTeamsPage = function(req,res){
     let info = services.isAdminLogged(req);
     let logged=info.logged;
     let isAdmin=info.isAdmin;
+    let status = services.getCookie(req,'status');
     Teams.getAllTeams((data)=>{
-        res.render("./teams/all",{data,logged,isAdmin});
+        res.render("./teams/all",{data,logged,isAdmin,status});
     });
 
 };

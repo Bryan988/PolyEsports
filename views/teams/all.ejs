@@ -7,6 +7,9 @@
         else{%>
             <%- include('../include/navbar'); -%>
         <%}%>
+        <%if(status===1){%>
+            <h3 class="text-success text-center">Your team has been created</h3>
+        <%}%>
 
         <%if(data){
                 for (let row of data){ %>

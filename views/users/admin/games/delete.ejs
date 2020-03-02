@@ -4,14 +4,11 @@
         <%- include('../../../include/navbarAdmin'); -%>
 
         <%if(data){%>
-            <%if(status){%>
-                <h3 class="text-center text-success mt15"> The item has been deleted</h3>
-            <%}%>
             <div class="container mt-3">
                 <h2 class="color-white">What game do you want to delete</h2>
-                <input class="form-control" id="myInput" type="text" onkeyup="myFunction()" placeholder="Search..">
+                <input class="form-control w500" id="myInput" type="text" onkeyup="myFunction()" placeholder="Search..">
                 <br>
-                <table class="table table-bordered">
+                <table class="table w500">
                     <thead>
                     <tr>
                         <th class="color-white">Games</th>
@@ -22,12 +19,27 @@
                         <%for (var row of data){%>
 
                                 <tr>
-                                    <td class="color-white"> <%= row.libelle%> </td>
-                                    <td>
-                                        <a href="/users/admin/games/delete/<%= row.id%>">
-                                            <button type="btn btn-danger" name="delete"> Delete</button>
-                                        </a>
+                                    <td class="color-white" id="<%= row.id%>"> <%= row.libelle%>
+                                    <button id="del_<%= row.id%>" type ="button" class="btn btn-danger ml50" name="delete"> Delete</button>
                                     </td>
+                                    <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            $('#del_<%= row.id %>').click(function () {
+                                                $.ajax({
+                                                    url: '/users/admin/games/delete/',
+                                                    type: 'DELETE',
+                                                    data: {id :<%= row.id%>,_csrf: "<%= csrfToken %>" },
+                                                    success: function() {
+                                                        $("#<%= row.id%>").hide();
+                                                        alert("Game deleted ! ");
+                                                    },
+                                                    error: function(){
+                                                        alert("Humm This game doesn't exist");
+                                                    }
+                                                });
+                                            });
+                                        });
+                                    </script>
                                 </tr>
                         <%}%>
                     </tbody>
