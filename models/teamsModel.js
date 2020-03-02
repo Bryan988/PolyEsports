@@ -11,7 +11,7 @@ const Teams = {
         connection.query('SELECT * FROM team WHERE teamName=?',name,(err,data)=>{
             if(err){throw err;}
             cb(data[0]);
-        })
+        });
     },
     getTeamById : function(id,cb){
         connection.query('SELECT * FROM team WHERE id=?',id,(err,data)=>{

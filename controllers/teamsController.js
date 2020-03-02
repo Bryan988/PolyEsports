@@ -109,12 +109,16 @@ exports.requestFromPage = function(req,res){
         //then update his info in DB (idTeam and pending invitation)
         Users.appliedToTeam(idUser, idPage);
         services.setCookie(res,'code',202);
+        res.redirect("/teams/"+idPage);
+
     }
     //second scenario, the user wants to cancel his request to the team
     else if(body.cancel ==="1"){
         //then update his info in DB (idTeam and pending invitation)
         Users.cancelledRequest(idUser);
         services.setCookie(res,'code',201);
+        res.redirect("/teams/"+idPage);
+
     }
     //third scenario, the captain declines the request from an user
     else if(typeof body.decline !=='undefined'){
@@ -123,6 +127,8 @@ exports.requestFromPage = function(req,res){
         //then just  remove the request from the user from DB
         Users.cancelledRequest(targetUser);
         services.setCookie(res,'code',200);
+        res.redirect("/teams/"+idPage);
+
     }
     //fourth scenario the captain accepts the user
     else if(typeof body.accept !=='undefined'){
@@ -132,6 +138,8 @@ exports.requestFromPage = function(req,res){
         //then need to update the number of members in the team
         Teams.increaseTeam(idPage);
         services.setCookie(res,'code',200);
+        res.redirect("/teams/"+idPage);
+
     }
     //fifth scenario, the user wants to leave the team
     else if(body.leave==="1"){
@@ -140,6 +148,8 @@ exports.requestFromPage = function(req,res){
         //Then we need to decrease the number of members in the corresponding team
         Teams.decreaseTeam(idPage);
         services.setCookie(res,'code',200);
+        res.redirect("/teams/"+idPage);
+
     }
     //too many scenarios ,here the captain wants to promote another member of his team to captain
     else if(typeof body.promote !=='undefined'){
@@ -152,10 +162,14 @@ exports.requestFromPage = function(req,res){
             Users.noLongerCaptain(idUser);
             //then promote the target user to captain
             Users.setToCaptain(targetUser, idPage);
+            res.redirect("/teams/"+idPage);
+
         }
         else{
             services.setCookie(res, 'code', 401);
             services.setCookie(res, 'issue', 0);
+            res.redirect("/teams/"+idPage);
+
 
         }
     }
@@ -178,6 +192,8 @@ exports.requestFromPage = function(req,res){
                Users.noLongerCaptain(idUser);
                Users.cancelledRequest(idUser);
                services.setCookie(res,'code',200);
+               res.redirect("/teams/"+idPage);
+
            }
            else{
                //here if the captain wants to remove someone (including himself)
@@ -186,8 +202,9 @@ exports.requestFromPage = function(req,res){
                    if(infoUser[0].captain===1){
                        console.log("trying to remove captain");
                        //if the target is captain, it means that he must promote first
-                       services.setCookie(res,"code",401);
-                       services.setCookie(res,"issue",1);
+                       //TODO This here doesn't work, it is sent after the redirection who knows why
+                       services.setCookie(res,'issue',1);
+                       res.redirect("/teams/"+idPage);
 
                    }
                    else{
@@ -199,13 +216,15 @@ exports.requestFromPage = function(req,res){
                        console.log("ok decrease");
                        Users.cancelledRequest(targetUser);
                        console.log("ok cancel");
+                       res.redirect("/teams/"+idPage);
+
                    }
                });
            }
         });
 
     }
-    res.redirect("/teams/"+idPage);
+
 
 };
 

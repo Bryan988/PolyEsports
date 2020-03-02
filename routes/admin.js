@@ -5,6 +5,7 @@ let tournament = require('../controllers/tournamentController');
 let services = require('../middlewares/userMW');
 let users = require('../controllers/usersController');
 
+
 router.get('/',services.verifyAdmin,users.adminPage);
 
 router.get('/games/add',services.verifyAdmin,games.addGamePage);
