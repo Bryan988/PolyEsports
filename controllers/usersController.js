@@ -133,6 +133,30 @@ exports.adminPage = function(req,res){
     res.render('./users/admin/admin',{logged:true});
 };
 
+exports.profilePage = function(req,res){
+    let id = req.params.id;
+    let logged = commonServices.isAdminLogged(req).logged;
+    if(logged){
+        let idUser = commonServices.getUserId(req);
+        if(id==idUser){
+            Users.getUserInfo(id,(info)=>{
+                console.log(info);
+                res.render("/profile",{info});
+            })
+
+        }
+        else{
+            console.log("merde");
+            res.sendStatus(403);
+        }
+    }
+    else{
+        res.sendStatus(401);
+    }
+
+
+};
+
 
 
 

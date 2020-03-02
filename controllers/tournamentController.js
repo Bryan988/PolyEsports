@@ -79,15 +79,19 @@ exports.selectTournamentPage = function(req,res){
 
 exports.deleteTournament = function(req,res){
     //store the id from the url
-    const id=req.params.id;
+    console.log(req.body);
+    const id=req.body.id;
     //check if the id is in the DB
     Tournament.getTournamentById(id,(check)=>{
         if(typeof check!=='undefined'){
             //delete the corresponding tournament
             Tournament.deleteTournamentById(id);
-            commonServices.setCookie(res,'status',1);
-            commonServices.setCookie(res,'code',200);
-            res.redirect('/users/admin/tournament/edit')
+            //commonServices.setCookie(res,'status',1);
+            //commonServices.setCookie(res,'code',200);
+            //res.redirect('/users/admin/tournament/edit')
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.write(JSON.stringify({ status: 200 }));
+            res.end();
         }
         else{
             commonServices.setCookie(res,'code',400);
@@ -113,6 +117,7 @@ exports.updateTournamentPage = function(req,res){
 
 exports.updateTournament = function(req,res){
     let data = commonServices.sanitizeBody(req);
+    console.log(data);
 
     let date=data.startingDate;
     let newDate= new Date(date);
@@ -122,25 +127,28 @@ exports.updateTournament = function(req,res){
         if(commonServices.checkPastDate(newDate)){
             if (typeof data.idGame !== 'undefined' && typeof data.minNbTeams !== 'undefined' && typeof data.startingDate !== 'undefined' && typeof data.tournamentName !== 'undefined' && typeof data.description !== 'undefined') {
                 Tournament.updateTournament(id,data.idGame, data.minNbTeams, newDate, data.tournamentName, data.description);
-                commonServices.setCookie(res,"status", 2);
-                commonServices.setCookie(res,'code',200);
-                res.redirect('/users/admin/tournament/edit');
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.write(JSON.stringify({ status: 200 }));
+                res.end();
             } else {
                 commonServices.setCookie(res,"invalid", 1);
-                commonServices.setCookie(res,'code',400);
-                res.redirect('/users/admin/tournament/update/'+id);
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.write(JSON.stringify({ status: 400 }));
+                res.end();
             }
         }
         else{
             commonServices.setCookie(res,'date',1);
-            commonServices.setCookie(res,'code',400);
-            res.redirect('/users/admin/tournament/update/'+id);
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.write(JSON.stringify({ status: 400 }));
+            res.end();
         }
     }
     else{
         commonServices.setCookie(res,"invalid", 1);
-        commonServices.setCookie(res,'code',400);
-        res.redirect('/users/admin/tournament/update/'+id);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.write(JSON.stringify({ status: 400 }));
+        res.end();
     }
 
 };

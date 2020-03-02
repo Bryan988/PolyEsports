@@ -4,9 +4,7 @@ const users = require('../controllers/usersController');
 const middleware = require('../middlewares/userMW');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router.get('/profile/:id',middleware.checkLogged,users.profilePage);
 
 router.get('/login',middleware.checkNonLogged,users.loginpage);
 router.post('/login',middleware.checkNonLogged,users.login);

@@ -28,23 +28,43 @@ exports.createTeamPage = function(req,res){
 exports.createTeam = function(req,res){
     //store the form data
 
-    let body=services.sanitizeBody(req);
-    let file = req.files.filename;
-    let filename=file.name;
-    let filepath=path+filename;
-    //move the logo into the correct folder
-    file.mv(filepath);
-    //Create the team in DB
-    Teams.createTeam(body.name,filepath);
-    //Set the user to captain
-    let idUser = services.getUserId(req);
-    Teams.getTeamByName(body.name,(info)=>{
-        let idTeam = info.id;
-        Users.setToCaptain(idUser,idTeam);
-    });
-    services.setCookie(res,'cookie',201);
-    //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
-    res.redirect("/");
+    let file=req.files.filename;
+    //need to check first if the file is a picture and if the size is not too big
+    if(file.size<1000000000){
+        let format = file.mimetype.split('/');
+        if(format[1]==='png'||format[1]==='jpg'||format[1]==='jpeg') {
+            //store the file name and set the path to put the file
+            let filename = commonServices.correctString(req.body.name.toLowerCase());
+            let filepath = path + filename;
+            console.log(filepath);
+            //put the file in the corresponding path
+            file.mv(filepath);
+            Teams.createTeam(req.body.name,filepath);
+            //Set the user to captain
+            let idUser = services.getUserId(req);
+            Teams.getTeamByName(body.name,(info)=>{
+                let idTeam = info.id;
+                Users.setToCaptain(idUser,idTeam);
+            });
+            services.setCookie(res,'cookie',201);
+            //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
+            res.redirect("/");
+            commonServices.setCookie(res, 'status', 1);
+            commonServices.setCookie(res, 'code', 201);
+            res.redirect('/users/admin/games/add');
+        }
+        else{
+            commonServices.setCookie(res, 'code', 415);
+            res.redirect('/users/admin/games/add');
+
+        }
+    }
+    else{
+        commonServices.setCookie(res, 'code', 413);
+        res.redirect('/users/admin/games/add');
+    }
+
+
 };
 //function that will render the corresponding view to the users
 //if he already has a team or a pending request, he cannot send a request to the team

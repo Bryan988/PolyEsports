@@ -25,7 +25,7 @@
                         </thead>
                         <tbody id="myTable">
                             <% for(var row of data) { %>
-                                <tr>
+                                <tr id="<%= row.id%>">
                                     <td class="color-white">
                                         <%= row.name%>
                                     </td>
@@ -44,12 +44,28 @@
                                                 Update
                                             </button>
                                         </a>
-                                        <a href="/users/admin/tournament/delete/<%= row.id %>">
-                                            <button class="btn btn-danger" type="button">
+                                            <button id="del_<%=row.id%>" class="btn btn-danger" type="button">
                                                 Delete
                                             </button>
-                                        </a>
                                     </td>
+                                    <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            $('#del_<%= row.id %>').click(function () {
+                                                $.ajax({
+                                                    url: '/users/admin/tournament/edit',
+                                                    type: 'DELETE',
+                                                    data: {id : <%= row.id%>,_csrf: "<%= csrfToken %>" },
+                                                    success: function() {
+                                                        $("#<%= row.id%>").hide();
+                                                        //res.redirect("/users/admin/tournament/edit");
+                                                    },
+                                                    error: function(){
+                                                        console.log(error);
+                                                    }
+                                                });
+                                            });
+                                        });
+                                    </script>
                                 </tr>
                             <%}%>
                         </tbody>

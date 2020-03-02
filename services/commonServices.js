@@ -79,3 +79,9 @@ exports.isAdminLogged = function(req){
     }
     return {logged,isAdmin};
 };
+exports.correctString = function(text){
+    let space = text.replace(/ /g, "_");
+    let res = space.replace(/'/g,"");
+    return res;
+};
+

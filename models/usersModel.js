@@ -87,6 +87,12 @@ const User = {
                cb(data);
           });
      },
+     getUserInfo : function(idUser,cb){
+          connection.query('SELECT name,firstname,email,idTeam FROM user WHERE id=?',idUser,(err,data)=>{
+               if (err) console.log(err);
+               cb(data[0]);
+          })
+     }
 };
 
 

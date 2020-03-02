@@ -14,7 +14,7 @@
 
         <%if(data && games){%>
             <div class="mx-auto mydark w1100">
-                <form class="d-flex flex-row m20 h600" method="POST" action="/users/admin/tournament/update/<%= data[0].id%>" required>
+                <div class="d-flex flex-row m20 h600">
                     <input type="hidden" name="_csrf" value="<%= csrfToken%>">
                     <div class = "w500">
                         <div class="w400">
@@ -22,19 +22,19 @@
                                 <label class="color-white">
                                     Tournament's name
                                 </label></br>
-                                <input type="text"  name="tournamentName" class="form-control w300" value="<%= data[0].name%>" required/>
+                                <input type="text" id="name"  name="tournamentName" class="form-control w300" value="<%= data[0].name%>" required/>
                             </div>
                             <div class="w500 color-white m10">
                                 <label class="color-white">
                                     Starting Date
                                 </label></br>
-                                <input type="date" name="startingDate" value="<%= data[0].date_debut%>" required/>
+                                <input type="date" id="date" name="startingDate" value="<%= data[0].date_debut%>" required/>
                             </div>
                             <div class="w500 color-white m10">
                                 <label class="color-white">
                                     Minimum Number of Teams
                                 </label></br>
-                                <input type="number" name="minNbTeams"  value="<%= data[0].participantMin %>" class="form-control" min="2" step="1" required/>
+                                <input type="number" id="nbTeams" name="minNbTeams"  value="<%= data[0].participantMin %>" class="form-control" min="2" step="1" required/>
                             </div>
                         </div>
                         <div class="w400">
@@ -48,13 +48,15 @@
                                         <%for (var row of games){%>
                                             <tr>
                                                 <td class="color-white"> <%= row.libelle%> </td>
-                                                <td>
+                                                <td >
+                                                    <div name="game">
                                                     <%if(row.id===data[0].idJeux){%>
                                                         <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required checked>
                                                     <%}else{%>
                                                         <input type="radio" name="idGame" value="<%= row.id%>" id="idGame<%= row.id %>" required>
                                                     <%}%>
                                                     <label class="color-white" for="idGame<%= row.id %>">Select</label>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <%}%>
@@ -69,18 +71,35 @@
                             <label class="color-white">
                                 Tournament's description : 
                             </label>
-                            <textarea class="form-control form-control-lg h500" name="description" required>
+                            <textarea class="form-control form-control-lg h500" id="description" name="description" required>
                                 <%= data[0].description%>
                             </textarea>
                         </div>
                         <div class="d-xl-flex justify-content-xl-end">
-                            <input type="hidden" name="_method" value="put"/>
-                            <button class="btn btn-primary mt20" type="sumbit">
+                            <button id="update_<%= data[0].id%>" class="btn btn-primary mt20" type="button">
                                 Update
                             </button>
                         </div>
                     </div>
-                </form>
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $('#update_<%= data[0].id %>').click(function () {
+                                $.ajax({
+                                    url: '/users/admin/tournament/update/'+<%= data[0].id%>,
+                                    type: 'PUT',
+                                    data: {id : <%= data[0].id%>,_csrf: "<%= csrfToken %>",tournamentName:document.getElementById('name').value,minNbTeams:document.getElementById('nbTeams').value,startingDate:document.getElementById('date').value,description:document.getElementById('description').value,idGame:document.querySelector('input[name="idGame"]:checked').value},
+                                    success: function() {
+                                        //Location.reload();
+                                        alert("The tournament has been updated ! ");
+                                    },
+                                    error: function(){
+                                        alert("Error with the inputs");
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+                </div>
             </div>
         <%}%>
         <%- include('../../../include/searchFunc'); -%>
