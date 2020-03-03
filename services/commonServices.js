@@ -76,4 +76,8 @@ exports.isAdminLogged = function(req){
 exports.correctString = function(text){
     return text.replace(/\W /g, "_");
 };
-
+exports.writeAndSend = function(res,code){
+    res.writeHead(code, { 'Content-Type': 'application/json' });
+    res.write(JSON.stringify({ status: code }));
+    res.end();
+};

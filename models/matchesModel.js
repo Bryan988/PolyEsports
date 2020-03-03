@@ -13,7 +13,26 @@ const Matches = {
             cb(data);
 
         })
+    },
+    selectMatchById : function(id,cb){
+        connection.query('SELECT * FROM round WHERE id=?',id,(err,data)=>{
+            if(err) console.log(err);
+            cb(data);
+
+        });
+    },
+    deleteMatchById : function(id){
+        connection.query('DELETE FROM round WHERE id=?',id,(err)=>{
+            if(err) console.log(err);
+            console.log("match deleted");
+        });
+    },
+    updateMatch : function(id,score1,score2){
+        connection.query('UPDATE round SET ? WHERE id=?',[{score1:score1,score2:score2},id],(err)=>{
+            if(err)console.log(err);
+        })
     }
+
 };
 
 module.exports = Matches;

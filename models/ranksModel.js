@@ -32,6 +32,13 @@ const Ranks = {
             console.log("score updated");
         });
     },
+    decreaseScore : function(idTournament,idTeam){
+        connection.query('UPDATE classement SET score = score - 1 WHERE idTournois=? AND idTeam=?',[idTournament,idTeam],(err)=>{
+            if(err){throw err;}
+            console.log("score updated");
+        });
+
+    }
 };
 
 module.exports = Ranks;

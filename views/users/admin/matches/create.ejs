@@ -3,7 +3,14 @@
     <body>
         <%- include('../../../include/navbarAdmin'); -%>
 
-        <div class="mx-auto">
+        <%if(status==='1'){%>
+            <h3 class="text-success text-center color-white">Match added !</h3>
+        <%}%>
+        <%if(status==='0'){%>
+            <h3 class="text-danger text-center color-white">Bad Inputs !</h3>
+        <%}%>
+
+        <div>
             <form action="/users/admin/tournament/<%= idTournament%>/matches/create" method="POST">
                 <label class="color-white" for="t1">Choose Team 1:</label>
                 <select id="t1" name="idTeam1">

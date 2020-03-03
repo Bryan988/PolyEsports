@@ -28,5 +28,9 @@ router.get('/tournament/:id/matches/create',services.verifyAdmin,matches.addMatc
 router.post('/tournament/:id/matches/create',services.verifyAdmin,matches.addMatch);
 
 router.get('/tournament/:id/matches/',services.verifyAdmin,matches.allMatches);
+router.delete('/tournament/:id/matches/',services.verifyAdmin,matches.deleteMatch);
+
+router.get('/tournament/:id/matches/update/:idmatch',services.verifyAdmin,matches.updateMatchPage);
+router.put('/tournament/:id/matches/update/:idmatch',services.verifyAdmin,matches.updateMatch);
 
 module.exports=router;

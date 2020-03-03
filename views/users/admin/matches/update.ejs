@@ -1,0 +1,35 @@
+<html>
+    <%- include('../../../include/head'); -%>
+    <body>
+        <%- include('../../../include/navbarAdmin'); -%>
+
+        <div>
+                <p class="color-white"><%= match[0].teamName1%> VS <%= match[0].teamName2%></p></br>
+                <label class="color-white" for="score1" >Team 1's Score</label>
+                <input id="score1" type="number" name="score1" min="0" max="1" value="<%= match[0].score1%>"><h3 class="color-white">-</h3>
+                <label class="color-white" for="score2" >Team 2's Score</label>
+                <input id="score2" type="number" name="score2" min="0" max="1" value="<%= match[0].score2%>">
+            <button id="update" type="button" class="btn btn-primary">Update</button>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#update').click(function () {
+                    $.ajax({
+                        url: '/users/admin/tournament/<%= idTournament%>/matches/update/<%= idMatch%>',
+                        type: 'PUT',
+                        data: {_csrf: "<%= csrfToken %>",score1:document.getElementById('score1').value,score2:document.getElementById('score2').value,idTeam1:<%= match[0].idTeam1%>,idTeam2:<%= match[0].idTeam2%>,ahead:<%= match[0].ahead%>},
+                        success: function() {
+                            alert("Match updated");
+                        },
+                        error: function(){
+                            alert("Bad inputs");
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <%- include('../../../include/footer'); -%>
+
+    </body>
+</html>
