@@ -34,7 +34,7 @@ exports.createTeam = function(req,res){
             let format = file.mimetype.split('/');
             if (format[1] === 'png' || format[1] === 'jpg' || format[1] === 'jpeg') {
                 //store the file name and set the path to put the file
-                let filename = commonServices.correctString(req.body.name.toLowerCase());
+                let filename = services.correctString(req.body.name.toLowerCase());
                 let filepath = path + filename;
                 console.log(filepath);
                 //put the file in the corresponding path
@@ -42,23 +42,24 @@ exports.createTeam = function(req,res){
                 Teams.createTeam(req.body.name, filepath);
                 //Set the user to captain
                 let idUser = services.getUserId(req);
-                Teams.getTeamByName(body.name, (info) => {
+                Teams.getTeamByName(req.body.name, (info) => {
+                    console.log(info);
                     let idTeam = info.id;
                     Users.setToCaptain(idUser, idTeam);
-                    commonServices.setCookie(res, 'status', 1);
-                    commonServices.setCookie(res, 'code', 201);
+                    services.setCookie(res, 'status', 1);
+                    services.setCookie(res, 'code', 201);
                     res.redirect('/teams/'+info.id);
                 });
                 services.setCookie(res, 'cookie', 201);
                 //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
 
             } else {
-                commonServices.setCookie(res, 'code', 415);
+                services.setCookie(res, 'code', 415);
                 res.redirect('/teams/create');
 
             }
         } else {
-            commonServices.setCookie(res, 'code', 413);
+            services.setCookie(res, 'code', 413);
             res.redirect('/teams/create');
         }
     }
@@ -89,36 +90,59 @@ exports.profilePage = function(req,res){
     let logged = info.logged;
     //this is for the display of the navbar
     let isAdmin = info.isAdmin;
-    Users.getAllTeamMembers(idPage,(members)=> {
-        if(logged){
-            //then check if the user can create a team, that means that he can also apply for a team
-            let idUser = services.getUserId(req);
-            Users.canApplyForTeam(idUser,(data)=>{
-                //first case, he can not apply because he is member of another team
-                if(data[0].idTeam != idPage && data[0].idTeam !==0){
-                    status = 0;
-                }
-                //second case
-                else if(data[0].idTeam == idPage && data[0].pending === 1){
-                     status = 1;
-                }
-                else if(data[0].idTeam == idPage && data[0].captain === 1){
-                     status = 2;
-                }
-                else if(data[0].idTeam == idPage && data[0].pending === 0 ){
-                     status = 3;
-                }
-                res.render('./teams/id', {logged, isAdmin, status, idPage,members,issue,csrfToken: req.csrfToken()});
+    Teams.getTeamById(idPage,(teaminfo)=>{
+       if(typeof teaminfo !=='undefined') {
+           Users.getAllTeamMembers(idPage, (members) => {
+               if (logged) {
+                   //then check if the user can create a team, that means that he can also apply for a team
+                   let idUser = services.getUserId(req);
+                   Users.canApplyForTeam(idUser, (data) => {
+                       //first case, he can not apply because he is member of another team
+                       if (data[0].idTeam != idPage && data[0].idTeam !== 0) {
+                           status = 0;
+                       }
+                       //second case
+                       else if (data[0].idTeam == idPage && data[0].pending === 1) {
+                           status = 1;
+                       } else if (data[0].idTeam == idPage && data[0].captain === 1) {
+                           status = 2;
+                       } else if (data[0].idTeam == idPage && data[0].pending === 0) {
+                           status = 3;
+                       }
+                       res.render('./teams/id', {
+                           logged,
+                           isAdmin,
+                           status,
+                           idPage,
+                           members,
+                           issue,
+                           csrfToken: req.csrfToken()
+                       });
 
 
-            });
+                   });
 
-        }
-        else{
-            status = 0;
-            res.render('./teams/id',{logged,isAdmin,status,idPage,issue,members,csrfToken: req.csrfToken()});
-        }
+               } else {
+                   status = 0;
+                   res.render('./teams/id', {
+                       logged,
+                       isAdmin,
+                       status,
+                       idPage,
+                       issue,
+                       members,
+                       csrfToken: req.csrfToken()
+                   });
+               }
+           });
+       }
+       else{
+           services.setCookie(res,'code',404);
+           res.redirect("/teams")
+       }
+
     });
+
 };
 exports.requestFromPage = function(req,res){
     let idPage = req.params.id;
@@ -262,6 +286,10 @@ exports.requestFromPage = function(req,res){
 
 exports.allTeamsPage = function(req,res){
     let info = services.isAdminLogged(req);
+    let code = services.getCookie(req,'code');
+    if(typeof code!=='undefined'){
+        res.status(code);
+    }
     let logged=info.logged;
     let isAdmin=info.isAdmin;
     let status = services.getCookie(req,'status');

@@ -56,14 +56,14 @@ const Tournament = {
         })
     },
     increaseTeams : function(id){
-        connection.query('UPDATE tournois SET nbParticipant = nbParticipant + 1',(err)=> {
+        connection.query('UPDATE tournois SET nbParticipant = nbParticipant + 1 WHERE id=?',id,(err)=> {
             if (err) {
                 throw err;
             }
         });
     },
     decreaseTeams : function(id){
-        connection.query('UPDATE tournois SET nbParticipant = nbParticipant - 1',(err)=> {
+        connection.query('UPDATE tournois SET nbParticipant = nbParticipant - 1 WHERE id=?',id,(err)=> {
             if (err) {
                 throw err;
             }

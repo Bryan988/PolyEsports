@@ -39,6 +39,15 @@
                                         <%= row.participantMin%>
                                     </td>
                                     <td class=" d-flex flex-row">
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-info dropdown-toggle mr10" data-toggle="dropdown">
+                                                Matches
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="/users/admin/tournament/<%= row.id%>/matches/create">Create </a>
+                                                <a class="dropdown-item" href="/users/admin/tournament/<%= row.id%>/matches/edit">Edit</a>
+                                            </div>
+                                        </div>
                                         <a href="/users/admin/tournament/update/<%= row.id %>">
                                             <button class="btn btn-primary mr10" type="button">
                                                 Update
@@ -57,7 +66,6 @@
                                                     data: {id : <%= row.id%>,_csrf: "<%= csrfToken %>" },
                                                     success: function() {
                                                         $("#<%= row.id%>").hide();
-                                                        //res.redirect("/users/admin/tournament/edit");
                                                     },
                                                     error: function(){
                                                         console.log(error);

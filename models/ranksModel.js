@@ -10,7 +10,7 @@ const Ranks = {
         })
     },
     addTeam : function(idTournament,idTeam){
-        connection.query('INSERT INTO classement SET ?',{idTournois:idTournament,idTeam:idTeam,position:0},(err)=>{
+        connection.query('INSERT INTO classement SET ?',{idTournois:idTournament,idTeam:idTeam,score:0},(err)=>{
             if(err){throw err;}
             console.log("new team joined the tournament");
         })
@@ -21,10 +21,16 @@ const Ranks = {
         })
     },
     getAllTeamInTournament : function(idTournament,cb){
-        connection.query('SELECT * FROM classement WHERE idTournois=?',idTournament,(err,teams)=>{
+        connection.query('SELECT * FROM classement WHERE idTournois=? ORDER BY score DESC',idTournament,(err,teams)=>{
                 if(err){throw err;}
                 cb(teams);
             });
+    },
+    updateScore : function(idTournament,idTeam){
+        connection.query('UPDATE classement SET score = score + 1 WHERE idTournois=? AND idTeam=?',[idTournament,idTeam],(err)=>{
+            if(err){throw err;}
+            console.log("score updated");
+        });
     },
 };
 

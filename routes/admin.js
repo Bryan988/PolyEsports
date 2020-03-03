@@ -2,6 +2,7 @@ let express = require('express');
 let router = express.Router();
 let games = require('../controllers/gamesController');
 let tournament = require('../controllers/tournamentController');
+let matches = require("../controllers/matchesController");
 let services = require('../middlewares/userMW');
 let users = require('../controllers/usersController');
 
@@ -23,6 +24,9 @@ router.delete('/tournament/edit',services.verifyAdmin,tournament.deleteTournamen
 router.get('/tournament/update/:id',services.verifyAdmin,tournament.updateTournamentPage);
 router.put('/tournament/update/:id',services.verifyAdmin,tournament.updateTournament);
 
+router.get('/tournament/:id/matches/create',services.verifyAdmin,matches.addMatchPage);
+router.post('/tournament/:id/matches/create',services.verifyAdmin,matches.addMatch);
 
+router.get('/tournament/:id/edit',services.verifyAdmin,);
 
 module.exports=router;
