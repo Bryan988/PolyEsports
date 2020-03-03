@@ -1,0 +1,56 @@
+<html>
+        <%- include('../../../include/head'); -%>
+        <body>
+            <%- include('../../../include/navbarAdmin'); -%>
+            <div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="color-white">Team 1</th>
+                            <th class="color-white">Score 1</th>
+                            <th class="color-white">Score 2</th>
+                            <th class="color-white">Team 2</th>
+                            <th class="color-white">Action</th>
+                        </tr>
+                        <%for(let row of matches){%>
+                            <tr id="<%= row.id%>">
+                                <td class="color-white"><%= row.teamName1%></td>
+                                <td class="color-white"><%= row.score1%></td>
+                                <td class="color-white"><%= row.score2%></td>
+                                <td class="color-white"><%= row.teamName2%></td>
+                                <td>
+                                    <a href="/users/admin/tournament/<%= idTournament%>/matches/update/<%= row.id%>">
+                                        <button class="btn btn-primary" type="button">Update</button>
+                                    </a>
+                                    <button id="del_<%= row.id%>" class="btn btn-danger" type="button">Delete</button>
+                                </td>
+                                <script type="text/javascript">
+                                    $(document).ready(function () {
+                                        $('#del_<%= row.id %>').click(function () {
+                                            $.ajax({
+                                                url: '/users/admin/tournament/<%= idTournament%>/matches/',
+                                                type: 'DELETE',
+                                                data: {id : <%= row.id%>,_csrf: "<%= csrfToken %>" },
+                                                success: function() {
+                                                    $("#<%= row.id%>").hide();
+                                                    alert("Match removed");
+                                                },
+                                                error: function(){
+                                                    alert("Error occured");
+                                                }
+                                            });
+                                        });
+                                    });
+                                </script>
+                            </tr>
+
+                        <%}%>
+
+                    </tbody>
+                </table>
+
+
+            </div>
+            <%- include('../../../include/footer'); -%>
+        </body>
+</html>

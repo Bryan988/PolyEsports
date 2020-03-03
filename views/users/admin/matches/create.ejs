@@ -1,0 +1,33 @@
+<html>
+    <%- include('../../../include/head'); -%>
+    <body>
+        <%- include('../../../include/navbarAdmin'); -%>
+
+        <div class="mx-auto">
+            <form action="/users/admin/tournament/<%= idTournament%>/matches/create" method="POST">
+                <label class="color-white" for="t1">Choose Team 1:</label>
+                <select id="t1" name="idTeam1">
+                    <% for(let row of teams){%>
+                        <option value="<%= row.idTeam%>"><%= row.teamName%></option>
+                    <%}%>
+                </select>
+                <label class="color-white" for="t2">Choose Team 2:</label>
+                <select id="t2" name="idTeam2">
+                    <% for(let row of teams){%>
+                        <option value="<%= row.idTeam%>"><%= row.teamName%></option>
+                    <%}%>
+                </select></br>
+                <label class="color-white" for="score1" >Team 1's Score</label>
+                <input id="score1" type="number" name="score1" min="0" max="1"><h3 class="color-white">-</h3>
+                <label class="color-white" for="score2" >Team 2's Score</label>
+                <input id="score2" type="number" name="score2" min="0" max="1">
+                <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+
+
+                <input type="submit">
+            </form>
+        </div>
+
+        <%- include('../../../include/footer'); -%>
+    </body>
+</html>

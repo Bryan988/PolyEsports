@@ -11,7 +11,7 @@
                 <%if(status==='2'){%>
                     <h3 class="text-success text-center">The item has been updated</h3>
                 <%}%>
-                <h2 class="text-left color-white" style="color: rgb(255,255,255);">Search for a tournament</h2><input type="text" style="width: 400px;margin-bottom: 15px;" />
+                <h2 class="text-left color-white" >Search for a tournament</h2><input class="w400 mb15" type="text" />
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -45,7 +45,7 @@
                                             </button>
                                             <div class="dropdown-menu">
                                                 <a class="dropdown-item" href="/users/admin/tournament/<%= row.id%>/matches/create">Create </a>
-                                                <a class="dropdown-item" href="/users/admin/tournament/<%= row.id%>/matches/edit">Edit</a>
+                                                <a class="dropdown-item" href="/users/admin/tournament/<%= row.id%>/matches/">Edit</a>
                                             </div>
                                         </div>
                                         <a href="/users/admin/tournament/update/<%= row.id %>">
