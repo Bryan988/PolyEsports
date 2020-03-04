@@ -8,12 +8,13 @@ const fs = require('fs');
 
 exports.addGamePage=function(req,res){
     //retrieve cookies
+    let idUser=commonServices.getUserId(req);
     let status = commonServices.getCookie(req,'status');
     let code = commonServices.getCookie(req,'code');
     if(typeof code !=='undefined'){
         res.status(code);
     }
-    res.render('users/admin/games/add',{status, csrfToken: req.csrfToken()});
+    res.render('users/admin/games/add',{idUser,status, csrfToken: req.csrfToken()});
 };
 exports.addGame=function(req,res){
     if(req.files && req.body.name !==''){
@@ -51,9 +52,10 @@ exports.addGame=function(req,res){
 };
 
 exports.deleteGamePage=function(req,res){
+    let idUser = commonServices.getUserId(req);
 
     Games.allGames((cb)=>{
-        res.render('./users/admin/games/delete',{data:cb,logged:true,csrfToken: req.csrfToken()});
+        res.render('./users/admin/games/delete',{idUser,data:cb,logged:true,csrfToken: req.csrfToken()});
     });
 };
 exports.deleteGame=function(req,res){

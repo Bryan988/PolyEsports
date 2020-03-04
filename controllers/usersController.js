@@ -130,23 +130,30 @@ exports.signup = function(req,res){
 };
 
 exports.adminPage = function(req,res){
-    res.render('./users/admin/admin',{logged:true});
+    let idUser = commonServices.getUserId(req);
+
+    res.render('./users/admin/admin',{idUser,logged:true});
 };
 
 exports.profilePage = function(req,res){
     let id = req.params.id;
-    let logged = commonServices.isAdminLogged(req).logged;
+    let info = commonServices.isAdminLogged(req);
+    let logged = info.logged;
+    let isAdmin = info.isAdmin;
+    let status=0;
     if(logged){
         let idUser = commonServices.getUserId(req);
         if(id==idUser){
-            Users.getUserInfo(id,(info)=>{
+            User.getUserInfo(id,(info)=>{
                 console.log(info);
-                res.render("/profile",{info});
+                if(info.idTeam!==0){
+                    status=1;
+                }
+                res.render("./users/profile",{idUser:id,info,logged,isAdmin,status});
             })
 
         }
         else{
-            console.log("merde");
             res.sendStatus(403);
         }
     }

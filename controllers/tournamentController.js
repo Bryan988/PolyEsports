@@ -8,6 +8,8 @@ const Ranks = require("../models/ranksModel");
 const Teams = require('../models/teamsModel');
 
 exports.addTournamentPage = function(req,res){
+    let idUser = commonServices.getUserId(req);
+
     Games.allGames((data)=>{
         //store the different cookies set up
         let status=commonServices.getCookie(req,'status');
@@ -17,7 +19,7 @@ exports.addTournamentPage = function(req,res){
         if(typeof code!=='undefined'){
             res.status(code);
         }
-        res.render('./users/admin/tournament/create',{data,status,date,invalid,csrfToken: req.csrfToken()});
+        res.render('./users/admin/tournament/create',{idUser,data,status,date,invalid,csrfToken: req.csrfToken()});
     });
 };
 
@@ -57,6 +59,7 @@ exports.addTournament = function(req,res){
 
 exports.selectTournamentPage = function(req,res){
     const status = commonServices.getCookie(req,'status');
+    let idUser = commonServices.getUserId(req);
     let code = commonServices.getCookie(req,'code');
     if(typeof code!=='undefined'){
         res.status(code);
@@ -73,7 +76,7 @@ exports.selectTournamentPage = function(req,res){
 
         }))));
 
-        res.render('./users/admin/tournament/viewTournaments',{data:data,status:status,csrfToken: req.csrfToken()});
+        res.render('./users/admin/tournament/viewTournaments',{idUser,data:data,status:status,csrfToken: req.csrfToken()});
     });
 };
 
@@ -105,12 +108,13 @@ exports.updateTournamentPage = function(req,res){
     let status = commonServices.getCookie(req,'status');
     let invalid = commonServices.getCookie(req,'invalid');
     let date = commonServices.getCookie(req,'date');
+    let idUser= commonServices.getUserId(req);
     Games.allGames((games)=>{
         Tournament.getTournamentById(id,(data)=>{
             data[0].date_debut=DATE.format(data[0].date_debut,'YYYY-MM-DD');
             console.log(data[0]);
 
-            res.render('./users/admin/tournament/update',{data,games,status,date,invalid,csrfToken: req.csrfToken()});
+            res.render('./users/admin/tournament/update',{idUser,data,games,status,date,invalid,csrfToken: req.csrfToken()});
         })
     })
 };
@@ -156,7 +160,11 @@ exports.updateTournament = function(req,res){
 exports.tournamentPage = function(req,res){
     let id = req.params.id;
     let info = commonServices.isAdminLogged(req);
+    let idUser;
     let logged = info.logged;
+    if(logged){
+         idUser = commonServices.getUserId(req);
+    }
     let isAdmin = info.isAdmin;
     let status;
     //need to know the status of the player, if he's the captain or no
@@ -194,22 +202,22 @@ exports.tournamentPage = function(req,res){
                                             //it means that the captain can join the tournament
                                             status = 1;
                                         }
-                                        res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
+                                        res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
                                     });
                                 } else {
-                                    res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
+                                    res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
                                 }
                             });
                         }
                         else {
-                            res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
+                            res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
                         }
                     }
                     else{
                         data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
                         //the date is past so no teams can leave the tournament nor join it
                         status=0;
-                        res.render("./tournaments/template", {data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
+                        res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
                     }
                 });
 
@@ -261,8 +269,12 @@ exports.tournament = function(req,res){
 };
 
 exports.allTournaments = function(req,res){
+    let idUser;
     let infoUser = commonServices.isAdminLogged(req);
     let logged = infoUser.logged;
+    if(logged){
+        idUser = commonServices.getUserId(req);
+    }
     let isAdmin = infoUser.isAdmin;
     Tournament.getAllOpenTournaments(async (data)=> {
         //use the same function as in selectPage above
@@ -274,6 +286,7 @@ exports.allTournaments = function(req,res){
             });
 
         }))));
-        res.render("./tournaments/all", {data, logged, isAdmin});
+        res.render("./tournaments/all", {idUser,data, logged, isAdmin});
     });
 };
+

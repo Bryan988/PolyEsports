@@ -6,23 +6,38 @@ const fs = require("fs");
 
 exports.TeamsPage = function(req,res){
     //retrieve the status code first
+    let info = services.isAdminLogged(req);
+    let logged = info.logged;
+    let isAdmin = info.isAdmin;
+    let idUser;
+
+    if(logged){
+        idUser = services.getUserId(req);
+    }
     let code = services.getCookie(req,'code');
     if(typeof code!=='undefined'){
         res.status(code);
     }
     //then store all the teams that are in the DB
     Teams.getAllTeams((data)=>{
-        res.render('/teams',{data});
+        res.render('/teams',{logged,isAdmin,data,idUser});
     });
 };
 exports.createTeamPage = function(req,res){
     //to render the team page we must check if the user can create it, therefore, we need his id
     let status = services.getCookie(req,'status');
     let code = services.getCookie(req,'code');
+    let info = services.isAdminLogged(req);
+    let idUser;
+    let logged = info.logged;
+    if(logged){
+        idUser = services.getUserId(req);
+    }
+    let isAdmin = info.isAdmin;
     if(typeof code!=='undefined'){
         res.status(code);
     }
-    res.render("./teams/create",{logged:true,status,csrfToken: req.csrfToken()});
+    res.render("./teams/create",{idUser,logged,isAdmin,status,csrfToken: req.csrfToken()});
 };
 
 exports.createTeam = function(req,res){
@@ -84,10 +99,15 @@ exports.profilePage = function(req,res){
     let issue = services.getCookie(req,'issue');
     //this const will tell if the user has the same team as the one he is visiting
     const idPage=req.params.id;
+    let idUser;
+
     let status;
     //First check if the user is logged
     let info = services.isAdminLogged(req);
     let logged = info.logged;
+    if(logged){
+        idUser= services.getUserId(req);
+    }
     //this is for the display of the navbar
     let isAdmin = info.isAdmin;
     Teams.getTeamById(idPage,(teaminfo)=>{
@@ -110,6 +130,7 @@ exports.profilePage = function(req,res){
                            status = 3;
                        }
                        res.render('./teams/id', {
+                           idUser,
                            logged,
                            isAdmin,
                            status,
@@ -125,6 +146,7 @@ exports.profilePage = function(req,res){
                } else {
                    status = 0;
                    res.render('./teams/id', {
+                       idUser,
                        logged,
                        isAdmin,
                        status,
@@ -287,14 +309,19 @@ exports.requestFromPage = function(req,res){
 exports.allTeamsPage = function(req,res){
     let info = services.isAdminLogged(req);
     let code = services.getCookie(req,'code');
+    let idUser;
+
     if(typeof code!=='undefined'){
         res.status(code);
     }
     let logged=info.logged;
+    if(logged){
+        idUser= services.getUserId(req);
+    }
     let isAdmin=info.isAdmin;
     let status = services.getCookie(req,'status');
     Teams.getAllTeams((data)=>{
-        res.render("./teams/all",{data,logged,isAdmin,status});
+        res.render("./teams/all",{idUser,data,logged,isAdmin,status});
     });
 
 };

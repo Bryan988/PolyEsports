@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 let jwt = require('jsonwebtoken');
 let key = require('../config/key');
+let services = require("../services/commonServices");
 let secretkey = key.secretkey;
 
 
@@ -15,7 +16,7 @@ router.get('/', function(req, res) {
     if (err) {console.log(err.message);}
     if(typeof playload !=='undefined'){
       let isAdmin = playload.isAdmin;
-      res.render('index', {logged: true,isAdmin,signedup});
+      res.render('index', {idUser:playload.id,logged: true,isAdmin,signedup});
     }
     else{res.render('index', {logged: false,isAdmin : false,signedup});}
 

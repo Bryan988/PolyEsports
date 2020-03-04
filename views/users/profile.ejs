@@ -1,4 +1,30 @@
-<%- include('./include/head'); -%>
+<html>
+    <%- include('../include/head'); -%>
+    <body>
+        <%if (isAdmin===true){%>
+            <%- include('../include/navbarAdmin'); -%>
+        <%}
+        else{%>
+            <%- include('../include/navbar'); -%>
+        <%}%>
+        <h3 class="color-white">tesst </h3>
+        <%if(status===1){%>
+            <div>
+                <h3 class="color-white">Team : </h3>
+                <a href="/teams/<%= info.idTeam%>">
+                    <button type="button" class="btn btn-primary"> My Team </button>
+                </a>
+            </div>
+        <%}
+        if(status===0){%>
+            <div>
+                <h3 class="color-white">Team : </h3>
+                <a href="/teams/create">
+                    <button type="button" class="btn btn-primary"> Create </button>
+                </a>
+            </div>
+        <%}%>
 
-
-<%- include('./include/footer'); -%>
+        <%- include('../include/footer'); -%>
+    </body>
+</html>

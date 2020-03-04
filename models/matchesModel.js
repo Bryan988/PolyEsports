@@ -31,6 +31,12 @@ const Matches = {
         connection.query('UPDATE round SET ? WHERE id=?',[{score1:score1,score2:score2},id],(err)=>{
             if(err)console.log(err);
         })
+    },
+    selectMatchByTeams : function(idTeam1,idTeam2,cb){
+        connection.query("SELECT id FROM round WHERE idTeam1=? AND idTeam2=?",[idTeam1,idTeam2],(err,data)=>{
+            if(err)console.log(err);
+            cb(data);
+        })
     }
 
 };

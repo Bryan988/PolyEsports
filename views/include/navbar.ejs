@@ -10,6 +10,13 @@
                             Accueil
                         </a>
                     </li>
+                    <%if(logged){%>
+                        <li class="nav-item" role="presentation">
+                            <a id="nav-link" class="nav-link" href="/users/profile/<%=idUser%>">
+                                Profile
+                            </a>
+                        </li>
+                    <%}%>
                     <li class="nav-item" role="presentation">
                         <a id="nav-link" class="nav-link" href="/teams" >
                             Teams
