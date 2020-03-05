@@ -17,14 +17,17 @@
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
+    "express-bouncer": "^0.2.0",
     "express-fileupload": "^1.1.6",
     "express-sanitizer": "^1.0.5",
+    "hpp": "^0.2.3",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
     "nodemailer": "^6.4.4",
     "nodemon": "^2.0.2",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "toobusy-js": "^0.5.1"
   }
 }

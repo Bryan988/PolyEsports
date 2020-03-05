@@ -1,0 +1,36 @@
+<html>
+    <%- include('../include/head'); -%>
+    <body>
+        <%if (isAdmin===true){%>
+            <%- include('../include/navbarAdmin'); -%>
+        <%}
+        else{%>
+            <%- include('../include/navbar'); -%>
+        <%}%>
+        <div id="div">
+            <label for="mail" class="color-white">Email : </label></br>
+            <input id="mail" name="mail" type="email" class="w300"></br>
+            <button class="btn btn-primary" id="send" type="button">Send</button>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#send').click(function () {
+                    $.ajax({
+                        url: '/users/lost-password',
+                        type: 'PUT',
+                        data: {mail : document.getElementById('mail').value,_csrf: "<%= csrfToken %>" },
+                        success: function() {
+                            $("#div").hide();
+                            alert("Mail Sent ! ");
+                        },
+                        error: function(){
+                            alert("The mail is not registered ")
+                        }
+                    });
+                });
+            })
+        </script>
+        <%- include('../include/footer'); -%>
+    </body>
+</html>

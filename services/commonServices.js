@@ -44,7 +44,7 @@ exports.sanitizeBody=function(req){
 };
 
 exports.setCookie = function(res,name,value){
-    return res.cookie(name,value,{maxAge : 3*1000,httpOnly: true});
+    return res.cookie(name,value,{maxAge : 3*1000,httpOnly: true,samesite:true});
 };
 exports.getCookie = function(req,name){
     if(typeof req.cookies !=='undefined'){
@@ -108,6 +108,32 @@ exports.sendVerifMail = function(mail,code){
         subject: "Mail Verification",
         text: code,
         html: "<h3>" + code + "</h3>"
+    };
+    transporter.sendMail(mailOption,(err)=>{
+        if(err){
+            console.log(err);
+        }
+    });
+
+};
+
+exports.sendNewPw = function(mail,code){
+    const mailOption = {
+        to: mail,
+        subject: "POLYESPORTS - Reset Password",
+        text: code,
+        html: "<h1 style=\"text-align: center;\">New Password</h1>\n" +
+            "<h1 style=\"text-align: center;\">\n" +
+            "  <br>\n" +
+            "</h1>\n" +
+            "<p style=\"text-align: center;\"><span style=\"font-size: \n" +
+            "      18px;\">A request has been sent to change your password.</span>\n" +
+            "  <br><span style=\"font-size: \n" +
+            "      18px;\">If this was not you, you can ignore this mail. Otherwise, to reset your password, you can click on the link below :&nbsp;</span></p>\n" +
+            "<p style=\"text-align: center;\"><span style=\"font-size: \n" +
+            "      18px;\">\n" +
+            "    <a href='https://polyesports.herokuapp.com/users/lost-password/"+code+"'>https://polyesports.herokuapp.com/users/lost-password/"+code+"</a>\n" +
+            "  </span></p>"
     };
     transporter.sendMail(mailOption,(err)=>{
         if(err){

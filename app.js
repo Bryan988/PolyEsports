@@ -6,6 +6,8 @@ const logger = require('morgan');
 const upload = require('express-fileupload');
 const expressSanitizer = require('express-sanitizer');
 const csrf = require("csurf");
+const toobusy = require('toobusy-js');
+const hpp = require('hpp');
 
 
 const indexRouter = require('./routes/index');
@@ -31,6 +33,7 @@ app.use(csrfMW);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(upload());
 app.use(expressSanitizer());
+app.use(hpp());
 
 
 
@@ -43,6 +46,15 @@ app.use('/users/admin', adminRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
+});
+
+app.use(function(req, res, next) {
+  if (toobusy()) {
+    // log if you see necessary
+    res.send(503, "Server Too Busy");
+  } else {
+    next();
+  }
 });
 
 // error handler

@@ -1,0 +1,45 @@
+<html>
+    <%- include('../include/head'); -%>
+    <body>
+        <%if(isAdmin){%>
+            <%- include('../include/navbarAdmin'); -%>
+        <%}
+        else{%>
+            <%- include('../include/navbar'); -%>
+        <%}%>
+
+        <div id="div">
+            <h3 class="text-center color-white"> Reset your Password </h3>
+            <label for="pw" class="color-white">
+                Password
+            </label></br>
+            <input type="password" id="pw" class="w300" required min="8"></br>
+            <label for="confpw" class="color-white">
+                Password Confirmation
+            </label></br>
+            <input type="password" id="confpw" class="w300" required min="8"></br>
+            <button id="send" class="btn btn-primary" type="button">Send</button>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#send').click(function () {
+                    $.ajax({
+                        url: '/users/lost-password/<%= key%>',
+                        type: 'PUT',
+                        data: {pw : document.getElementById('pw').value,confpw : document.getElementById('confpw').value,_csrf: "<%= csrfToken %>" },
+                        success: function() {
+                            $("#div").hide();
+                            alert("Password updated ! ");
+                        },
+                        error: function(){
+                            alert("The passwords do not match ")
+                        }
+                    });
+                });
+            })
+        </script>
+
+
+        <%- include('../include/footer'); -%>
+    </body>
+</html>

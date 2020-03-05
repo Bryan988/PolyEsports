@@ -2,6 +2,8 @@ const User = require('../models/usersModel');
 const bcrypt = require('bcrypt');
 const middleware = require('../middlewares/userMW');
 const commonServices = require('../services/commonServices');
+const bouncer = require('express-bouncer')(500,900000,5)
+
 
 
 const EMAIL_REGEXX = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -21,52 +23,75 @@ exports.login = function(req,res,next){
     //Note that status : 0 = Something is wrong
     //store the form's data
     const data = commonServices.sanitizeBody(req);
-    // We then check if the mail is in database
-    User.checkMail(data.mail,(result) =>{
-        if(typeof result !== 'undefined'){
-            if(result.check===true){
-                //Check if the password entered match with the one registered
-                User.getPw(result.idUser,(hashedPw)=>{
-                    bcrypt.compare(data.pw,hashedPw,(err,resp)=>{
-                        if(resp) {
-                            User.checkVerified(result.idUser,(info)=>{
-                                if(info.verified===1){
-                                    User.getInfoToken(result.idUser,(infoUser)=>{
-                                        console.log(infoUser);
-                                        //Call the services that will create the token and redirect corresponding to his status
-                                        middleware.createToken(res,result,result.idUser,infoUser.pseudo,infoUser.isAdmin)
-                                    });
-                                }
-                                else{
-                                    commonServices.setCookie(res,'code',401);
-                                    res.redirect('/verify')
-                                }
-                            });
+    if(typeof data.mail !=='undefined' && typeof data.pw !=='undefined' && EMAIL_REGEXX.test(data.mail)) {
+        console.log(data);
 
-                        }
-                        else{
-                            //It will come here if the user did not type in the right password
-                            commonServices.setCookie(res,'status',0);
-                            commonServices.setCookie(res,'code',400);
-                            res.redirect('/users/login');
-                        }
+        // We then check if the mail is in database
+        User.checkMail(data.mail, (result) => {
+            if (typeof result !== 'undefined') {
+                if (result.check === true) {
+                    console.log(1);
+                    //Check if the password entered match with the one registered
+                    User.getPw(result.idUser, (hashedPw) => {
+                        console.log(2);
+
+                        bcrypt.compare(data.pw, hashedPw, (err, resp) => {
+                            if (resp) {
+                                console.log(3);
+
+                                User.checkVerified(result.idUser, (info) => {
+                                    if (info.verified === 1) {
+                                        console.log(4);
+
+                                        User.getInfoToken(result.idUser, (infoUser) => {
+                                            console.log(infoUser);
+                                            bouncer.reset(req);
+                                            //Call the services that will create the token and redirect corresponding to his status
+                                            middleware.createToken(res, result, result.idUser, infoUser.pseudo, infoUser.isAdmin)
+                                        });
+                                    } else {
+                                        console.log(5);
+
+                                        commonServices.setCookie(res, 'code', 401);
+                                        res.redirect('/verify')
+                                    }
+                                });
+
+                            } else {
+                                console.log(6);
+
+                                //It will come here if the user did not type in the right password
+                                commonServices.setCookie(res, 'status', 0);
+                                commonServices.setCookie(res, 'code', 400);
+                                res.redirect('/users/login');
+                            }
+                        });
                     });
-                });
-            }
-            else{
-                //that means that the user did not enter the same mails
-                commonServices.setCookie(res,'status',0);
-                commonServices.setCookie(res,'code',400);
+                } else {
+                    console.log(7);
+
+                    //that means that the user did not enter the same mails
+                    commonServices.setCookie(res, 'status', 0);
+                    commonServices.setCookie(res, 'code', 400);
+                    res.redirect('/users/login');
+                }
+            } else {
+                console.log(8);
+
+                //if there is no mail matching in the DB
+                commonServices.setCookie(res, 'status', 0);
+                commonServices.setCookie(res, 'code', 400);
                 res.redirect('/users/login');
             }
-        }
-        else {
-            //if there is no mail matching in the DB
-            commonServices.setCookie(res,'status',0);
-            commonServices.setCookie(res,'code',400);
-            res.redirect('/users/login');
-        }
-    });
+        });
+    }
+    else{
+        console.log(9);
+
+        commonServices.setCookie(res, 'status', 0);
+        commonServices.setCookie(res, 'code', 400);
+        res.redirect('/users/login');
+    }
 };
 
 exports.signupPage = function(req,res){
@@ -260,4 +285,77 @@ exports.updatePw = function(req,res){
         commonServices.setCookie(res,'code',403);
         res.redirect("/users/profile/"+idUser);
     }
+};
+
+exports.lostPwPage = function(req,res){
+    let code = commonServices.getCookie(req,'code');
+    if(typeof code!=='undefined'){
+        res.status(code);
+    }
+    res.render("./users/lost-pw",{logged:false,isAdmin:false,csrfToken:req.csrfToken()});
+};
+
+exports.lostPw = function(req,res){
+    let body = commonServices.sanitizeBody(req);
+    console.log(body);
+    if(typeof body.mail!=='undefined' && EMAIL_REGEXX.test(body.mail)) {
+
+        User.checkMail(body.mail, (info) => {
+            console.log(info);
+
+            if (typeof info !== 'undefined') {
+                let newLink = commonServices.makeid(16);
+                User.updateCode(info.idUser, newLink);
+                commonServices.sendNewPw(body.mail, newLink);
+                commonServices.writeAndSend(res, 200);
+            } else {
+                commonServices.writeAndSend(res, 400);
+            }
+        });
+    }
+    else{
+        commonServices.writeAndSend(res, 400);
+    }
+};
+
+
+exports.lostPwKeyPage = function(req,res){
+    let code = commonServices.getCookie(req,'code');
+    if(typeof code!=='undefined'){
+        res.status(code);
+    }
+    let key = req.params.key;
+    User.verifyCode(key,(info)=>{
+        console.log(info);
+        if(typeof info!=='undefined'){
+            res.render("./users/new-pw",{key,logged:false,isAdmin:false,csrfToken:req.csrfToken()});
+        }
+        else{
+            commonServices.setCookie(res,404);
+            res.redirect('/users/login');
+        }
+    });
+};
+
+exports.lostPwKey = function(req,res){
+    let body = commonServices.sanitizeBody(req);
+    if(typeof body.pw!=='undefined' && typeof body.confpw!=='undefined'
+        && body.pw.length>7 && body.confpw.length>7) {
+        let key = req.params.key;
+        User.verifyCode(key, (info) => {
+            let hashedPw = bcrypt.hashSync(body.pw, 10);
+            bcrypt.compare(body.confpw, hashedPw, (err, data) => {
+                if (data) {
+                    User.updatePw(info.id, hashedPw);
+                    commonServices.writeAndSend(res, 200);
+                } else {
+                    commonServices.writeAndSend(res, 400);
+                }
+            })
+        });
+    }
+    else{
+        commonServices.writeAndSend(res, 400);
+    }
+
 };

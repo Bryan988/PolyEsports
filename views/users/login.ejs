@@ -11,13 +11,13 @@
             </h1>
             <div class="d-xl-flex justify-content-xl-start">
                 <label class="color-white ml15">
-                    Email :
+                    Mail :
                 </label>
-                <input type="email" class="form-control ml10 w400" name="mail"/>
+                <input type="email" class="form-control ml10 w400" name="mail" required/>
             </div>
             <div class="d-xl-flex justify-content-xl-start mt20">
-                <label class="color-white ml15">Mot de passe :</label>
-                <input id="pw" type="password" class="form-control ml10" name="pw"/>
+                <label class="color-white ml15">Password :</label>
+                <input id="pw" type="password" class="form-control ml10" name="pw" required/>
             </div>
             <div class="d-xl-flex flex-row mt15">
                 <button class="btn btn-primary d-xl-flex mx-auto" type="submit">
@@ -25,8 +25,11 @@
                 </button>
             </div>
             <div class="d-xl-flex flex-column justify-content-xl-center">
+                <a  class="mx-auto mr10" href="/users/lost-password">
+                    Lost your password ?
+                </a>
                 <a  class="mx-auto mr10" href="/users/signup">
-                    Creer un compte
+                    Sign up
                 </a>
                 <%if(status==='0'){%>
                         <h5  class="text-center text-danger d-xl-flex mx-auto pl10">Email ou mot de pass incorrect</h5>
