@@ -19,8 +19,8 @@ const Teams = {
             cb(data[0]);
         })
     },
-    createTeam : function(name,logo){
-        connection.query('INSERT INTO team SET ?',{teamName:name,logo:logo},(err)=>{
+    createTeam : function(name){
+        connection.query('INSERT INTO team SET ?',{teamName:name,nombre:1},(err)=>{
             if(err)throw err;
             console.log("New team created ! ");
         });

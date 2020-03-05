@@ -4,6 +4,8 @@ const services = require('../services/commonServices');
 const path = "public/img/teams/";
 const fs = require("fs");
 
+let NAME_REGEX = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
+
 exports.TeamsPage = function(req,res){
     //retrieve the status code first
     let info = services.isAdminLogged(req);
@@ -25,7 +27,6 @@ exports.TeamsPage = function(req,res){
 };
 exports.createTeamPage = function(req,res){
     //to render the team page we must check if the user can create it, therefore, we need his id
-    let status = services.getCookie(req,'status');
     let code = services.getCookie(req,'code');
     let info = services.isAdminLogged(req);
     let idUser;
@@ -37,49 +38,30 @@ exports.createTeamPage = function(req,res){
     if(typeof code!=='undefined'){
         res.status(code);
     }
-    res.render("./teams/create",{idUser,logged,isAdmin,status,csrfToken: req.csrfToken()});
+    res.render("./teams/create",{idUser,logged,isAdmin,csrfToken: req.csrfToken()});
 };
 
 exports.createTeam = function(req,res){
     //store the form data
-    if(req.files &&req.body.name !=='') {
-        let file = req.files.filename;
+    let body = services.sanitizeBody(req);
+    console.log(!NAME_REGEX.test(body.name));
+    if(typeof body.name !=='undefined' && NAME_REGEX.test(body.name)) {
         //need to check first if the file is a picture and if the size is not too big
-        if (file.size < 10000000) {
-            let format = file.mimetype.split('/');
-            if (format[1] === 'png' || format[1] === 'jpg' || format[1] === 'jpeg') {
-                //store the file name and set the path to put the file
-                let filename = services.correctString(req.body.name.toLowerCase());
-                let filepath = path + filename;
-                console.log(filepath);
-                //put the file in the corresponding path
-                file.mv(filepath);
-                Teams.createTeam(req.body.name, filepath);
-                //Set the user to captain
-                let idUser = services.getUserId(req);
-                Teams.getTeamByName(req.body.name, (info) => {
-                    console.log(info);
-                    let idTeam = info.id;
-                    Users.setToCaptain(idUser, idTeam);
-                    services.setCookie(res, 'status', 1);
-                    services.setCookie(res, 'code', 201);
-                    res.redirect('/teams/'+info.id);
-                });
-                services.setCookie(res, 'cookie', 201);
-                //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
-
-            } else {
-                services.setCookie(res, 'code', 415);
-                res.redirect('/teams/create');
-
-            }
-        } else {
-            services.setCookie(res, 'code', 413);
-            res.redirect('/teams/create');
-        }
+        Teams.createTeam(body.name);
+        //Set the user to captain
+        let idUser = services.getUserId(req);
+        Teams.getTeamByName(body.name, (info) => {
+            console.log(info);
+            let idTeam = info.id;
+            Users.setToCaptain(idUser, idTeam);
+            services.setCookie(res, 'code', 201);
+            res.redirect('/teams/'+info.id);
+        });
+        //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
     }
     else{
-
+        services.setCookie(res, 'code', 400);
+        res.redirect("/teams/create");
     }
 
 };
@@ -167,6 +149,7 @@ exports.profilePage = function(req,res){
 
 };
 exports.requestFromPage = function(req,res){
+    //TODO check that the target user is for this team and not another !
     let idPage = req.params.id;
     console.log(req.params);
     console.log(req.body);
@@ -177,42 +160,68 @@ exports.requestFromPage = function(req,res){
     if(body.request==="1") {
         //then update his info in DB (idTeam and pending invitation)
         Users.appliedToTeam(idUser, idPage);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.write(JSON.stringify({ status: 200 }));
-        res.end();
+        services.writeAndSend(res,200);
+
 
     }
     //second scenario, the user wants to cancel his request to the team
     else if(body.cancel ==="1"){
         //then update his info in DB (idTeam and pending invitation)
         Users.cancelledRequest(idUser);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.write(JSON.stringify({ status: 200 }));
-        res.end();
+        services.writeAndSend(res,200);
+
 
     }
     //third scenario, the captain declines the request from an user
     else if(typeof body.decline !=='undefined'){
-        //store the idUser that needs to be modified != the captain
-        let targetUser=body.decline;
+        //we first need to check that the captain is doing these request for HIS team and not another
+        Users.canApplyForTeam(idUser,(captInfo)=>{
+            if(captInfo[0].idTeam==idPage){
+                //store the idUser that needs to be modified != the captain
+                let targetUser=body.decline;
+                //We need to check if the target user is not an user from another team
+                Users.canApplyForTeam(targetUser,(userInfo)=>{
+                    if(userInfo[0].idTeam==idPage && userInfo[0].pending==1 ){
+                        Users.cancelledRequest(targetUser);
+                        services.writeAndSend(res,200);
+                    }
+                    else{
+                        services.writeAndSend(res,403);
+                    }
+                });
+            }
+            else{
+                services.writeAndSend(res,403);
+            }
+        });
+
         //then just  remove the request from the user from DB
-        Users.cancelledRequest(targetUser);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.write(JSON.stringify({ status: 200 }));
-        res.end();
+
+
 
     }
     //fourth scenario the captain accepts the user
     else if(typeof body.accept !=='undefined'){
         //same pattern here but we accept his request
         let targetUser=body.accept;
-        Users.acceptedInTeam(targetUser);
-        //then need to update the number of members in the team
-        Teams.increaseTeam(idPage);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.write(JSON.stringify({ status: 200 }));
-        res.end();
-
+        Users.canApplyForTeam(idUser,(captInfo)=>{
+            if(captInfo[0].idTeam==idPage) {
+                Users.canApplyForTeam(targetUser,(userInfo)=>{
+                    if(userInfo[0].idTeam==idPage && userInfo[0].pending==1 ){
+                        Users.acceptedInTeam(targetUser);
+                        //then need to update the number of members in the team
+                        Teams.increaseTeam(idPage);
+                        services.writeAndSend(res,200);
+                    }
+                    else{
+                        services.writeAndSend(res,403);
+                    }
+                });
+            }
+            else{
+                services.writeAndSend(res,403);
+            }
+        });
     }
     //fifth scenario, the user wants to leave the team
     else if(body.leave==="1"){
@@ -220,9 +229,8 @@ exports.requestFromPage = function(req,res){
         Users.cancelledRequest(idUser);
         //Then we need to decrease the number of members in the corresponding team
         Teams.decreaseTeam(idPage);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.write(JSON.stringify({ status: 200 }));
-        res.end();
+        services.writeAndSend(res,200);
+
 
     }
     //too many scenarios ,here the captain wants to promote another member of his team to captain
@@ -230,77 +238,103 @@ exports.requestFromPage = function(req,res){
         let targetUser = body.promote;
         console.log(targetUser);
         console.log(idUser);
-        //in case if the captain wants to promote itself, we do a little check
-        if(idUser!=targetUser) {
-            //first the captain is no longer captain
-            Users.noLongerCaptain(idUser);
-            //then promote the target user to captain
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.write(JSON.stringify({ status: 200 }));
-            res.end();
-
-        }
-        else{
-            res.writeHead(401, { 'Content-Type': 'application/json' });
-            res.write(JSON.stringify({ status: 401 }));
-            res.end();
-
-
-        }
+        Users.canApplyForTeam(idUser,(captInfo)=> {
+            if (captInfo[0].idTeam == idPage) {
+                //in case if the captain wants to promote itself, we do a little check
+                if(idUser!=targetUser) {
+                    Users.canApplyForTeam(targetUser,(userInfo)=>{
+                        if(userInfo[0].idTeam==idPage && userInfo[0].captain==0 ){
+                            Users.acceptedInTeam(targetUser);
+                            //first the captain is no longer captain
+                            Users.noLongerCaptain(idUser);
+                            //then promote the target user to captain
+                            Users.setToCaptain(targetUser,idPage);
+                            services.writeAndSend(res,200);
+                        }
+                        else{
+                            services.writeAndSend(res,403);
+                        }
+                    });
+                }
+                else{
+                    services.writeAndSend(res,400);
+                }
+            }
+            else{
+                services.writeAndSend(res,403);
+            }
+        });
     }
     //yeah there's one last I hope. Here the captain remove a member of the team
-        // we of course check that if he remove himself, he put an other captain
-        // In the case that he is alone, we delete the team (DB and logo in folders)
+    // we of course check that if he remove himself, he put an other captain
+    // In the case that he is alone, we delete the team (DB and logo in folders)
     else if(typeof body.remove!=='undefined'){
         console.log(idPage);
-        //Check the number of members in order to know in what scenario the captain is
-        Teams.getTeamById(idPage,(info)=>{
-           //special scenario when the captain is the last member
-            console.log(info);
-           if(info.nombre==1){
-               console.log("solo captain");
-               //Remove everything in the server here the logo
-               fs.unlink(info.logo,err=>{
-                   if(err){throw err;}
-               });
-               //then from DB
-               Teams.deleteTeam(idPage);
-               //then we can remove the user's status
-               Users.noLongerCaptain(idUser);
-               Users.cancelledRequest(idUser);
-               res.writeHead(200, { 'Content-Type': 'application/json' });
-               res.write(JSON.stringify({ status: 200 }));
-               res.end();
-
-           }
-           else{
-               //here if the captain wants to remove someone (including himself)
-               let targetUser = body.remove;
-               Users.getTeamInfo(targetUser,(infoUser)=>{
-                   if(infoUser[0].captain===1){
-                       console.log("trying to remove captain");
-                        res.writeHead(400, { 'Content-Type': 'application/json' });
-                        res.write(JSON.stringify({ status: 400 }));
+        Users.canApplyForTeam(idUser,(captInfo)=> {
+            if (captInfo[0].idTeam == idPage) {
+                //Check the number of members in order to know in what scenario the captain is
+                Teams.getTeamById(idPage,(info)=>{
+                    //special scenario when the captain is the last member
+                    console.log(info);
+                    if(info.nombre==1){
+                        console.log("solo captain");
+                        //Remove everything in the server here the logo
+                        //then from DB
+                        Teams.deleteTeam(idPage);
+                        //then we can remove the user's status
+                        Users.noLongerCaptain(idUser);
+                        Users.cancelledRequest(idUser);
+                        //the problem here is that we need to cancel all request for this team or
+                        //users will be unavailable to join another team
+                        Users.getAllPendingMembers(idPage,async (members)=>{
+                            console.log(members);
+                            await Promise.all(members.map((row) => new Promise((resolve => {
+                                Users.cancelledRequest(row.id);
+                                resolve();
+                            }))));
+                            console.log(members);
+                        });
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.write(JSON.stringify({ status: 200 }));
                         res.end();
-                       //if the target is captain, it means that he must promote first
-                       //TODO This here doesn't work, it is sent after the redirection who knows why
+                    }
+                    else{
+                        //here if the captain wants to remove someone (including himself)
+                        let targetUser = body.remove;
+                        Users.getTeamInfo(targetUser,(infoUser)=>{
+                            if(infoUser[0].captain===1){
+                                console.log("trying to remove captain");
+                                res.writeHead(400, { 'Content-Type': 'application/json' });
+                                res.write(JSON.stringify({ status: 400 }));
+                                res.end();
+                                //if the target is captain, it means that he must promote first
+                                //TODO This here doesn't work, it is sent after the redirection who knows why
 
 
-                   }
-                   else{
-                       //everything is ok here
-                       // Start by decreasing the nb of members
-                       Teams.decreaseTeam(idPage);
-                       //then the target user
-                       Users.cancelledRequest(targetUser);
-                       res.writeHead(200, { 'Content-Type': 'application/json' });
-                       res.write(JSON.stringify({ status: 200 }));
-                       res.end();
-                   }
-               });
-           }
+                            }
+                            else{
+                                //everything is ok here
+                                // Start by decreasing the nb of members
+                                Users.canApplyForTeam(targetUser,(userInfo)=>{
+                                    if(userInfo[0].idTeam==idPage && userInfo[0].pending==0 ){
+                                        Teams.decreaseTeam(idPage);
+                                        //then the target user
+                                        Users.cancelledRequest(targetUser);
+                                        services.writeAndSend(res,200);
+                                    }
+                                    else{
+                                        services.writeAndSend(res,403);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                services.writeAndSend(res,403)
+            }
         });
-
     }
 
 

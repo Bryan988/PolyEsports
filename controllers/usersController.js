@@ -81,7 +81,7 @@ exports.signup = function(req,res){
     // store the form's data
     const newUser = commonServices.sanitizeBody(req);
     console.log(newUser);
-    if (EMAIL_REGEXX.test(newUser.mail) && typeof newUser.name !=='undefined' && typeof newUser.fname!=='undefined' && typeof newUser.pseudo!=='undefined' && typeof newUser.mail !=='undefined' && typeof newUser.mdp!=='undefined'){
+    if (EMAIL_REGEXX.test(newUser.mail) && typeof newUser.name !=='undefined' && typeof newUser.fname!=='undefined' && typeof newUser.pseudo!=='undefined' && typeof newUser.mail !=='undefined' && typeof newUser.mdp!=='undefined' && newUser.mdp.length>7){
         //Hashing the password
         const hashedPw = bcrypt.hashSync(newUser.mdp, 10);
         if (newUser.mail === newUser.confmail) {

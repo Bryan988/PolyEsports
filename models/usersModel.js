@@ -92,6 +92,12 @@ const User = {
                if (err) console.log(err);
                cb(data[0]);
           })
+     },
+     getAllPendingMembers : function(idTeam,cb){
+          connection.query('SELECT id FROM user WHERE idTeam=? AND pending=1',idTeam,(err,data)=>{
+               if (err) console.log(err);
+               cb(data);
+          })
      }
 };
 

@@ -83,7 +83,8 @@ exports.selectTournamentPage = function(req,res){
 exports.deleteTournament = function(req,res){
     //store the id from the url
     console.log(req.body);
-    const id=req.body.id;
+    let body = commonServices.sanitizeBody(req);
+    const id=body.id;
     //check if the id is in the DB
     Tournament.getTournamentById(id,(check)=>{
         if(typeof check!=='undefined'){
@@ -224,7 +225,8 @@ exports.tournamentPage = function(req,res){
             });
         }
         else{
-            res.sendStatus(404);
+            commonServices.setCookie(res,'code',404);
+            res.redirect("/tournaments/")
         }
     });
 };
@@ -269,7 +271,12 @@ exports.tournament = function(req,res){
 };
 
 exports.allTournaments = function(req,res){
+    let code = commonServices.getCookie(req,'code');
+    if(typeof code!=='undefined'){
+        res.status(code);
+    }
     let idUser;
+
     let infoUser = commonServices.isAdminLogged(req);
     let logged = infoUser.logged;
     if(logged){

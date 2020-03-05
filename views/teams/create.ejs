@@ -10,11 +10,11 @@
 
         <main>
             <div class="justify-content-xl-center d-xl-flex mx-auto w-50 mt50 mydark">
-                <form method="POST" enctype="multipart/form-data" action="/teams/create?_csrf=<%= csrfToken%>">
+                <form method="POST" action="/teams/create">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken%>">
                     <h3 class="text-center color-white">
                        Create your own team
                     </h3>
-                    <input class="color-white mx-auto" type="file" name="filename">
                     <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center">
                         <label class="color-white">Team's name</label>
                         <input class="w-50" type="text" name="name" required>

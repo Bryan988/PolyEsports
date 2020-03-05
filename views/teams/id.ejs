@@ -53,6 +53,9 @@
                                                                         $("#<%= row.id%>").hide();
                                                                         alert("User accepted ! ");
                                                                     },
+                                                                    error: function(){
+                                                                        alert("The team no longer exists ... ")
+                                                                    }
                                                                 });
                                                             });
                                                         })
@@ -66,6 +69,9 @@
                                                                         $("#<%= row.id%>").hide();
                                                                         alert("User's request removed ! ");
                                                                     },
+                                                                    error: function(){
+                                                                        alert("The team no longer exists ... ")
+                                                                    }
                                                                 });
                                                             });
                                                         });
