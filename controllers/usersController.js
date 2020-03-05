@@ -29,11 +29,20 @@ exports.login = function(req,res,next){
                 User.getPw(result.idUser,(hashedPw)=>{
                     bcrypt.compare(data.pw,hashedPw,(err,resp)=>{
                         if(resp) {
-                            User.getInfoToken(result.idUser,(infoUser)=>{
-                                console.log(infoUser);
-                                //Call the services that will create the token and redirect corresponding to his status
-                                middleware.createToken(res,result,result.idUser,infoUser.pseudo,infoUser.isAdmin)
+                            User.checkVerified(result.idUser,(info)=>{
+                                if(info.verified===1){
+                                    User.getInfoToken(result.idUser,(infoUser)=>{
+                                        console.log(infoUser);
+                                        //Call the services that will create the token and redirect corresponding to his status
+                                        middleware.createToken(res,result,result.idUser,infoUser.pseudo,infoUser.isAdmin)
+                                    });
+                                }
+                                else{
+                                    commonServices.setCookie(res,'code',401);
+                                    res.redirect('/verify')
+                                }
                             });
+
                         }
                         else{
                             //It will come here if the user did not type in the right password
@@ -73,8 +82,8 @@ exports.signupPage = function(req,res){
     res.render('./users/signup',{errorNb,logged:false,csrfToken: req.csrfToken()});
 };
 exports.signup = function(req,res){
-
     // store the form's data
+    let code = commonServices.makeid(8);
     const newUser = commonServices.sanitizeBody(req);
     console.log(newUser);
     if (EMAIL_REGEXX.test(newUser.mail) && typeof newUser.name !=='undefined' && typeof newUser.fname!=='undefined'
@@ -92,10 +101,10 @@ exports.signup = function(req,res){
                         //console.log(data);
                         if (data) {
                             //everything is good so it add it to the database and the user is created
-                            User.createUser(newUser.name, newUser.fname, newUser.pseudo, newUser.mail, hashedPw);
-                            commonServices.setCookie(res,'signedup',1);
+                            User.createUser(newUser.name, newUser.fname, newUser.pseudo,code, newUser.mail, hashedPw);
                             commonServices.setCookie(res,'code',201);
-                            res.redirect("/");
+                            commonServices.sendVerifMail(newUser.mail,code);
+                            res.redirect("/verify");
                         } else {
                             //return the signup page with the corresponding error
                             commonServices.setCookie(res,'errorNb', 1);

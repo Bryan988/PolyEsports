@@ -1,0 +1,68 @@
+<html>
+    <%- include('./include/head'); -%>
+    <body>
+        <%if(isAdmin){%>
+            <%- include('./include/navbarAdmin'); -%>
+        <%}
+        else{%>
+            <%- include('./include/navbar'); -%>
+        <%}%>
+        <div class="ml15" style="display:none;" id="resend_div">
+            <label class="color-white ml15">
+                Email :
+            </label></br>
+            <input type="email" id="email" class=" w400" name="mail"/>
+            <button id="okResend" class="btn btn-primary" type="button">Resend</button>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#okResend').click(function () {
+                        $.ajax({
+                            url: '/verify',
+                            type: 'PUT',
+                            data: {email:document.getElementById("email").value,_csrf: "<%= csrfToken %>" },
+                            success: function() {
+                                $("#resend_div").hide();
+                                alert("Mail send ! ");
+                            },
+                            error: function(){
+                                alert("Mail does not exist ")
+                            }
+                        });
+                    });
+                })
+            </script>
+
+        </div>
+
+        <div class ="mt50" id="verified">
+            <h3 class="color-white"> Verify your account</h3>
+            <input type="text" class="w300" name="code_verif" id="code_verif">
+            <button id="verify" class="btn btn-primary" type="button">
+                Verify
+            </button>
+            <button type="button" id="resend" class="btn btn-primary" onclick="document.getElementById('resend_div').style.display='inline'">
+                Resend</button>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#verify').click(function () {
+                    $.ajax({
+                        url: '/verify',
+                        type: 'PUT',
+                        data: {code_verif:document.getElementById("code_verif").value,_csrf: "<%= csrfToken %>" },
+                        success: function() {
+                            $("#verified").hide();
+                            alert("Account activated ! ");
+                        },
+                        error: function(){
+                            alert("wrong code entered ")
+                        }
+                    });
+                });
+            })
+        </script>
+
+        <%- include('./include/footer'); -%>
+    </body>
+</html>

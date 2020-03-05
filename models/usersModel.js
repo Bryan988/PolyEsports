@@ -16,8 +16,8 @@ const User = {
                else{cb();}
           });
      },
-     createUser: function(name,firstname,pseudo,mail,pw){
-          connection.query('INSERT INTO user SET ?',{name:name,firstname:firstname,pseudo:pseudo,email:mail,password:pw},function (error, results) {
+     createUser: function(name,firstname,pseudo,code,mail,pw){
+          connection.query('INSERT INTO user SET ?',{name:name,firstname:firstname,pseudo:pseudo,code:code,email:mail,password:pw},function (error) {
                if (error) throw error;
                console.log("user added");
           });
@@ -109,7 +109,30 @@ const User = {
                if (err) console.log(err);
                cb(data);
           })
-     }
+     },
+     verifyCode : function(code,cb){
+          connection.query('SELECT id FROM user WHERE code=?',code,(err,data)=>{
+               if (err) console.log(err);
+               cb(data[0]);
+          })
+     },
+     verified : function(id){
+          connection.query('UPDATE user SET ? WHERE id=?',[{verified:1},id],(err)=>{
+               if (err) console.log(err);
+          })
+     },
+     checkVerified : function(id,cb){
+          connection.query('SELECT verified FROM user WHERE id=?',id,(err,data)=>{
+               if (err) console.log(err);
+               cb(data[0]);
+          })
+     },
+     updateCode : function(id,code){
+          connection.query('UPDATE user SET ? WHERE id=?',[{code:code},id],(err)=>{
+               if(err) console.log(err);
+          })
+     },
+
 };
 
 

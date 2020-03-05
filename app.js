@@ -23,9 +23,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-app.use(express.json());
+app.use(express.json('10mb'));
 //extended false means that values will only be string and array in body
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit:"1kb" }));
 app.use(cookieParser());
 app.use(csrfMW);
 app.use(express.static(path.join(__dirname, 'public')));

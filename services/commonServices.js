@@ -1,6 +1,17 @@
 let jwt = require('jsonwebtoken');
 let key = require('../config/key');
 let secretkey=key.secretkey;
+const nodemail = require('nodemailer');
+const infomail = require('../config/mail');
+
+let transporter = nodemail.createTransport({
+    service: 'gmail',
+    auth:{
+        user: infomail.mail,
+        pass: infomail.pw,
+    }
+});
+
 
 //this function informs wether the date entered is past or not, comparing to today.
 //false means that the date is already past
@@ -80,4 +91,28 @@ exports.writeAndSend = function(res,code){
     res.writeHead(code, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify({ status: code }));
     res.end();
+};
+exports.makeid=function(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+};
+
+exports.sendVerifMail = function(mail,code){
+    const mailOption = {
+        to: mail,
+        subject: "Mail Verification",
+        text: code,
+        html: "<h3>" + code + "</h3>"
+    };
+    transporter.sendMail(mailOption,(err)=>{
+        if(err){
+            console.log(err);
+        }
+    });
+
 };

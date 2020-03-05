@@ -25,7 +25,7 @@ exports.addGame=function(req,res){
             let format = file.mimetype.split('/');
             if(format[1]==='png'||format[1]==='jpg'||format[1]==='jpeg') {
                 //store the file name and set the path to put the file
-                let filename = commonServices.correctString(req.body.name.toLowerCase());
+                let filename = commonServices.correctString(req.body.name.toLowerCase())+"."+format[1];
                 let filepath = path + filename;
                 console.log(filepath);
                 //put the file in the corresponding path
