@@ -5,6 +5,11 @@ const middleware = require('../middlewares/userMW');
 
 /* GET users listing. */
 router.get('/profile/:id',middleware.checkLogged,users.profilePage);
+router.put('/profile/:id',middleware.checkLogged,users.updateProfile);
+
+router.get('/profile/:id/password',middleware.checkLogged,users.updatePwPage);
+router.put('/profile/:id/password',middleware.checkLogged,users.updatePw);
+
 
 router.get('/login',middleware.checkNonLogged,users.loginpage);
 router.post('/login',middleware.checkNonLogged,users.login);

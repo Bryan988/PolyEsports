@@ -22,12 +22,23 @@ const User = {
                console.log("user added");
           });
      },
+     updateUser : function(id,name,firstname,mail,pseudo){
+          connection.query('UPDATE user SET ? WHERE id=?',[{name:name,firstname:firstname,email:mail,pseudo:pseudo},id],(err)=>{
+               if (err) throw err;
+          })
+
+     },
      //Retrieve the pw from database
      getPw : function(id,cb){
           connection.query('SELECT password FROM user WHERE id=?',id, (error,results)=>{
                if (error) throw error;
                cb(results[0].password);
           });
+     },
+     updatePw : function(id,pw){
+          connection.query('UPDATE user SET ? WHERE id=?',[{password:pw},id],(err)=>{
+               if (err) throw err;
+          })
      },
 
      //retrieve pseudo and if the user is admin for the token
@@ -88,7 +99,7 @@ const User = {
           });
      },
      getUserInfo : function(idUser,cb){
-          connection.query('SELECT name,firstname,email,idTeam FROM user WHERE id=?',idUser,(err,data)=>{
+          connection.query('SELECT pseudo,name,firstname,email,idTeam FROM user WHERE id=?',idUser,(err,data)=>{
                if (err) console.log(err);
                cb(data[0]);
           })

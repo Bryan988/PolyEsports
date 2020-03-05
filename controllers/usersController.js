@@ -1,15 +1,11 @@
 const User = require('../models/usersModel');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const keyconfig = require('../config/key');
 const middleware = require('../middlewares/userMW');
 const commonServices = require('../services/commonServices');
 
 
-//store the secret key for jwt
-const secretkey = keyconfig.secretkey;
-
 const EMAIL_REGEXX = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const NAME_REGEX = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
 
 exports.loginpage= function(req,res){
     let status=commonServices.getCookie(req,'status');
@@ -81,7 +77,10 @@ exports.signup = function(req,res){
     // store the form's data
     const newUser = commonServices.sanitizeBody(req);
     console.log(newUser);
-    if (EMAIL_REGEXX.test(newUser.mail) && typeof newUser.name !=='undefined' && typeof newUser.fname!=='undefined' && typeof newUser.pseudo!=='undefined' && typeof newUser.mail !=='undefined' && typeof newUser.mdp!=='undefined' && newUser.mdp.length>7){
+    if (EMAIL_REGEXX.test(newUser.mail) && typeof newUser.name !=='undefined' && typeof newUser.fname!=='undefined'
+        && typeof newUser.pseudo!=='undefined' && typeof newUser.mail !=='undefined' && typeof newUser.mdp!=='undefined'
+        && newUser.mdp.length>7 &&  NAME_REGEX.test(newUser.name) && NAME_REGEX.test(newUser.fname)){
+
         //Hashing the password
         const hashedPw = bcrypt.hashSync(newUser.mdp, 10);
         if (newUser.mail === newUser.confmail) {
@@ -149,7 +148,7 @@ exports.profilePage = function(req,res){
                 if(info.idTeam!==0){
                     status=1;
                 }
-                res.render("./users/profile",{idUser:id,info,logged,isAdmin,status});
+                res.render("./users/profile",{idUser:id,info,logged,isAdmin,status,csrfToken:req.csrfToken()});
             })
 
         }
@@ -160,10 +159,96 @@ exports.profilePage = function(req,res){
     else{
         res.sendStatus(401);
     }
-
-
 };
 
+exports.updateProfile = function(req,res){
+  let idUser=commonServices.getUserId(req);
+  let idPage=req.params.id;
+  if(idUser==idPage){
+      let body=commonServices.sanitizeBody(req);
+      if(typeof body.name !=='undefined' && typeof body.pseudo!=='undefined'
+          && typeof body.firstname !=='undefined' && typeof body.email !=='undefined'
+          && EMAIL_REGEXX.test(body.email) && NAME_REGEX.test(body.name) && NAME_REGEX.test(body.firstname)
+          && NAME_REGEX.test(body.pseudo)){
+          //Check if mail already in DB
+          User.checkMail(body.email,(info)=>{
+              console.log(info);
+              if(typeof info==='undefined'){
+                  User.updateUser(idUser,body.name,body.firstname,body.email,body.pseudo);
+                  commonServices.writeAndSend(res,200);
+              }
+              else{
+                  commonServices.writeAndSend(res,400);
+              }
+          });
+      }
+      else{
+          commonServices.writeAndSend(res,400);
+      }
+  }
+  else{
+      commonServices.writeAndSend(res,403);
+  }
+};
 
+exports.updatePwPage = function(req,res){
+    let idUser = commonServices.getUserId(req);
+    let idPage = req.params.id;
+    if(idUser==idPage){
+        let code = commonServices.getCookie(req,'code');
+        if(typeof code !=='undefined'){
+            res.status(code);
+        }
+        let info = commonServices.isAdminLogged(req);
+        let logged = info.logged;
+        let isAdmin = info.isAdmin;
+        res.render("./users/password",{idUser,logged,isAdmin,csrfToken:req.csrfToken()});
+    }
+    else{
+        commonServices.setCookie(res,'code',403);
+        res.redirect("/users/profile/"+idUser);
+    }
+};
 
+exports.updatePw = function(req,res){
+    let idUser = commonServices.getUserId(req);
+    let idPage = req.params.id;
+    if(idUser==idPage){
+        console.log("ok id");
+        let body = commonServices.sanitizeBody(req);
+        if(typeof body.oldPw !=='undefined' && typeof body.newPw !=='undefined' && typeof body.confPw !=='undefined'
+            && body.oldPw.length>7 && body.newPw.length>7 && body.confPw.length>7) {
+            User.getPw(idUser, (hashpw) => {
+                console.log(hashpw);
+                bcrypt.compare(body.oldPw, hashpw, (err, data) => {
+                    if (data) {
+                        console.log("old ok");
+                        let newPw = bcrypt.hashSync(body.newPw, 10);
+                        bcrypt.compare(body.confPw, newPw, (err, info) => {
+                            if (info) {
+                                User.updatePw(idUser, newPw);
+                                console.log("PASSWORD UPDATED");
+                                commonServices.writeAndSend(res, 200);
 
+                            } else {
+                                console.log("conf no ok");
+                                commonServices.writeAndSend(res, 400);
+                            }
+                        })
+                    } else {
+                        console.log("old non ok");
+                        commonServices.writeAndSend(res, 400);
+                    }
+                })
+            })
+        }
+        else{
+            console.log("inputs no ok");
+            commonServices.writeAndSend(res, 400);
+        }
+    }
+    else{
+        commonServices.setCookie(res,'code',403);
+        res.redirect("/users/profile/"+idUser);
+    }
+};

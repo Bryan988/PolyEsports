@@ -57,7 +57,6 @@ exports.createTeam = function(req,res){
             services.setCookie(res, 'code', 201);
             res.redirect('/teams/'+info.id);
         });
-        //TODO envoyer un status comme quoi l'équipe a été créée / peut etre renvoyé, sur la page de l'équipe ?
     }
     else{
         services.setCookie(res, 'code', 400);
@@ -149,7 +148,6 @@ exports.profilePage = function(req,res){
 
 };
 exports.requestFromPage = function(req,res){
-    //TODO check that the target user is for this team and not another !
     let idPage = req.params.id;
     console.log(req.params);
     console.log(req.body);
@@ -294,9 +292,8 @@ exports.requestFromPage = function(req,res){
                             }))));
                             console.log(members);
                         });
-                        res.writeHead(200, { 'Content-Type': 'application/json' });
-                        res.write(JSON.stringify({ status: 200 }));
-                        res.end();
+                        services.writeAndSend(res,200);
+
                     }
                     else{
                         //here if the captain wants to remove someone (including himself)
@@ -304,13 +301,7 @@ exports.requestFromPage = function(req,res){
                         Users.getTeamInfo(targetUser,(infoUser)=>{
                             if(infoUser[0].captain===1){
                                 console.log("trying to remove captain");
-                                res.writeHead(400, { 'Content-Type': 'application/json' });
-                                res.write(JSON.stringify({ status: 400 }));
-                                res.end();
-                                //if the target is captain, it means that he must promote first
-                                //TODO This here doesn't work, it is sent after the redirection who knows why
-
-
+                                services.writeAndSend(res,400);
                             }
                             else{
                                 //everything is ok here
@@ -363,4 +354,4 @@ exports.allTeamsPage = function(req,res){
 //TODO Security every where ! check mail // forgot pw
 //TODO 2- DO PROFILE PAGE : Allow an user to modify his pseudo // password
 //TODO 3- allow the captain to modify the picture/name of his team
-//TODO 4- Visuel page Team + all Teams + Rajouter les logos des teams et user dans l'affichage de la team !
+//TODO 4- Visuel page Team + all Teams + Rajouter les matchs
