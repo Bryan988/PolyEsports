@@ -1,8 +1,7 @@
 const Teams = require('../models/teamsModel');
 const Users = require('../models/usersModel');
 const services = require('../services/commonServices');
-const path = "public/img/teams/";
-const fs = require("fs");
+const Matches = require("../models/matchesModel");
 
 let NAME_REGEX = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
 
@@ -44,14 +43,12 @@ exports.createTeamPage = function(req,res){
 exports.createTeam = function(req,res){
     //store the form data
     let body = services.sanitizeBody(req);
-    console.log(!NAME_REGEX.test(body.name));
     if(typeof body.name !=='undefined' && NAME_REGEX.test(body.name)) {
         //need to check first if the file is a picture and if the size is not too big
         Teams.createTeam(body.name);
         //Set the user to captain
         let idUser = services.getUserId(req);
         Teams.getTeamByName(body.name, (info) => {
-            console.log(info);
             let idTeam = info.id;
             Users.setToCaptain(idUser, idTeam);
             services.setCookie(res, 'code', 201);
@@ -80,12 +77,12 @@ exports.profilePage = function(req,res){
     let issue = services.getCookie(req,'issue');
     //this const will tell if the user has the same team as the one he is visiting
     const idPage=req.params.id;
-    let idUser;
 
     let status;
     //First check if the user is logged
     let info = services.isAdminLogged(req);
     let logged = info.logged;
+    let idUser;
     if(logged){
         idUser= services.getUserId(req);
     }
@@ -94,49 +91,61 @@ exports.profilePage = function(req,res){
     Teams.getTeamById(idPage,(teaminfo)=>{
        if(typeof teaminfo !=='undefined') {
            Users.getAllTeamMembers(idPage, (members) => {
-               if (logged) {
-                   //then check if the user can create a team, that means that he can also apply for a team
-                   let idUser = services.getUserId(req);
-                   Users.canApplyForTeam(idUser, (data) => {
-                       //first case, he can not apply because he is member of another team
-                       if (data[0].idTeam != idPage && data[0].idTeam !== 0) {
-                           status = 0;
-                       }
-                       //second case
-                       else if (data[0].idTeam == idPage && data[0].pending === 1) {
-                           status = 1;
-                       } else if (data[0].idTeam == idPage && data[0].captain === 1) {
-                           status = 2;
-                       } else if (data[0].idTeam == idPage && data[0].pending === 0) {
-                           status = 3;
-                       }
+               Matches.selectMatchesByTeams(idPage,async (matches)=> {
+
+                   await Promise.all(matches.map((row) => new Promise((resolve => {
+                       Teams.getTeamById(row.idTeam1, (info1) => {
+                           row.teamName1 = info1.teamName;
+                       });
+                       Teams.getTeamById(row.idTeam2, (info2) => {
+                           row.teamName2 = info2.teamName;
+                           resolve();
+                       });
+                   }))));
+
+                   if (logged) {
+                       //then check if the user can create a team, that means that he can also apply for a team
+                       let idUser = services.getUserId(req);
+                       Users.canApplyForTeam(idUser, (data) => {
+                           //first case, he can not apply because he is member of another team
+                           if (data[0].idTeam != idPage && data[0].idTeam !== 0) {
+                               status = 0;
+                           }
+                           //second case
+                           else if (data[0].idTeam == idPage && data[0].pending === 1) {
+                               status = 1;
+                           } else if (data[0].idTeam == idPage && data[0].captain === 1) {
+                               status = 2;
+                           } else if (data[0].idTeam == idPage && data[0].pending === 0) {
+                               status = 3;
+                           }
+                           res.render('./teams/id', {
+                               idUser,
+                               logged,
+                               isAdmin,
+                               status,
+                               idPage,
+                               members,
+                               matches,
+                               issue,
+                               csrfToken: req.csrfToken()
+                           });
+                       });
+                   } else {
+                       status = 0;
                        res.render('./teams/id', {
                            idUser,
                            logged,
                            isAdmin,
                            status,
                            idPage,
-                           members,
+                           matches,
                            issue,
+                           members,
                            csrfToken: req.csrfToken()
                        });
-
-
-                   });
-
-               } else {
-                   status = 0;
-                   res.render('./teams/id', {
-                       idUser,
-                       logged,
-                       isAdmin,
-                       status,
-                       idPage,
-                       issue,
-                       members,
-                       csrfToken: req.csrfToken()
-                   });
-               }
+                   }
+               });
            });
        }
        else{
@@ -149,8 +158,6 @@ exports.profilePage = function(req,res){
 };
 exports.requestFromPage = function(req,res){
     let idPage = req.params.id;
-    console.log(req.params);
-    console.log(req.body);
     let body=services.sanitizeBody(req);
     //We start by picking up his id
     let idUser = services.getUserId(req);
@@ -234,8 +241,6 @@ exports.requestFromPage = function(req,res){
     //too many scenarios ,here the captain wants to promote another member of his team to captain
     else if(typeof body.promote !=='undefined'){
         let targetUser = body.promote;
-        console.log(targetUser);
-        console.log(idUser);
         Users.canApplyForTeam(idUser,(captInfo)=> {
             if (captInfo[0].idTeam == idPage) {
                 //in case if the captain wants to promote itself, we do a little check
@@ -267,15 +272,12 @@ exports.requestFromPage = function(req,res){
     // we of course check that if he remove himself, he put an other captain
     // In the case that he is alone, we delete the team (DB and logo in folders)
     else if(typeof body.remove!=='undefined'){
-        console.log(idPage);
         Users.canApplyForTeam(idUser,(captInfo)=> {
             if (captInfo[0].idTeam == idPage) {
                 //Check the number of members in order to know in what scenario the captain is
                 Teams.getTeamById(idPage,(info)=>{
                     //special scenario when the captain is the last member
-                    console.log(info);
                     if(info.nombre==1){
-                        console.log("solo captain");
                         //Remove everything in the server here the logo
                         //then from DB
                         Teams.deleteTeam(idPage);
@@ -285,12 +287,10 @@ exports.requestFromPage = function(req,res){
                         //the problem here is that we need to cancel all request for this team or
                         //users will be unavailable to join another team
                         Users.getAllPendingMembers(idPage,async (members)=>{
-                            console.log(members);
                             await Promise.all(members.map((row) => new Promise((resolve => {
                                 Users.cancelledRequest(row.id);
                                 resolve();
                             }))));
-                            console.log(members);
                         });
                         services.writeAndSend(res,200);
 
@@ -300,7 +300,6 @@ exports.requestFromPage = function(req,res){
                         let targetUser = body.remove;
                         Users.getTeamInfo(targetUser,(infoUser)=>{
                             if(infoUser[0].captain===1){
-                                console.log("trying to remove captain");
                                 services.writeAndSend(res,400);
                             }
                             else{
@@ -351,7 +350,4 @@ exports.allTeamsPage = function(req,res){
 
 };
 
-//TODO Security every where ! check mail // forgot pw
-//TODO 2- DO PROFILE PAGE : Allow an user to modify his pseudo // password
-//TODO 3- allow the captain to modify the picture/name of his team
 //TODO 4- Visuel page Team + all Teams + Rajouter les matchs

@@ -9,6 +9,7 @@ router.get("/create",middleware.checkLogged,middleware.canCreateTeam,teams.creat
 router.post("/create",middleware.checkLogged,teams.createTeam);
 
 router.get("/:id",teams.profilePage);
+//should have made  3 different functions below
 router.post("/:id",teams.requestFromPage);
 router.put("/:id",teams.requestFromPage);
 router.delete("/:id",teams.requestFromPage);

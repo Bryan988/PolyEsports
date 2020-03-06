@@ -2,8 +2,6 @@ let services = require("../services/commonServices");
 const Users = require('../models/usersModel');
 
 exports.homePage = function(req, res){
-    console.log(__dirname);
-    console.log(req.cookies.token);
     let idUser;
     let info=services.isAdminLogged(req);
     let logged = info.logged;
@@ -28,7 +26,6 @@ exports.verifyPage = function(req,res){
 
 exports.verify = function(req,res){
     let body = services.sanitizeBody(req);
-    console.log(body);
     if(typeof body.code_verif !=='undefined'){
         Users.verifyCode(body.code_verif,(info)=>{
             if(typeof info !=='undefined'){

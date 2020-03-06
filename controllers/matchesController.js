@@ -12,8 +12,6 @@ exports.addMatch = function(req,res){
         if (body.score1 > body.score2) {
             //increase team1's score
             Rank.getTeamAById(idTournament, body.idTeam1, (infoRank) => {
-                console.log(infoRank);
-                console.log(typeof infoRank !== 'undefined');
                 if (typeof infoRank !== 'undefined') {
                     //add the match to the DB
                     Matches.addMatch(idTournament, body.idTeam1, body.idTeam2, body.score1, body.score2);
@@ -38,11 +36,9 @@ exports.addMatch = function(req,res){
             services.setCookie(res, 'status', 1);
             res.redirect("/users/admin/tournament/"+idTournament+"/matches/create");
         }
+        //increase team 2's score
         else {
             Rank.getTeamAById(idTournament, body.idTeam2, (infoRank) => {
-                console.log(infoRank);
-                console.log(typeof infoRank !== 'undefined');
-
                 if (typeof infoRank !== 'undefined') {
                     //add the match to the DB
                     Matches.addMatch(idTournament, body.idTeam1, body.idTeam2, body.score1, body.score2);
@@ -70,25 +66,20 @@ exports.addMatch = function(req,res){
 exports.addMatchPage = function(req,res){
     let idTournament = req.params.id;
     let idUser = services.getUserId(req);
-
     let status = services.getCookie(req,'status');
-    console.log("status");
-    console.log(status);
     let code = services.getCookie(req,'code');
     if(typeof code!=='undefined'){
         res.status(code);
     }
+    //retrieve all the teams which joined the tournament
     Ranks.getAllTeamInTournament(idTournament,async (teams)=>{
         await Promise.all(teams.map((row) => new Promise((resolve => {
             Teams.getTeamById(row.idTeam,(teamName)=>{
                 row.teamName=teamName.teamName;
                 resolve();
             });
-
         }))));
-        console.log(teams);
         res.render("./users/admin/matches/create",{idUser,status,csrfToken:req.csrfToken(),teams,idTournament});
-
     })
 };
 
@@ -99,6 +90,7 @@ exports.allMatches = function(req,res){
     if(typeof code !== 'undefined'){
         res.status(code);
     }
+    //retrieve all matches of the tournament
     Matches.getAllMatches(idTournament,async (matches)=>{
         await Promise.all(matches.map((row) => new Promise((resolve => {
             Teams.getTeamById(row.idTeam1, (info1) => {
@@ -108,20 +100,18 @@ exports.allMatches = function(req,res){
                 row.teamName2 = info2.teamName;
                 resolve();
             });
-
         }))));
-        console.log(matches);
         res.render("./users/admin/matches/allMatches",{idUser,idTournament,matches,csrfToken: req.csrfToken()});
     });
 };
 
 exports.deleteMatch = function(req,res){
   let body = services.sanitizeBody(req);
+  //retrieve information about the match with its id
   Matches.selectMatchById(body.id,(data)=>{
       if(typeof data !=='undefined'){
           Matches.deleteMatchById(body.id);
           services.writeAndSend(res,200);
-
       }
       else{
           services.writeAndSend(res,400);
@@ -130,9 +120,9 @@ exports.deleteMatch = function(req,res){
 };
 
 exports.updateMatchPage = function(req,res){
-    console.log(req.params);
     let idTournament = req.params.id;
     let idMatch = req.params.idmatch;
+    let idUser = services.getUserId(req);
 
     Matches.selectMatchById(idMatch,async (match)=>{
         if(typeof match[0]!=='undefined') {
@@ -152,7 +142,9 @@ exports.updateMatchPage = function(req,res){
                 Teams.getTeamById(match[0].idTeam2, (info2) => {
                     match[0].teamName2 = info2.teamName;
                     resolve();
+                    //res render is here because if it is outside, one of the teamName is not put in the object match
                     res.render("./users/admin/matches/update", {
+                        idUser,
                         match,
                         csrfToken: req.csrfToken(),
                         idTournament,
@@ -171,25 +163,19 @@ exports.updateMatch = function(req,res) {
     let idTournament = req.params.id;
     let idMatch = req.params.idmatch;
     let body = services.sanitizeBody(req);
-    console.log("ahead : "+body.ahead);
     //first update the match itself
     Matches.updateMatch(idMatch,body.score1,body.score2);
     //increase the score according to the results
     if(body.score1>body.score2){
         if(body.ahead==='1'){
-            console.log("1");
             services.writeAndSend(res,200);
 
         }
         else if(body.ahead==='0'){
-            console.log("2");
-
             Ranks.updateScore(idTournament,body.idTeam1);
             services.writeAndSend(res,200);
         }
         else{
-            console.log("3");
-
             Ranks.updateScore(idTournament,body.idTeam1);
             Ranks.decreaseScore(idTournament,body.idTeam2);
             services.writeAndSend(res,200);
@@ -199,20 +185,14 @@ exports.updateMatch = function(req,res) {
     }
     else if(body.score1<body.score2){
         if(body.ahead==='2'){
-            console.log("4");
-
             services.writeAndSend(res,200);
 
         }
         else if(body.ahead==='0'){
-            console.log("5");
-
             Ranks.updateScore(idTournament,body.idTeam2);
             services.writeAndSend(res,200);
         }
         else{
-            console.log("6");
-
             Ranks.updateScore(idTournament,body.idTeam2);
             Ranks.decreaseScore(idTournament,body.idTeam1);
             services.writeAndSend(res,200);
@@ -220,21 +200,15 @@ exports.updateMatch = function(req,res) {
     }
     else{
         if(body.ahead==='1'){
-            console.log("7");
-
             Ranks.decreaseScore(idTournament,body.idTeam1);
             services.writeAndSend(res,200);
 
         }
         else if(body.ahead==='2'){
-            console.log("8");
-
             Ranks.decreaseScore(idTournament,body.idTeam2);
             services.writeAndSend(res,200);
         }
         else{
-            console.log("9");
-
             services.writeAndSend(res,200);
         }
     }

@@ -182,6 +182,25 @@
                     </tbody>
                 </table>
             <%}%>
+
+        <div>
+            <h3 class="color-white text-center">Previous Matches</h3>
+            <table class="mx-auto">
+                <tbody>
+                <%if(matches){
+                        for (let row of matches){ %>
+
+                            <tr>
+                                <td class="color-white "><%= row.teamName1%></td>
+                                <td class="color-white "><%= row.score1%> - <%= row.score2%> </td>
+                                <td class="color-white "><%= row.teamName2%></td>
+                            </tr>
+                        <%}%>
+                <%}%>
+                </tbody>
+            </table>
+        </div>
+
         <%- include('../include/footer'); -%>
     </body>
 </html>

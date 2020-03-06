@@ -24,34 +24,23 @@ exports.login = function(req,res,next){
     //store the form's data
     const data = commonServices.sanitizeBody(req);
     if(typeof data.mail !=='undefined' && typeof data.pw !=='undefined' && EMAIL_REGEXX.test(data.mail)) {
-        console.log(data);
 
         // We then check if the mail is in database
         User.checkMail(data.mail, (result) => {
             if (typeof result !== 'undefined') {
                 if (result.check === true) {
-                    console.log(1);
                     //Check if the password entered match with the one registered
                     User.getPw(result.idUser, (hashedPw) => {
-                        console.log(2);
-
                         bcrypt.compare(data.pw, hashedPw, (err, resp) => {
                             if (resp) {
-                                console.log(3);
-
                                 User.checkVerified(result.idUser, (info) => {
                                     if (info.verified === 1) {
-                                        console.log(4);
-
                                         User.getInfoToken(result.idUser, (infoUser) => {
-                                            console.log(infoUser);
                                             bouncer.reset(req);
                                             //Call the services that will create the token and redirect corresponding to his status
                                             middleware.createToken(res, result, result.idUser, infoUser.pseudo, infoUser.isAdmin)
                                         });
                                     } else {
-                                        console.log(5);
-
                                         commonServices.setCookie(res, 'code', 401);
                                         res.redirect('/verify')
                                     }

@@ -6,6 +6,7 @@ const DATE = require('date-and-time');
 const Users = require("../models/usersModel");
 const Ranks = require("../models/ranksModel");
 const Teams = require('../models/teamsModel');
+const Matches = require("../models/matchesModel");
 
 exports.addTournamentPage = function(req,res){
     let idUser = commonServices.getUserId(req);
@@ -82,7 +83,6 @@ exports.selectTournamentPage = function(req,res){
 
 exports.deleteTournament = function(req,res){
     //store the id from the url
-    console.log(req.body);
     let body = commonServices.sanitizeBody(req);
     const id=body.id;
     //check if the id is in the DB
@@ -113,7 +113,6 @@ exports.updateTournamentPage = function(req,res){
     Games.allGames((games)=>{
         Tournament.getTournamentById(id,(data)=>{
             data[0].date_debut=DATE.format(data[0].date_debut,'YYYY-MM-DD');
-            console.log(data[0]);
 
             res.render('./users/admin/tournament/update',{idUser,data,games,status,date,invalid,csrfToken: req.csrfToken()});
         })
@@ -122,11 +121,8 @@ exports.updateTournamentPage = function(req,res){
 
 exports.updateTournament = function(req,res){
     let data = commonServices.sanitizeBody(req);
-    console.log(data);
-
     let date=data.startingDate;
     let newDate= new Date(date);
-    console.log(req.body);
     let id = req.params.id;
     if(typeof newDate.getFullYear()==='number'&& typeof newDate.getMonth()==='number' && typeof newDate.getDate()==='number') {
         if(commonServices.checkPastDate(newDate)){
@@ -185,43 +181,51 @@ exports.tournamentPage = function(req,res){
                         });
 
                     }))));
-                    console.log(teams);
-                    if(commonServices.checkPastDate(data[0].date_debut)){
-                        data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
-                        //here return the corresponding status for the buttons display
-                        if (logged) {
-                            let idUser = commonServices.getUserId(req);
-                            Users.getTeamInfo(idUser, (info) => {
-                                console.log(info);
-                                //check if the team is registered in the tournament or not
-                                if (info[0].captain === 1) {
-                                    Ranks.getTeamAById(id, info[0].idTeam, (cb) => {
-                                        if (typeof cb !== 'undefined') {
-                                            //means that the team is in the tournament
-                                            status = 2;
-                                        } else {
-                                            //it means that the captain can join the tournament
-                                            status = 1;
-                                        }
-                                        res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
-                                    });
-                                } else {
-                                    res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
-                                }
+                    Matches.getAllMatches(id,async (matches)=>{
+                        await Promise.all(matches.map((row) => new Promise((resolve => {
+                            Teams.getTeamById(row.idTeam1, (info1) => {
+                                row.teamName1 = info1.teamName;
                             });
+                            Teams.getTeamById(row.idTeam2, (info2) => {
+                                row.teamName2 = info2.teamName;
+                                resolve();
+                            });
+                        }))));
+                        if(commonServices.checkPastDate(data[0].date_debut)){
+                            data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
+                            //here return the corresponding status for the buttons display
+                            if (logged) {
+                                let idUser = commonServices.getUserId(req);
+                                Users.getTeamInfo(idUser, (info) => {
+                                    //check if the team is registered in the tournament or not
+                                    if (info[0].captain === 1) {
+                                        Ranks.getTeamAById(id, info[0].idTeam, (cb) => {
+                                            if (typeof cb !== 'undefined') {
+                                                //means that the team is in the tournament
+                                                status = 2;
+                                            } else {
+                                                //it means that the captain can join the tournament
+                                                status = 1;
+                                            }
+                                            res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,matches,teams,csrfToken: req.csrfToken()});
+                                        });
+                                    } else {
+                                        res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,matches,csrfToken: req.csrfToken()});
+                                    }
+                                });
+                            }
+                            else {
+                                res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,matches,teams,csrfToken: req.csrfToken()});
+                            }
                         }
-                        else {
-                            res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
+                        else{
+                            data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
+                            //the date is past so no teams can leave the tournament nor join it
+                            status=0;
+                            res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,matches,teams,csrfToken: req.csrfToken()});
                         }
-                    }
-                    else{
-                        data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
-                        //the date is past so no teams can leave the tournament nor join it
-                        status=0;
-                        res.render("./tournaments/template", {idUser,data, logged, isAdmin, status, id,teams,csrfToken: req.csrfToken()});
-                    }
+                    });
                 });
-
             });
         }
         else{

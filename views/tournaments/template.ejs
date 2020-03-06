@@ -7,44 +7,65 @@
         else{%>
             <%- include('../include/navbar'); -%>
         <%}%>
+        <div>
+            <h3 class="text-center color-white">Welcome to <%= data[0].name%> ! </h3>
+            <form action="/tournaments/<%= id%>" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken%>">
+                <%switch(status){
+                    case 0:
+                        break
+                    case 1:%>
+                        <button type="submit" class="btn btn-primary" name="join" value="1">Join</button>
+                        <%break
+                    case 2:%>
+                        <button type="submit" class="btn btn-danger" name="leave" value="1">Leave </button>
+                        <%break
+                    default:%>
+                        <button type="button" class="btn btn-primary" disabled>Join</button>
+                <%}%>
+            </form>
+        </div>
+        <div>
+            <p class="color-white text-center">This is the tournament of the YEAR ! </br>
+                There are <%= data[0].nbParticipant%> teams at the moment, Join the tournament in order to show every one your strengths ! </br>
+                Careful, tournament will start on <%= data[0].date_debut%> AND the game is <%= data[0].game%></p>
+        </div>
+        <div>
+            <table class="mx-auto">
+                <tbody>
+                <%if(teams){
+                        for (let row of teams){ %>
 
-        <h3 class="text-center color-white">Welcome to <%= data[0].name%> ! </h3>
-        <form action="/tournaments/<%= id%>" method="POST">
-            <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-            <%switch(status){
-                case 0:
-                    break
-                case 1:%>
-                    <button type="submit" class="btn btn-primary" name="join" value="1">Join</button>
-                    <%break
-                case 2:%>
-                    <button type="submit" class="btn btn-danger" name="leave" value="1">Leave </button>
-                    <%break
-                default:%>
-                    <button type="button" class="btn btn-primary" disabled>Join</button>
-            <%}%>
-        </form>
+                            <tr>
+                                <td>
+                                    <p class="color-white"> <%= row.teamName%> with a <%= row.score %> score</p>
 
-        <p class="color-white text-center">This is the tournament of the YEAR ! </br>
-            There are <%= data[0].nbParticipant%> teams at the moment, Join the tournament in order to show every one your strengths ! </br>
-            Careful, tournament will start on <%= data[0].date_debut%> AND the game is <%= data[0].game%></p>
+                                </td>
+                            </tr>
 
-        <table class="mx-auto">
-            <tbody>
-            <%if(teams){
-                    for (let row of teams){ %>
+                         <%}%>
+                <%}%>
+                </tbody>
+            </table>
+        </div>
 
-                        <tr>
-                            <td>
-                                <p class="color-white"> <%= row.teamName%> with a <%= row.score %> score</p>
+        <div>
+            <h3 class="color-white text-center">Previous Matches</h3>
+            <table class="mx-auto">
+                <tbody>
+                <%if(matches){
+                        for (let row of matches){ %>
 
-                            </td>
-                        </tr>
-
-                     <%}%>
-            <%}%>
-            </tbody>
-        </table>
+                    <tr>
+                        <td class="color-white "><%= row.teamName1%></td>
+                        <td class="color-white "><%= row.score1%> - <%= row.score2%> </td>
+                        <td class="color-white "><%= row.teamName2%></td>
+                    </tr>
+                <%}%>
+                <%}%>
+                </tbody>
+            </table>
+        </div>
 
 
 
