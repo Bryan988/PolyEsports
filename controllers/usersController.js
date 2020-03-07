@@ -159,9 +159,9 @@ exports.adminPage = function(req,res){
 
 exports.profilePage = function(req,res){
     let id = req.params.id;
-    let info = commonServices.isAdminLogged(req);
-    let logged = info.logged;
-    let isAdmin = info.isAdmin;
+    let userInf = commonServices.isAdminLogged(req);
+    let logged = userInf.logged;
+    let isAdmin = userInf.isAdmin;
     let status=0;
     if(logged){
         let idUser = commonServices.getUserId(req);
@@ -190,20 +190,11 @@ exports.updateProfile = function(req,res){
   if(idUser==idPage){
       let body=commonServices.sanitizeBody(req);
       if(typeof body.name !=='undefined' && typeof body.pseudo!=='undefined'
-          && typeof body.firstname !=='undefined' && typeof body.email !=='undefined'
-          && EMAIL_REGEXX.test(body.email) && NAME_REGEX.test(body.name) && NAME_REGEX.test(body.firstname)
+          && typeof body.firstname !=='undefined'
+          && NAME_REGEX.test(body.name) && NAME_REGEX.test(body.firstname)
           && NAME_REGEX.test(body.pseudo)){
-          //Check if mail already in DB
-          User.checkMail(body.email,(info)=>{
-              console.log(info);
-              if(typeof info==='undefined'){
-                  User.updateUser(idUser,body.name,body.firstname,body.email,body.pseudo);
-                  commonServices.writeAndSend(res,200);
-              }
-              else{
-                  commonServices.writeAndSend(res,400);
-              }
-          });
+          User.updateUser(idUser,body.name,body.firstname,body.pseudo);
+          commonServices.writeAndSend(res,200);
       }
       else{
           commonServices.writeAndSend(res,400);
@@ -247,7 +238,7 @@ exports.updatePw = function(req,res){
                     if (data) {
                         console.log("old ok");
                         let newPw = bcrypt.hashSync(body.newPw, 10);
-                        bcrypt.compare(body.confPw, newPw, (err, info) => {
+                        bcrypt.compare(body.confPw, newPw, (error, info) => {
                             if (info) {
                                 User.updatePw(idUser, newPw);
                                 console.log("PASSWORD UPDATED");

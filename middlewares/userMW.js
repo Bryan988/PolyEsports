@@ -120,19 +120,14 @@ exports.createToken = function(res,result,idUser,pseudo,isAdmin){
 
 exports.canCreateTeam = function(req,res,next){
   //first store his id,
-  let token = commonServices.getCookie(req,"token");
   //we know for sure that the token is verified by the MW before so we do not need to check for errors
   const idUser = commonServices.getUserId(req);
-  console.log(idUser);
   //Then check if the user asking to create a team / apply for a team / apply for the page is authorized
   User.canApplyForTeam(idUser,(data)=>{
-    console.log(data);
     if(data[0].idTeam ===0 && data[0].pending===0 && data[0].captain === 0){
       next();
     }
     else{
-      console.log("redirecting in MW");
-
       res.redirect("/");
     }
   });

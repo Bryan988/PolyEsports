@@ -32,8 +32,6 @@
             <input id="firstname" class ="border rounded" name="firstname" type="text" value="<%= info.firstname%>" required></br>
             <label for="pseudo" class="color-white">Pseudo : </label>
             <input id="pseudo" class ="border rounded" name="pseudo" type="text" value="<%= info.pseudo%>" required></br>
-            <label for="mail" class="color-white">Mail : </label>
-            <input id="mail" class ="border rounded w200" name="mail" type="email" value="<%= info.email%>" required></br>
             <button id="update" class="btn btn-primary" type="button">Update</button>
         </div>
         <a href="/users/profile/<%= idUser%>/password"><p>Change your password</p></a>
@@ -46,7 +44,6 @@
                         type: 'PUT',
                         data: {_csrf: "<%= csrfToken %>",name:document.getElementById("name").value,
                             firstname:document.getElementById("firstname").value,
-                            email:document.getElementById("mail").value,
                             pseudo:document.getElementById("pseudo").value},
                         success: function() {
                             alert("Profile updated");

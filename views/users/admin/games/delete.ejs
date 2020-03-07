@@ -18,8 +18,8 @@
                     <tbody id="myTable">
                         <%for (var row of data){%>
 
-                                <tr>
-                                    <td class="color-white" id="<%= row.id%>"> <%= row.libelle%>
+                                <tr id="<%= row.id%>">
+                                    <td class="color-white" > <%= row.libelle%>
                                     </td>
                                     <td>
                                         <button id="del_<%= row.id%>" type ="button" class="btn btn-danger ml50" name="delete"> Delete</button>

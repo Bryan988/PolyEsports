@@ -11,7 +11,7 @@ const Games = {
     },
     allGames : function(cb){
         connection.query('SELECT * FROM jeux',(err,data)=>{
-            if(err){throw err};
+            if(err){throw err}
             cb(data);
         })
     },

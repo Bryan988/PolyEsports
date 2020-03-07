@@ -22,8 +22,8 @@ const User = {
                console.log("user added");
           });
      },
-     updateUser : function(id,name,firstname,mail,pseudo){
-          connection.query('UPDATE user SET ? WHERE id=?',[{name:name,firstname:firstname,email:mail,pseudo:pseudo},id],(err)=>{
+     updateUser : function(id,name,firstname,pseudo){
+          connection.query('UPDATE user SET ? WHERE id=?',[{name:name,firstname:firstname,pseudo:pseudo},id],(err)=>{
                if (err) throw err;
           })
 

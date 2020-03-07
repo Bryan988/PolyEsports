@@ -156,13 +156,13 @@ exports.updateTournament = function(req,res){
 
 exports.tournamentPage = function(req,res){
     let id = req.params.id;
-    let info = commonServices.isAdminLogged(req);
+    let userInf = commonServices.isAdminLogged(req);
     let idUser;
-    let logged = info.logged;
+    let logged = userInf.logged;
     if(logged){
          idUser = commonServices.getUserId(req);
     }
-    let isAdmin = info.isAdmin;
+    let isAdmin = userInf.isAdmin;
     let status;
     //need to know the status of the player, if he's the captain or no
     // retrieve all the info about the tournament
@@ -195,7 +195,7 @@ exports.tournamentPage = function(req,res){
                             data[0].date_debut= DATE.format(data[0].date_debut,'ddd, MMM DD YYYY');
                             //here return the corresponding status for the buttons display
                             if (logged) {
-                                let idUser = commonServices.getUserId(req);
+                                idUser = commonServices.getUserId(req);
                                 Users.getTeamInfo(idUser, (info) => {
                                     //check if the team is registered in the tournament or not
                                     if (info[0].captain === 1) {
