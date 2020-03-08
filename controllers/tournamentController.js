@@ -121,6 +121,7 @@ exports.updateTournamentPage = function(req,res){
 
 exports.updateTournament = function(req,res){
     let data = commonServices.sanitizeBody(req);
+    console.log(data);
     let date=data.startingDate;
     let newDate= new Date(date);
     let id = req.params.id;
@@ -176,7 +177,6 @@ exports.tournamentPage = function(req,res){
                     await Promise.all(teams.map((row) => new Promise((resolve => {
                        Teams.getTeamById(row.idTeam,(teamInfo)=>{
                            row.teamName=teamInfo.teamName;
-                           row.logo = teamInfo.logo;
                            resolve();
                         });
 

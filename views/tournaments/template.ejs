@@ -7,9 +7,18 @@
         else{%>
             <%- include('../include/navbar'); -%>
         <%}%>
-        <div>
-            <h3 class="text-center color-white">Welcome to <%= data[0].name%> ! </h3>
-            <form action="/tournaments/<%= id%>" method="POST">
+        <div class=" m10 mydark d-flex d-sm-flex d-xl-flex flex-column align-items-center align-items-sm-center justify-content-xl-start align-items-xl-center  ">
+            <h3 class="text-center color-white">Welcome to <%= data[0].name%>! </h3>
+            <div class="d-flex flex-row justify-content-center justify-content-xl-center w500 m10">
+                <div class="w200">
+                    <p class="color-white">Game : <%= data[0].game%></p>
+                </div>
+                <div class="w100"></div>
+                <div class="w200">
+                    <p class="color-white">Starting date : <%= data[0].date_debut%></p>
+                </div>
+            </div>
+            <form action="/tournaments/<%= id%>" method="POST" class="m10">
                 <input type="hidden" name="_csrf" value="<%= csrfToken%>">
                 <%switch(status){
                     case 0:
@@ -24,50 +33,101 @@
                         <button type="button" class="btn btn-primary" disabled>Join</button>
                 <%}%>
             </form>
+            <span id="dots">...</span>
+            <div id="more" class="mt20" style="display: none;"><%= data[0].description%></div>
+
+            <div class="mb15">
+                <button class="btn btn-info" onclick="myFunction()" id="myBtn">Show more</button>
+            </div>
         </div>
-        <div>
-            <p class="color-white text-center">This is the tournament of the YEAR ! </br>
-                There are <%= data[0].nbParticipant%> teams at the moment, Join the tournament in order to show every one your strengths ! </br>
-                Careful, tournament will start on <%= data[0].date_debut%> AND the game is <%= data[0].game%></p>
-        </div>
-        <div>
-            <table class="mx-auto">
-                <tbody>
-                <%if(teams){
-                        for (let row of teams){ %>
-
-                            <tr>
-                                <td>
-                                    <p class="color-white"> <%= row.teamName%> with a <%= row.score %> score</p>
-
-                                </td>
-                            </tr>
-
-                         <%}%>
+        <div class="d-flex flex-row flex-wrap">
+            <%if(teams){
+                for (let row of teams){ %>
+                    <div class="d-flex d-xl-flex flex-column align-items-center align-items-md-center align-items-xl-center border-solid m10 w200 h100">
+                        <h3 class="color-white"><%= row.teamName%></h3>
+                        <a href="/teams/<%= row.idTeam%>">
+                            <button class="btn btn-primary" type="button">Let's See</button>
+                        </a>
+                    </div>
                 <%}%>
-                </tbody>
-            </table>
+            <%}%>
+        </div>
+        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center flex-sm-column flex-md-column flex-lg-row flex-xl-row justify-content-xl-center mt50">
+            <div class="w400 h400">
+                <table class=" table mx-auto">
+                    <thead>
+                        <tr>
+                            <td class="color-white text-center">Position</td>
+                            <td class="color-white text-center">Team</td>
+                            <td class="color-white text-center">Score</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <%if(teams){
+                        let i=1;
+                            for (let row of teams){ %>
+
+                                <tr class="color-white text-center">
+                                    <td><%= i%></td>
+                                    <td class="color-white text-center">
+                                        <%= row.teamName%>
+                                    </td>
+                                    <td class="color-white text-center">
+                                        <%= row.score %>
+                                    </td>
+                                </tr>
+                                <%= i++%>
+
+                             <%}%>
+                    <%}%>
+                    </tbody>
+                </table>
+            </div>
+            <div class="w100"></div>
+            <div class="w400 h300">
+                <h3 class="color-white text-center">Previous Matches</h3>
+                <table class="table mx-auto">
+                    <thead>
+                        <tr>
+                            <td class="color-white text-center"></td>
+                            <td class="color-white text-center">Score</td>
+                            <td class="color-white text-center"></td>
+                        </tr>
+                    </thead>
+                    <tbody class="overflow-y-auto">
+                    <%if(matches){
+                            for (let row of matches){ %>
+
+                        <tr>
+                            <td class="color-white text-center"><%= row.teamName1%></td>
+                            <td class="color-white text-center"><%= row.score1%> - <%= row.score2%> </td>
+                            <td class="color-white text-center"><%= row.teamName2%></td>
+                        </tr>
+                    <%}%>
+                    <%}%>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div>
-            <h3 class="color-white text-center">Previous Matches</h3>
-            <table class="mx-auto">
-                <tbody>
-                <%if(matches){
-                        for (let row of matches){ %>
 
-                    <tr>
-                        <td class="color-white "><%= row.teamName1%></td>
-                        <td class="color-white "><%= row.score1%> - <%= row.score2%> </td>
-                        <td class="color-white "><%= row.teamName2%></td>
-                    </tr>
-                <%}%>
-                <%}%>
-                </tbody>
-            </table>
-        </div>
+        <script>
+            function myFunction() {
+                let dots = document.getElementById("dots");
+                let moreText = document.getElementById("more");
+                let btnText = document.getElementById("myBtn");
 
-
+                if (dots.style.display === "none") {
+                    dots.style.display = "inline";
+                    btnText.innerHTML = "Show more";
+                    moreText.style.display = "none";
+                } else {
+                    dots.style.display = "none";
+                    btnText.innerHTML = "Show less";
+                    moreText.style.display = "inline";
+                }
+            }
+        </script>
 
         <%- include('../include/footer'); -%>
     </body>

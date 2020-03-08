@@ -2,6 +2,8 @@
     <%- include('../../../include/head'); -%>
     <body>
         <%- include('../../../include/navbarAdmin'); -%>
+        <script src="https://cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
+
         <%if(status){%>
             <h3 class="text-center text-success mt15"> The tournament has been updated</h3>
         <%}
@@ -14,7 +16,7 @@
 
         <%if(data && games){%>
             <div class="mx-auto mydark w1100">
-                <div class="d-flex flex-row m20 h600">
+                <div class="d-flex flex-row m20">
                     <input type="hidden" name="_csrf" value="<%= csrfToken%>">
                     <div class = "w500">
                         <div class="w400">
@@ -66,15 +68,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex d-xl-flex flex-column w500 m10 h580 ml50">
-                        <div class="h500 overflow-y-auto">
-                            <label class="color-white">
-                                Tournament's description : 
-                            </label>
-                            <textarea class="form-control form-control-lg h500" id="description" name="description" required>
-                                <%= data[0].description%>
-                            </textarea>
-                        </div>
+                    <div class="d-flex d-xl-flex flex-column w500 m10 ml50">
+                        <textarea id="description" class="w500">
+                            <%= data[0].description%>
+                        </textarea>
                         <div class="d-xl-flex justify-content-xl-end">
                             <button id="update_<%= data[0].id%>" class="btn btn-primary mt20" type="button">
                                 Update
@@ -87,7 +84,12 @@
                                 $.ajax({
                                     url: '/users/admin/tournament/update/'+<%= data[0].id%>,
                                     type: 'PUT',
-                                    data: {id : <%= data[0].id%>,_csrf: "<%= csrfToken %>",tournamentName:document.getElementById('name').value,minNbTeams:document.getElementById('nbTeams').value,startingDate:document.getElementById('date').value,description:document.getElementById('description').value,idGame:document.querySelector('input[name="idGame"]:checked').value},
+                                    data: {id : <%= data[0].id%>,_csrf: "<%= csrfToken %>",
+                                        tournamentName:document.getElementById('name').value,
+                                        minNbTeams:document.getElementById('nbTeams').value,
+                                        startingDate:document.getElementById('date').value,
+                                        description:document.getElementById('description').value,
+                                        idGame:document.querySelector('input[name="idGame"]:checked').value},
                                     success: function() {
                                         //Location.reload();
                                         alert("The tournament has been updated ! ");
@@ -101,6 +103,7 @@
                     </script>
                 </div>
             </div>
+            <
         <%}%>
         <%- include('../../../include/searchFunc'); -%>
         <%- include('../../../include/footer'); -%>

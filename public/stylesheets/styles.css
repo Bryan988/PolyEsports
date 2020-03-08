@@ -56,6 +56,7 @@ body{
     margin-top : 150px;
 }
 .mb15{margin-bottom: 15px;}
+.w100{width: 100px;}
 .w200{width: 200px;}
 .w300{width: 300px;}
 .w350{width : 350px;}
@@ -87,6 +88,7 @@ body{
 .overflow-y-auto{overflow-y: auto;}
 
 .border-solid{
+    border-color: white;
     border-style: solid;
     border-width: 3px;
 }
