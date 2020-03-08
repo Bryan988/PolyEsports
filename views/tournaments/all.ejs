@@ -29,7 +29,28 @@
             <%}%>
             </div>
         </div>
+        <%}%>
 
+        <h3 class="color-white text-center mt80">Old tournaments</h3>
+        <%if (ended){%>
+            <div class="d-flex d-md-flex flex-column align-items-xl-center mt20">
+                <div class="d-flex justify-content-center flex-wrap">
+                    <%for (let row of ended){ %>
+                        <div class="my-container border-solid mr10">
+                            <img src="<%= row.img%>" alt="<%= row.titleGame%>" class="image" style="width:100%">
+                            <div class="middle">
+                                <div class="text">
+                                    <%=row.name%> </br>
+                                    <a href="/tournaments/<%= row.id%>">
+                                        <button class="btn btn-primary" type="button" style="font-size: 11px;">Let's review</button>
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    <%}%>
+                </div>
+            </div>
         <%}%>
 
 

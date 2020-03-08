@@ -19,7 +19,7 @@
                             <th class="color-white">Tournament's Name</th>
                             <th class="color-white">Start Date</th>
                             <th class="color-white">Game</th>
-                            <th class="color-white">Minimum Team Numbers</th>
+                            <th class="color-white">Minimum Teams</th>
                             <th class="color-white">Action</th>
                         </tr>
                         </thead>
@@ -48,11 +48,12 @@
                                                 <a class="dropdown-item" href="/users/admin/tournament/<%= row.id%>/matches/">Edit</a>
                                             </div>
                                         </div>
-                                        <a href="/users/admin/tournament/update/<%= row.id %>">
-                                            <button class="btn btn-primary mr10" type="button">
-                                                Update
-                                            </button>
-                                        </a>
+                                            <a href="/users/admin/tournament/update/<%= row.id %>">
+                                                <button class="btn btn-primary mr10" type="button">
+                                                    Update
+                                                </button>
+                                            </a>
+                                            <button id="end_<%= row.id%>" class="btn btn-warning mr10">End</button>
                                             <button id="del_<%=row.id%>" class="btn btn-danger" type="button">
                                                 Delete
                                             </button>
@@ -63,6 +64,21 @@
                                                 $.ajax({
                                                     url: '/users/admin/tournament/edit',
                                                     type: 'DELETE',
+                                                    data: {id : <%= row.id%>,_csrf: "<%= csrfToken %>" },
+                                                    success: function() {
+                                                        $("#<%= row.id%>").hide();
+                                                    },
+                                                    error: function(){
+                                                        console.log(error);
+                                                    }
+                                                });
+                                            });
+                                        });
+                                        $(document).ready(function () {
+                                            $('#end_<%= row.id %>').click(function () {
+                                                $.ajax({
+                                                    url: '/users/admin/tournament/edit',
+                                                    type: 'PUT',
                                                     data: {id : <%= row.id%>,_csrf: "<%= csrfToken %>" },
                                                     success: function() {
                                                         $("#<%= row.id%>").hide();

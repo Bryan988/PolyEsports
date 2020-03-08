@@ -26,6 +26,7 @@ exports.addTournamentPage = function(req,res){
 
 exports.addTournament = function(req,res){
     let data = commonServices.sanitizeBody(req);
+    console.log(data);
     let date=data.startingDate;
     let newDate= new Date(date);
 
@@ -129,29 +130,32 @@ exports.updateTournament = function(req,res){
         if(commonServices.checkPastDate(newDate)){
             if (typeof data.idGame !== 'undefined' && typeof data.minNbTeams !== 'undefined' && typeof data.startingDate !== 'undefined' && typeof data.tournamentName !== 'undefined' && typeof data.description !== 'undefined') {
                 Tournament.updateTournament(id,data.idGame, data.minNbTeams, newDate, data.tournamentName, data.description);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.write(JSON.stringify({ status: 200 }));
-                res.end();
+                commonServices.writeAndSend(res,200);
+
             } else {
                 commonServices.setCookie(res,"invalid", 1);
-                res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.write(JSON.stringify({ status: 400 }));
-                res.end();
+                commonServices.writeAndSend(res,400);
+
             }
         }
         else{
             commonServices.setCookie(res,'date',1);
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.write(JSON.stringify({ status: 400 }));
-            res.end();
+            commonServices.writeAndSend(res,400);
+
         }
     }
     else{
         commonServices.setCookie(res,"invalid", 1);
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.write(JSON.stringify({ status: 400 }));
-        res.end();
+        commonServices.writeAndSend(res,400);
     }
+};
+
+exports.endTournament = function(req,res){
+    let data = commonServices.sanitizeBody(req);
+    Tournament.endTournament(data.id);
+    commonServices.writeAndSend(res,200);
+
+
 
 };
 
@@ -287,18 +291,32 @@ exports.allTournaments = function(req,res){
         idUser = commonServices.getUserId(req);
     }
     let isAdmin = infoUser.isAdmin;
-    Tournament.getAllOpenTournaments(async (data)=> {
-        //use the same function as in selectPage above
-        await Promise.all(data.map((row) => new Promise((resolve => {
-            Games.getNameGame(row.idJeux, (gameName) => {
-                row.date_debut = DATE.format(row.date_debut, 'YYYY-MM-DD');
-                row.titleGame = gameName[0].libelle;
-                row.img = gameName[0].image;
-                resolve();
-            });
+    Tournament.getAllOpenTournaments( async (data)=> {
+        Tournament.getAllEndedTournaments(async (ended)=>{
+            //use the same function as in selectPage above
+            await Promise.all(data.map((row) => new Promise((resolve => {
+                Games.getNameGame(row.idJeux, (gameName) => {
+                    row.date_debut = DATE.format(row.date_debut, 'YYYY-MM-DD');
+                    row.titleGame = gameName[0].libelle;
+                    row.img = gameName[0].image;
+                    resolve();
+                });
 
-        }))));
-        res.render("./tournaments/all", {idUser,data, logged, isAdmin});
+            }))));
+            await Promise.all(ended.map((row) => new Promise((resolve => {
+                Games.getNameGame(row.idJeux, (gameName) => {
+                    row.date_debut = DATE.format(row.date_debut, 'YYYY-MM-DD');
+                    row.titleGame = gameName[0].libelle;
+                    row.img = gameName[0].image;
+                    resolve();
+                });
+
+            }))));
+            res.render("./tournaments/all", {idUser,data, logged, isAdmin,ended});
+
+
+        });
+
     });
 };
 

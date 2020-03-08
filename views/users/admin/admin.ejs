@@ -2,26 +2,27 @@
     <%- include('../../include/head'); -%>
     <body>
         <%- include('../../include/navbarAdmin'); -%>
+        <div class="d-flex d-md-flex flex-row align-items-xl-center justify-content-center mt80">
 
-        <div class="dropdown">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                Action on Games
-            </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="/users/admin/games/add">Add </a>
-                <a class="dropdown-item" href="/users/admin/games/delete">Delete</a>
+            <div class="dropdown mr50">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Action on Games
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/users/admin/games/add">Add </a>
+                    <a class="dropdown-item" href="/users/admin/games/delete">Delete</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Action on Tournament
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/users/admin/tournament/create">Create </a>
+                    <a class="dropdown-item" href="/users/admin/tournament/edit">Edit</a>
+                </div>
             </div>
         </div>
-        <div class="dropdown">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                Action on Tournament
-            </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="/users/admin/tournament/create">Create </a>
-                <a class="dropdown-item" href="/users/admin/tournament/edit">Edit</a>
-            </div>
-        </div>
-
         <%- include('../../include/footer'); -%>
     </body>
 </html>

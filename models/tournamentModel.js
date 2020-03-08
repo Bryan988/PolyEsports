@@ -25,14 +25,22 @@ const Tournament = {
     },
 
     getAllOpenTournaments : function(callback){
-        let now = new Date(Date.now());
-        let today = DATE.format(now,'YYYY/MM/DD');
-        console.log(today);
-        connection.query('SELECT * FROM tournois WHERE termine=0 AND date_debut>=?', today,(err,data)=>{
+        connection.query('SELECT * FROM tournois WHERE termine=0',(err,data)=>{
             if(err){throw err;}
             callback(data);
 
         })
+    },
+
+    getAllEndedTournaments :  function(callback) {
+        let now = new Date(Date.now());
+        let today = DATE.format(now, 'YYYY/MM/DD');
+        connection.query('SELECT * FROM tournois WHERE termine=1', (err, data) => {
+            if (err) {
+                throw err;
+            }
+            callback(data);
+        });
     },
 
     updateTournament : function(id,idGame,minNbTeams,startingDate,name,description){
@@ -70,6 +78,13 @@ const Tournament = {
         });
     },
 
+    endTournament : function(id) {
+        connection.query('UPDATE tournois SET termine = 1 WHERE id=?', id, (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+    },
 
 };
 
