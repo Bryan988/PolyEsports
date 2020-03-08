@@ -293,6 +293,7 @@ exports.allTournaments = function(req,res){
             Games.getNameGame(row.idJeux, (gameName) => {
                 row.date_debut = DATE.format(row.date_debut, 'YYYY-MM-DD');
                 row.titleGame = gameName[0].libelle;
+                row.img = gameName[0].image;
                 resolve();
             });
 

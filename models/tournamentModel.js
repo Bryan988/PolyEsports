@@ -28,7 +28,7 @@ const Tournament = {
         let now = new Date(Date.now());
         let today = DATE.format(now,'YYYY/MM/DD');
         console.log(today);
-        connection.query('SELECT id,idJeux,participantMin,date_debut,name,description FROM tournois WHERE termine=0 AND date_debut>=?', today,(err,data)=>{
+        connection.query('SELECT * FROM tournois WHERE termine=0 AND date_debut>=?', today,(err,data)=>{
             if(err){throw err;}
             callback(data);
 

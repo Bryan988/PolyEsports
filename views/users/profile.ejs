@@ -7,9 +7,9 @@
         else{%>
             <%- include('../include/navbar'); -%>
         <%}%>
-
+        <div class="d-flex d-md-flex flex-column align-items-xl-center">
         <%if(status===1){%>
-            <div>
+            <div class="d-flex d-xl-flex flex-column align-items-center flex-sm-column flex-md-column flex-lg-column flex-xl-column align-items-xl-center">
                 <h3 class="color-white">Team : </h3>
                 <a href="/teams/<%= info.idTeam%>">
                     <button type="button" class="btn btn-primary"> My Team </button>
@@ -17,7 +17,7 @@
             </div>
         <%}
         if(status===0){%>
-            <div>
+            <div class="d-flex d-xl-flex flex-column align-items-center flex-sm-column flex-md-column flex-lg-column flex-xl-column align-items-xl-center">
                 <h3 class="color-white">Team : </h3>
                 <a href="/teams/create">
                     <button type="button" class="btn btn-primary"> Create </button>
@@ -25,16 +25,18 @@
             </div>
         <%}%>
 
-        <div>
-            <label for="name" class="color-white">Name : </label>
+        <div class="d-flex d-xl-flex flex-column align-items-center flex-sm-column align-items-sm-center flex-md-column flex-lg-column flex-xl-column justify-content-xl-center mt15">
+            <label for="name" class="color-white text-center ">Name : </label>
             <input id="name" class ="border rounded" name="name" type="text" value="<%= info.name%>" required></br>
-            <label for="firstname" class="color-white">Firstname : </label>
+            <label for="firstname" class="color-white text-center ">Firstname : </label>
             <input id="firstname" class ="border rounded" name="firstname" type="text" value="<%= info.firstname%>" required></br>
-            <label for="pseudo" class="color-white">Pseudo : </label>
+            <label for="pseudo" class="color-white text-center ">Pseudo : </label>
             <input id="pseudo" class ="border rounded" name="pseudo" type="text" value="<%= info.pseudo%>" required></br>
-            <button id="update" class="btn btn-primary" type="button">Update</button>
+            <button id="update" class="btn btn-primary  mb15" type="button">Update</button>
+            <a href="/users/profile/<%= idUser%>/password">Change your password</a>
+
         </div>
-        <a href="/users/profile/<%= idUser%>/password"><p>Change your password</p></a>
+        </div>
 
         <script type="text/javascript">
             $(document).ready(function () {

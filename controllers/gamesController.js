@@ -1,6 +1,6 @@
 let Games =  require('../models/gamesModel');
 let commonServices = require('../services/commonServices');
-const path = "public/img/games/";
+const path = "/img/games/";
 const fs = require('fs');
 
 
@@ -29,7 +29,7 @@ exports.addGame=function(req,res){
                 let filepath = path + filename;
                 console.log(filepath);
                 //put the file in the corresponding path
-                file.mv(filepath);
+                file.mv("public"+filepath);
                 Games.addGame(body.name, filepath);
                 commonServices.setCookie(res, 'status', 1);
                 commonServices.setCookie(res, 'code', 201);
@@ -66,7 +66,7 @@ exports.deleteGame=function(req,res){
     Games.selectGameById(id,(info)=>{
         if(typeof info!=='undefined'){
             Games.deleteGame(id);
-            fs.unlink(info[0].image,err=>{
+            fs.unlink("public"+info[0].image,err=>{
                 if(err){throw err;}
             });
             commonServices.writeAndSend(res,200);

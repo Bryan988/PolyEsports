@@ -10,13 +10,19 @@
         <%if(status===1){%>
             <h3 class="text-success text-center">Your team has been created</h3>
         <%}%>
-
-        <%if(data){
-                for (let row of data){ %>
-                    <a href="/teams/<%= row.id%>">
-                        <p class="color-white"><%= row.teamName%></p></br>
-                    </a>
-
+        <%if(data){%>
+            <div class="d-flex d-md-flex flex-column align-items-xl-center">
+                    <div class="d-flex justify-content-center flex-wrap">
+                        <%for (let row of data){ %>
+                            <div class="text-center  border-dark float-left flex-column border-solid m10 p10">
+                                <h3 class="color-white"><%= row.teamName%></h3>
+                                <p class="color-white"><%= parseInt(row.nombre,10)%> members</p>
+                                <a href="/teams/<%= row.id%>">
+                                    <button class="btn btn-primary">Let's See</button>
+                                </a>
+                            </div>
+                    </div>
+            </div>
             <%}%>
         <%}%>
 

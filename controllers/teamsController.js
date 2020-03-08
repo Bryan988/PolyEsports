@@ -27,6 +27,7 @@ exports.TeamsPage = function(req,res){
 exports.createTeamPage = function(req,res){
     //to render the team page we must check if the user can create it, therefore, we need his id
     let code = services.getCookie(req,'code');
+    let status = services.getCookie(req,'status');
     let info = services.isAdminLogged(req);
     let idUser;
     let logged = info.logged;
@@ -37,23 +38,34 @@ exports.createTeamPage = function(req,res){
     if(typeof code!=='undefined'){
         res.status(code);
     }
-    res.render("./teams/create",{idUser,logged,isAdmin,csrfToken: req.csrfToken()});
+    res.render("./teams/create",{idUser,logged,isAdmin,status,csrfToken: req.csrfToken()});
 };
 
 exports.createTeam = function(req,res){
     //store the form data
     let body = services.sanitizeBody(req);
     if(typeof body.name !=='undefined' && NAME_REGEX.test(body.name)) {
-        //need to check first if the file is a picture and if the size is not too big
-        Teams.createTeam(body.name);
-        //Set the user to captain
-        let idUser = services.getUserId(req);
-        Teams.getTeamByName(body.name, (info) => {
-            let idTeam = info.id;
-            Users.setToCaptain(idUser, idTeam);
-            services.setCookie(res, 'code', 201);
-            res.redirect('/teams/'+info.id);
+        Teams.getTeamByName(body.name, (check) => {
+            if(typeof check!=='undefined'){
+                services.setCookie(res, 'code', 400);
+                services.setCookie(res, 'status', 1);
+
+                res.redirect("/teams/create");
+            }
+            else{
+                //need to check first if the file is a picture and if the size is not too big
+                Teams.createTeam(body.name);
+                //Set the user to captain
+                let idUser = services.getUserId(req);
+                Teams.getTeamByName(body.name, (info) => {
+                    let idTeam = info.id;
+                    Users.setToCaptain(idUser, idTeam);
+                    services.setCookie(res, 'code', 201);
+                    res.redirect('/teams/'+info.id);
+                });
+            }
         });
+
     }
     else{
         services.setCookie(res, 'code', 400);
@@ -105,7 +117,7 @@ exports.profilePage = function(req,res){
 
                    if (logged) {
                        //then check if the user can create a team, that means that he can also apply for a team
-                       let idUser = services.getUserId(req);
+                       idUser = services.getUserId(req);
                        Users.canApplyForTeam(idUser, (data) => {
                            //first case, he can not apply because he is member of another team
                            if (data[0].idTeam != idPage && data[0].idTeam !== 0) {
@@ -121,6 +133,7 @@ exports.profilePage = function(req,res){
                            }
                            res.render('./teams/id', {
                                idUser,
+                               teaminfo,
                                logged,
                                isAdmin,
                                status,
@@ -136,6 +149,7 @@ exports.profilePage = function(req,res){
                        res.render('./teams/id', {
                            idUser,
                            logged,
+                           teaminfo,
                            isAdmin,
                            status,
                            idPage,

@@ -22,7 +22,7 @@ const Games = {
         });
     },
     getNameGame : function(id,cb){
-        connection.query('SELECT libelle FROM jeux WHERE id=?',id,(err,data)=>{
+        connection.query('SELECT * FROM jeux WHERE id=?',id,(err,data)=>{
             if(err){console.log(err);}
             cb(data);
         })

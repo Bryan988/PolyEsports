@@ -7,41 +7,18 @@
         else{%>
             <%- include('./include/navbar'); -%>
         <%}%>
-        <div class="ml15" style="display:none;" id="resend_div">
-            <label class="color-white ml15">
-                Email :
-            </label></br>
-            <input type="email" id="email" class=" w400" name="mail"/>
-            <button id="okResend" class="btn btn-primary" type="button">Resend</button>
-            <script type="text/javascript">
-                $(document).ready(function () {
-                    $('#okResend').click(function () {
-                        $.ajax({
-                            url: '/verify',
-                            type: 'PUT',
-                            data: {email:document.getElementById("email").value,_csrf: "<%= csrfToken %>" },
-                            success: function() {
-                                $("#resend_div").hide();
-                                alert("Mail send ! ");
-                            },
-                            error: function(){
-                                alert("Mail does not exist ")
-                            }
-                        });
-                    });
-                })
-            </script>
 
-        </div>
 
-        <div class ="mt50" id="verified">
+        <div class ="mt50 d-flex d-xl-flex flex-column align-items-center flex-sm-column align-items-sm-center flex-md-column flex-lg-column flex-xl-column justify-content-xl-center" id="verified">
             <h3 class="color-white"> Verify your account</h3>
-            <input type="text" class="w300" name="code_verif" id="code_verif">
-            <button id="verify" class="btn btn-primary" type="button">
-                Verify
-            </button>
-            <button type="button" id="resend" class="btn btn-primary" onclick="document.getElementById('resend_div').style.display='inline'">
-                Resend</button>
+            <input type="text" class="w300 border rounded" name="code_verif" id="code_verif">
+            <div class="mt15">
+                <button id="verify" class="btn btn-primary" type="button">
+                    Verify
+                </button>
+                <button type="button" id="resend" class="btn btn-primary" onclick="document.getElementById('resend_div').classList.remove('invisible')">
+                    Resend</button>
+            </div>
         </div>
 
         <script type="text/javascript">
@@ -62,6 +39,33 @@
                 });
             })
         </script>
+
+        <div class="ml15 mt50 d-flex d-xl-flex flex-column align-items-center flex-sm-column align-items-sm-center flex-md-column flex-lg-column flex-xl-column justify-content-xl-center invisible"  id="resend_div">
+            <label class="color-white ml15">
+                Email :
+            </label></br>
+            <input type="email" id="email" class="border rounded w400" name="mail"/>
+            <button id="okResend" class="btn btn-primary mt15" type="button">Resend</button>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#okResend').click(function () {
+                        $.ajax({
+                            url: '/verify',
+                            type: 'PUT',
+                            data: {email:document.getElementById("email").value,_csrf: "<%= csrfToken %>" },
+                            success: function() {
+                                $("#resend_div").hide();
+                                alert("Mail send ! ");
+                            },
+                            error: function(){
+                                alert("Mail does not exist ")
+                            }
+                        });
+                    });
+                })
+            </script>
+
+        </div>
 
         <%- include('./include/footer'); -%>
     </body>
