@@ -1,6 +1,7 @@
 <html>
     <%- include('../../../include/head'); -%>
     <body>
+        <script src="https://cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
         <%- include('../../../include/navbarAdmin'); -%>
         <%if(status){%>
             <h3 class="text-center text-success mt15"> The tournament has been added</h3>
@@ -13,12 +14,12 @@
         <%}%>
 
 
-        <div class="d-flex flex-column align-items-xl-center mt50">
+        <div class="d-flex d-md-flex flex-column align-items-xl-center mt50">
             <h2 class="color-white text-center">Create a tournament</h2>
             <form method="POST" action="/users/admin/tournament/create">
                 <input type="hidden" name="_csrf" value="<%= csrfToken%>">
-                <div class="d-flex flex-column align-items-center align-items-lg-center">
-                    <div class="d-flex align-items-xl-center mydark h400 w1000">
+                <div class="d-flex flex-column align-items-center align-items-lg-center mydark">
+                    <div class="d-flex flex-row w-100 h300">
                         <div class="d-flex flex-column w300 h-100 ml10 overflow-y-auto mt15 color-white">
                             <div class="table-responsive d-flex flex-column flex-grow-0">
                                 <label>Search the game</label>
@@ -38,15 +39,14 @@
                                     </table>
                             </div>
                         </div>
-                        <div class="border rounded d-xl-flex flex-row d-flex w700 h300 m10">
-                            <div class="w300">
-                                <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100">
+                        <div class="border rounded d-xl-flex flex-row d-flex flex-row w700 h100 m10">
+                                <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100 ml10 mr50">
                                     <label class="color-white">
                                         Tournament Name
                                          </label>
                                     <input type="text" name="tournamentName" class="w200" required/>
                                 </div>
-                                <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100">
+                                <div class="d-xl-flex flex-column justify-content-xl-center align-items-xl-center h100 mr50">
                                     <label class="color-white">
                                         Minimum number of teams
                                          </label>
@@ -58,19 +58,19 @@
                                     </label>
                                     <input id="date"type="date" name="startingDate" required />
                                 </div>
-                            </div>
-                            <div class="d-flex flex-column w400">
-                                <label class="color-white ml15 mt15">Tournament's description</label>
-                                <textarea name="description" required>
-                                </textarea>
-                            </div>
                         </div>
                     </div>
-                    <button class="btn btn-primary" type="submit">Create tournament</button>
-                </div>
+                        <div id="editor">
+
+                    </div>
+                    <button class="btn btn-primary m10" type="submit">Create tournament</button>
 
             </form>
         </div>
+        <script>
+            CKEDITOR.replace( 'editor' );
+        </script>
+
 
         <%- include('../../../include/searchFunc') -%>
 
